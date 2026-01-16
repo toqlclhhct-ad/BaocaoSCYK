@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tổng hợp Sự cố Y khoa Bệnh viện Huyết học - Truyền máu</title>
+    <style>
+        :root { --title-color: #2980b9; --bg-body: #f4f7f6; --success-color: #27ae60; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        header { 
+            display: flex; align-items: center; justify-content: space-between; 
+            border-bottom: 3px solid var(--title-color); margin-bottom: 30px; padding-bottom: 15px;
+        }
+        .btn-new { background: var(--success-color); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; font-size: 14px; }
+        
+        h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 20px; }
+        
+        /* Bảng danh sách */
+        .table-container { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background-color: var(--title-color); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #ddd; }
+        tr:hover { background-color: #f1f1f1; }
+
+        .status-pill { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
+        .status-heavy { background: #e74c3c; } /* Nặng */
+        .status-medium { background: #f39c12; } /* Trung bình */
+        .status-light { background: #3498db; } /* Nhẹ */
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" style="width: 50px; height: auto;">
+            <h2>Hệ thống quản lý sự cố</h2>
+        </div>
+        <a href="index.html" class="btn-new">+ TẠO BÁO CÁO MỚI</a>
+    </header>
+
+    <div class="table-container">
+        <h3>Danh sách sự cố vừa báo cáo</h3>
+        <p style="font-size: 13px; color: #666;">Dữ liệu cập nhật từ hệ thống Google Sheets</p>
+        <table id="incidentTable">
+            <thead>
+                <tr>
+                    <th>Số BC</th>
+                    <th>Ngày BC</th>
+                    <th>Khoa/Phòng</th>
+                    <th>Mô tả sự cố</th>
+                    <th>Mức độ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="5" style="text-align:center;">Đang tải dữ liệu...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzZUa09ezczYmB0-o-QHP-HCy7Qe52EImsVcyLxcYY-vEP58baJxhcMDCf8PKBGRks/exec';
+
+    window.onload = function() {
+        // Gọi hàm doGet của script để lấy danh sách sự cố (5-10 dòng gần nhất)
+        fetch(scriptURL + '?action=read')
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector('#incidentTable tbody');
+            tbody.innerHTML = '';
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${row.id}</b></td>
+                    <td>${row.date}</td>
+                    <td>${row.dept}</td>
+                    <td>${row.desc}</td>
+                    <td><span class="status-pill status-${row.levelClass}">${row.level}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+    }
+</script>
+</body>
+</html>
