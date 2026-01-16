@@ -90,7 +90,7 @@
                         <option>Khoa SL-ĐC-CP</option><option>Khoa Tiếp  nhận máu</option>
                         <option>Khoa XN - CĐHA</option><option>Phòng Điều dưỡng</option>
                         <option>Phòng TCKT</option><option>Phòng TCHC</option>
-                        <option>Khoa KHTH</option>
+                        <option>Phòng KHTH</option>
                     </select>
                 </div>
             </div>
@@ -168,7 +168,41 @@
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwk9u4hiqZC0dNgKbQnXpGSXUHQDOMigJo1Qc2HunMxzlgVAziWr2WPne7EnlCnjpI/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxVFtVjkvxAAehLc48bXLk8DNKsKC0-XLq0-6-2X3u0BtRnI1VRaoivb9UJtzupRvw/exec';
+    window.onload = function() {
+        const now = new Date();
+        
+        // 1. Điền Ngày báo cáo và Ngày xảy ra (Hôm nay)
+        const today = now.toISOString().split('T')[0];
+        document.getElementsByName('ngayBaoCao')[0].value = today;
+        document.getElementsByName('ngayXayRa')[0].value = today;
+
+        // 2. Điền Giờ xảy ra (Bây giờ)
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        document.getElementsByName('gioXayRa')[0].value = `${hh}:${min}`;
+
+        // 3. Tự sinh Số báo cáo (ddmmyy.stt tăng dần)
+        const dd = String(now.getDate()).padStart(2, '0');
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const yy = String(now.getFullYear()).slice(-2);
+        const datePart = `${dd}${mm}${yy}`;
+
+        // Gọi đến Script để lấy STT tiếp theo từ Sheet
+        fetch(scriptURL)
+        .then(response => response.text())
+        .then(stt => {
+            const sttFormatted = String(stt).padStart(2, '0');
+            document.getElementsByName('soBaoCao')[0].value = `${datePart}.${sttFormatted}`;
+        })
+        .catch(() => {
+            // Nếu lỗi kết nối, lấy ngẫu nhiên để không bị trống
+            const randomStt = String(Math.floor(Math.random() * 100)).padStart(2, '0');
+            document.getElementsByName('soBaoCao')[0].value = `${datePart}.${randomStt}`;
+        });
+    };
+
+    // Script xử lý Gửi Form (giữ nguyên logic bạn đã ưng ý)
     const form = document.getElementById('incidentForm');
     const btn = document.getElementById('submitBtn');
 
@@ -179,10 +213,10 @@
         fetch(scriptURL, { method: 'POST', body: new FormData(form)})
         .then(res => {
             alert('Gửi báo cáo THÀNH CÔNG!');
-            form.reset();
+            location.reload(); // Tải lại trang để cập nhật Số báo cáo mới cho lần sau
         })
-        .catch(err => alert('Lỗi kết nối!'))
-        .finally(() => {
+        .catch(err => {
+            alert('Lỗi kết nối!');
             btn.disabled = false;
             btn.innerText = 'GỬI BÁO CÁO VỀ HỆ THỐNG';
         });
