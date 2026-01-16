@@ -53,11 +53,20 @@
 
 <div class="container">
     <header>
-        <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" alt="Logo" class="logo-bv">
-        <div class="header-text">
-            <h2>Báo cáo sự cố y khoa</h2>
-            <p>(Mẫu Phụ lục III - Ban hành kèm theo Thông tư số 43/2018/TT-BYT)</p>
-        </div>
+        header { 
+    display: grid;
+    grid-template-columns: 80px 1fr 80px; /* Chia 3 phần: Logo - Chữ - Khoảng trống cân bằng */
+    align-items: center; 
+    border-bottom: 3px solid var(--title-color); 
+    margin-bottom: 30px; 
+    padding-bottom: 15px;
+}
+.logo-bv { width: 80px; height: auto; }
+.header-text { 
+    text-align: center; /* Căn giữa nội dung chữ */
+}
+.header-text h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 24px; }
+.header-text p { margin: 5px 0 0; font-size: 13px; color: #7f8c8d; }
     </header>
 
     <form id="incidentForm">
