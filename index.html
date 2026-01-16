@@ -14,12 +14,19 @@
         .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
         header { 
-            display: flex; align-items: center; justify-content: flex-start; 
-            border-bottom: 3px solid var(--title-color); margin-bottom: 30px; padding-bottom: 15px; gap: 20px;
-        }
-        .logo-bv { width: 80px; height: 80px; object-fit: contain; }
-        .header-text h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 22px; }
-        .header-text p { margin: 5px 0 0; font-size: 13px; color: #7f8c8d; }
+    display: grid;
+    grid-template-columns: 80px 1fr 80px; /* Chia 3 phần: Logo - Chữ - Khoảng trống cân bằng */
+    align-items: center; 
+    border-bottom: 3px solid var(--title-color); 
+    margin-bottom: 30px; 
+    padding-bottom: 15px;
+}
+.logo-bv { width: 80px; height: auto; }
+.header-text { 
+    text-align: center; /* Căn giữa nội dung chữ */
+}
+.header-text h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 24px; }
+.header-text p { margin: 5px 0 0; font-size: 13px; color: #7f8c8d; }
 
         fieldset { border: 1px solid #dcdde1; border-radius: 10px; margin-bottom: 25px; padding: 20px; background: #fff; }
         legend { font-weight: bold; color: var(--title-color); padding: 0 15px; font-size: 16px; text-transform: uppercase; }
@@ -52,13 +59,14 @@
 <body>
 
 <div class="container">
+    
     <header>
-        <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" alt="Logo" class="logo-bv">
-        <div class="header-text">
-            <h2>Báo cáo sự cố y khoa</h2>
-            <p>(Mẫu Phụ lục III - Ban hành kèm theo Thông tư số 43/2018/TT-BYT)</p>
-        </div>
-    </header>
+    <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" alt="Logo" class="logo-bv">
+    <div class="header-text">
+        <h2>Báo cáo sự cố y khoa</h2>
+        <p>(Mẫu Phụ lục III - Ban hành kèm theo Thông tư số 43/2018/TT-BYT)</p>
+    </div>
+    <div style="width: 80px;"></div> </header>
 
     <form id="incidentForm">
         <fieldset>
