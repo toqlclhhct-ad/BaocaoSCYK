@@ -68,17 +68,17 @@
 
     <div class="filter-section">
         <div class="filter-group" style="flex: 2;">
-            <label>Tìm kiếm mô tả:</label>
+            <label>Tìm kiếm:</label>
             <input type="text" id="searchDesc" placeholder="Nhập từ khóa..." onkeyup="filterData()">
         </div>
         <div class="filter-group">
-            <label>Khoa/Phòng:</label>
+            <label>Lọc theo Khoa/Phòng:</label>
             <select id="filterDept" onchange="filterData()">
                 <option value="">-- Tất cả khoa --</option>
             </select>
         </div>
         <div class="filter-group">
-            <label>Mức độ:</label>
+            <label>Lọc theo Mức độ:</label>
             <select id="filterLevel" onchange="filterData()">
                 <option value="">-- Tất cả --</option>
                 <option value="Nhẹ">Nhẹ</option>
@@ -87,7 +87,7 @@
             </select>
         </div>
         <div class="filter-group">
-            <label>Ngày:</label>
+            <label>Lọc theo Ngày:</label>
             <input type="date" id="filterDate" onchange="filterData()">
         </div>
     </div>
@@ -198,7 +198,7 @@
             },
             options: {
                 plugins: {
-                    title: { display: true, text: 'TỶ LỆ MỨC ĐỘ SỰ CỐ' },
+                    title: { display: true, text: 'Tỷ lệ mức độ sự cố' },
                     legend: { position: 'bottom' },
                     datalabels: {
                         color: '#fff', font: { weight: 'bold' },
@@ -221,7 +221,7 @@
             options: {
                 scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
                 plugins: {
-                    title: { display: true, text: 'SỐ LƯỢNG THEO KHOA/PHÒNG' },
+                    title: { display: true, text: 'Số lượng sự cố' },
                     legend: { display: false },
                     datalabels: { anchor: 'end', align: 'top', color: '#333', font: { weight: 'bold' }, formatter: Math.round }
                 }
