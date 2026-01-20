@@ -23,9 +23,8 @@
         }
         .chart-card {
             background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); min-height: 350px;
         }
-        .chart-card h4 { text-align: center; color: var(--title-color); margin-bottom: 15px; font-size: 16px; }
 
         /* Filter Box */
         .filter-section {
@@ -69,31 +68,32 @@
 
     <div class="filter-section">
         <div class="filter-group" style="flex: 2;">
-            <label>Tìm kiếm mô tả sự cố:</label>
-            <input type="text" id="searchDesc" placeholder="Nhập từ khóa cần tìm..." onkeyup="filterData()">
+            <label>Tìm kiếm mô tả:</label>
+            <input type="text" id="searchDesc" placeholder="Nhập từ khóa..." onkeyup="filterData()">
         </div>
         <div class="filter-group">
-            <label>Theo Khoa/Phòng:</label>
+            <label>Khoa/Phòng:</label>
             <select id="filterDept" onchange="filterData()">
                 <option value="">-- Tất cả khoa --</option>
             </select>
         </div>
         <div class="filter-group">
-            <label>Theo Mức độ:</label>
+            <label>Mức độ:</label>
             <select id="filterLevel" onchange="filterData()">
-                <option value="">-- Tất cả mức độ --</option>
+                <option value="">-- Tất cả --</option>
                 <option value="Nhẹ">Nhẹ</option>
                 <option value="Trung bình">Trung bình</option>
                 <option value="Nặng">Nặng</option>
             </select>
         </div>
         <div class="filter-group">
-            <label>Theo Ngày:</label>
+            <label>Ngày:</label>
             <input type="date" id="filterDate" onchange="filterData()">
         </div>
     </div>
 
     <div class="table-container">
+        <h3 style="color: #333; font-size: 16px; margin-bottom: 10px;">Danh sách sự cố vừa báo cáo</h3>
         <table id="incidentTable">
             <thead>
                 <tr>
@@ -111,9 +111,12 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
 <script>
+    // URL Web App của bạn
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwsgg3TyHuF60XbkdaHr6uTrXW8akj5Np9f9MjKoC0nNhZoFHnekWpkqpQzAYPpdjQ/exec';
-    let originalData = []; // Lưu trữ dữ liệu gốc để lọc
+    let originalData = [];
 
     window.onload = function() {
         fetch(scriptURL + '?action=read')
@@ -123,16 +126,19 @@
             populateDeptFilter(data);
             renderTable(data);
             renderCharts(data);
+        })
+        .catch(err => {
+            console.error('Lỗi:', err);
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Lỗi tải dữ liệu.</td></tr>';
         });
     }
 
     function populateDeptFilter(data) {
         const deptSelect = document.getElementById('filterDept');
-        const depts = [...new Set(data.map(item => item.dept))];
-        depts.sort().forEach(dept => {
+        const depts = [...new Set(data.map(item => item.dept))].sort();
+        depts.forEach(dept => {
             const opt = document.createElement('option');
-            opt.value = dept;
-            opt.textContent = dept;
+            opt.value = dept; opt.textContent = dept;
             deptSelect.appendChild(opt);
         });
     }
@@ -147,15 +153,10 @@
             const matchSearch = item.desc.toLowerCase().includes(searchVal);
             const matchDept = deptVal === "" || item.dept === deptVal;
             const matchLevel = levelVal === "" || item.level === levelVal;
-            
-            // Chuyển đổi ngày để so sánh (yyyy-mm-dd)
-            const itemDateParts = item.date.split('/');
-            const itemDateFormatted = `${itemDateParts[2]}-${itemDateParts[1]}-${itemDateParts[0]}`;
+            const itemDateFormatted = item.date.split('/').reverse().join('-');
             const matchDate = dateVal === "" || itemDateFormatted === dateVal;
-
             return matchSearch && matchDept && matchLevel && matchDate;
         });
-
         renderTable(filtered);
     }
 
@@ -163,7 +164,7 @@
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Không tìm thấy kết quả phù hợp.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Không tìm thấy dữ liệu.</td></tr>';
             return;
         }
         data.forEach(row => {
@@ -186,22 +187,45 @@
             depts[item.dept] = (depts[item.dept] || 0) + 1;
         });
 
+        Chart.register(ChartDataLabels);
+
+        // Biểu đồ tròn
         new Chart(document.getElementById('levelChart'), {
             type: 'pie',
             data: {
                 labels: Object.keys(levels),
                 datasets: [{ data: Object.values(levels), backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }]
             },
-            options: { plugins: { title: {display:true, text:'Mức độ sự cố'}, legend: { position: 'bottom' } } }
+            options: {
+                plugins: {
+                    title: { display: true, text: 'TỶ LỆ MỨC ĐỘ SỰ CỐ' },
+                    legend: { position: 'bottom' },
+                    datalabels: {
+                        color: '#fff', font: { weight: 'bold' },
+                        formatter: (value, ctx) => {
+                            let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            return value > 0 ? `${value} (${(value*100/sum).toFixed(1)}%)` : '';
+                        }
+                    }
+                }
+            }
         });
 
+        // Biểu đồ cột
         new Chart(document.getElementById('deptChart'), {
             type: 'bar',
             data: {
                 labels: Object.keys(depts),
-                datasets: [{ label: 'Số vụ', data: Object.values(depts), backgroundColor: '#2980b9' }]
+                datasets: [{ label: 'Số vụ', data: Object.values(depts), backgroundColor: '#2980b9', borderRadius: 5 }]
             },
-            options: { plugins: { title: {display:true, text:'Theo Khoa/Phòng'} }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            options: {
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                plugins: {
+                    title: { display: true, text: 'SỐ LƯỢNG THEO KHOA/PHÒNG' },
+                    legend: { display: false },
+                    datalabels: { anchor: 'end', align: 'top', color: '#333', font: { weight: 'bold' }, formatter: Math.round }
+                }
+            }
         });
     }
 </script>
