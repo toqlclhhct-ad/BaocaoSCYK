@@ -22,7 +22,7 @@
         }
         .chart-card {
             background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); min-height: 350px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); min-height: 380px; /* Tăng nhẹ chiều cao */
         }
 
         .filter-section {
@@ -192,8 +192,9 @@
                 datasets: [{ data: Object.values(levels), backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }]
             },
             options: {
+                layout: { padding: { top: 20 } },
                 plugins: {
-                    title: { display: true, text: 'Tỷ lệ mức độ sự cố' },
+                    title: { display: true, text: 'Tỷ lệ mức độ sự cố', padding: { bottom: 20 } },
                     legend: { position: 'bottom' },
                     datalabels: {
                         color: '#fff', font: { weight: 'bold' },
@@ -214,11 +215,25 @@
                 datasets: [{ label: 'Số vụ', data: Object.values(depts), backgroundColor: '#2980b9', borderRadius: 5 }]
             },
             options: {
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                layout: { padding: { top: 30 } }, // Tạo thêm khoảng trống phía trên cột
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { stepSize: 1 },
+                        grace: '15%' // Tự động tạo thêm khoảng trống ở đỉnh trục Y
+                    } 
+                },
                 plugins: {
-                    title: { display: true, text: 'Số lượng sự cố' },
+                    title: { display: true, text: 'Số lượng sự cố', padding: { bottom: 20 } },
                     legend: { display: false },
-                    datalabels: { anchor: 'end', align: 'top', color: '#333', font: { weight: 'bold' }, formatter: Math.round }
+                    datalabels: { 
+                        anchor: 'end', 
+                        align: 'top', 
+                        offset: 5, // Đẩy số liệu cách đỉnh cột một chút
+                        color: '#333', 
+                        font: { weight: 'bold' }, 
+                        formatter: Math.round 
+                    }
                 }
             }
         });
