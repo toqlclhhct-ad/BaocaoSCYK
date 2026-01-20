@@ -213,7 +213,7 @@
         fetch(scriptURL, { method: 'POST', body: new FormData(form)})
         .then(res => {
             alert('Gửi báo cáo THÀNH CÔNG!');
-            window.location.href = 'home.html'; // Chuyển về trang Home thay vì load lại
+            window.location.href = 'index.html'; // Chuyển về trang Dashboard thay vì load lại
         })
         .catch(err => {
             alert('Lỗi kết nối!');
@@ -223,4 +223,5 @@
     });
 </script>
 </body>
+
 </html>
