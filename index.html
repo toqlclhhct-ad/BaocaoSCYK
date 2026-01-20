@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tổng hợp Sự cố Y khoa Bệnh viện Huyết học - Truyền máu</title>
+    <title>Hệ thống Quản lý Sự cố</title>
     <style>
         :root { --title-color: #2980b9; --bg-body: #f4f7f6; --success-color: #27ae60; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); padding: 20px; }
@@ -11,186 +11,199 @@
         
         header { 
             display: flex; align-items: center; justify-content: space-between; 
-            border-bottom: 3px solid var(--title-color); margin-bottom: 30px; padding-bottom: 15px;
+            border-bottom: 3px solid var(--title-color); margin-bottom: 25px; padding-bottom: 15px;
         }
-        .btn-new { background: var(--success-color); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; font-size: 14px; }
-        
-        h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 20px; }
-        
-        /* Bảng danh sách */
-        .table-container { overflow-x: auto; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .btn-new { background: var(--success-color); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; font-size: 14px; transition: 0.3s; }
+        .btn-new:hover { background: #219150; }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px; margin-bottom: 30px;
+        }
+        .chart-card {
+            background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .chart-card h4 { text-align: center; color: var(--title-color); margin-bottom: 15px; font-size: 16px; }
+
+        /* Filter Box */
+        .filter-section {
+            display: flex; flex-wrap: wrap; gap: 15px; background: #f9f9f9;
+            padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee;
+        }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        .filter-group label { font-size: 12px; font-weight: bold; color: #555; }
+        .filter-group input, .filter-group select { 
+            padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none;
+        }
+
+        /* Table Style */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
         th { background-color: var(--title-color); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #ddd; }
-        tr:hover { background-color: #f1f1f1; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        tr:hover { background-color: #f1f7ff; }
 
-        .status-pill { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
-        .status-heavy { background: #e74c3c; } /* Nặng */
-        .status-medium { background: #f39c12; } /* Trung bình */
-        .status-light { background: #3498db; } /* Nhẹ */
-
-        /* Thêm vào phần <style> */
-    .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-    }
-    .chart-card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    canvas { max-height: 250px; }
-
+        .status-pill { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; text-align: center; display: inline-block; min-width: 70px; }
+        .status-heavy { background: #e74c3c; }
+        .status-medium { background: #f39c12; }
+        .status-light { background: #3498db; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="dashboard-grid">
-    <div class="chart-card">
-        <h4 style="text-align:center; color: var(--title-color);">Tỉ lệ Mức độ Sự cố</h4>
-        <canvas id="levelChart"></canvas>
-    </div>
-    <div class="chart-card">
-        <h4 style="text-align:center; color: var(--title-color);">Sự cố theo Khoa/Phòng</h4>
-        <canvas id="deptChart"></canvas>
-    </div>
-</div>
-    
     <header>
         <div style="display: flex; align-items: center; gap: 15px;">
             <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" style="width: 50px; height: auto;">
-            <h2>Hệ thống quản lý sự cố</h2>
+            <h2 style="color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 18px;">Hệ thống quản lý sự cố</h2>
         </div>
         <a href="form.html" class="btn-new">+ TẠO MỚI</a>
     </header>
 
+    <div class="dashboard-grid">
+        <div class="chart-card"><canvas id="levelChart"></canvas></div>
+        <div class="chart-card"><canvas id="deptChart"></canvas></div>
+    </div>
+
+    <div class="filter-section">
+        <div class="filter-group" style="flex: 2;">
+            <label>Tìm kiếm mô tả sự cố:</label>
+            <input type="text" id="searchDesc" placeholder="Nhập từ khóa cần tìm..." onkeyup="filterData()">
+        </div>
+        <div class="filter-group">
+            <label>Theo Khoa/Phòng:</label>
+            <select id="filterDept" onchange="filterData()">
+                <option value="">-- Tất cả khoa --</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Theo Mức độ:</label>
+            <select id="filterLevel" onchange="filterData()">
+                <option value="">-- Tất cả mức độ --</option>
+                <option value="Nhẹ">Nhẹ</option>
+                <option value="Trung bình">Trung bình</option>
+                <option value="Nặng">Nặng</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Theo Ngày:</label>
+            <input type="date" id="filterDate" onchange="filterData()">
+        </div>
+    </div>
+
     <div class="table-container">
-        <h3>Danh sách sự cố vừa báo cáo</h3>
-        <p style="font-size: 13px; color: #666;">Dữ liệu cập nhật từ hệ thống Google Sheets</p>
         <table id="incidentTable">
             <thead>
                 <tr>
-                    <th>Số BC</th>
                     <th>Ngày BC</th>
                     <th>Khoa/Phòng</th>
                     <th>Mô tả sự cố</th>
                     <th>Mức độ</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr><td colspan="5" style="text-align:center;">Đang tải dữ liệu...</td></tr>
+            <tbody id="tableBody">
+                <tr><td colspan="4" style="text-align:center;">Đang tải dữ liệu...</td></tr>
             </tbody>
         </table>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-    // Dùng link Web App mới nhất của bạn
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwsgg3TyHuF60XbkdaHr6uTrXW8akj5Np9f9MjKoC0nNhZoFHnekWpkqpQzAYPpdjQ/exec';
+    let originalData = []; // Lưu trữ dữ liệu gốc để lọc
 
     window.onload = function() {
-        // Chỉ gọi Fetch một lần duy nhất khi load trang
         fetch(scriptURL + '?action=read')
         .then(res => res.json())
         .then(data => {
-            renderTable(data);  // Vẽ bảng
-            renderCharts(data); // Vẽ biểu đồ
-        })
-        .catch(err => {
-            console.error('Lỗi kết nối dữ liệu:', err);
-            document.querySelector('#incidentTable tbody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Không thể tải dữ liệu từ hệ thống.</td></tr>';
+            originalData = data;
+            populateDeptFilter(data);
+            renderTable(data);
+            renderCharts(data);
         });
     }
 
-    // Hàm vẽ bảng danh sách
+    function populateDeptFilter(data) {
+        const deptSelect = document.getElementById('filterDept');
+        const depts = [...new Set(data.map(item => item.dept))];
+        depts.sort().forEach(dept => {
+            const opt = document.createElement('option');
+            opt.value = dept;
+            opt.textContent = dept;
+            deptSelect.appendChild(opt);
+        });
+    }
+
+    function filterData() {
+        const searchVal = document.getElementById('searchDesc').value.toLowerCase();
+        const deptVal = document.getElementById('filterDept').value;
+        const levelVal = document.getElementById('filterLevel').value;
+        const dateVal = document.getElementById('filterDate').value;
+
+        const filtered = originalData.filter(item => {
+            const matchSearch = item.desc.toLowerCase().includes(searchVal);
+            const matchDept = deptVal === "" || item.dept === deptVal;
+            const matchLevel = levelVal === "" || item.level === levelVal;
+            
+            // Chuyển đổi ngày để so sánh (yyyy-mm-dd)
+            const itemDateParts = item.date.split('/');
+            const itemDateFormatted = `${itemDateParts[2]}-${itemDateParts[1]}-${itemDateParts[0]}`;
+            const matchDate = dateVal === "" || itemDateFormatted === dateVal;
+
+            return matchSearch && matchDept && matchLevel && matchDate;
+        });
+
+        renderTable(filtered);
+    }
+
     function renderTable(data) {
-        const tbody = document.querySelector('#incidentTable tbody');
+        const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
-        
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có dữ liệu báo cáo.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Không tìm thấy kết quả phù hợp.</td></tr>';
             return;
         }
-
         data.forEach(row => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><b>${row.id}</b></td>
                 <td>${row.date}</td>
                 <td>${row.dept}</td>
-                <td>${row.desc}</td>
+                <td title="${row.desc}">${row.desc}</td>
                 <td><span class="status-pill status-${row.levelClass}">${row.level}</span></td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    // Hàm vẽ biểu đồ
     function renderCharts(data) {
         const levels = { 'Nhẹ': 0, 'Trung bình': 0, 'Nặng': 0 };
         const depts = {};
-
         data.forEach(item => {
-            // Đếm mức độ
-            if (levels.hasOwnProperty(item.level)) {
-                levels[item.level]++;
-            }
-            // Đếm theo khoa phòng
+            if (levels.hasOwnProperty(item.level)) levels[item.level]++;
             depts[item.dept] = (depts[item.dept] || 0) + 1;
         });
 
-        // Biểu đồ hình tròn (Mức độ ảnh hưởng)
         new Chart(document.getElementById('levelChart'), {
             type: 'pie',
             data: {
                 labels: Object.keys(levels),
-                datasets: [{
-                    data: Object.values(levels),
-                    backgroundColor: ['#3498db', '#f39c12', '#e74c3c'],
-                    borderWidth: 1
-                }]
+                datasets: [{ data: Object.values(levels), backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }]
             },
-            options: {
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
+            options: { plugins: { title: {display:true, text:'Mức độ sự cố'}, legend: { position: 'bottom' } } }
         });
 
-        // Biểu đồ cột (Top các khoa phòng xảy ra sự cố)
         new Chart(document.getElementById('deptChart'), {
             type: 'bar',
             data: {
                 labels: Object.keys(depts),
-                datasets: [{
-                    label: 'Số vụ việc',
-                    data: Object.values(depts),
-                    backgroundColor: '#2980b9',
-                    borderRadius: 5
-                }]
+                datasets: [{ label: 'Số vụ', data: Object.values(depts), backgroundColor: '#2980b9' }]
             },
-            options: {
-                responsive: true,
-                scales: {
-                    y: { 
-                        beginAtZero: true, 
-                        ticks: { stepSize: 1 } 
-                    }
-                },
-                plugins: {
-                    legend: { display: false }
-                }
-            }
+            options: { plugins: { title: {display:true, text:'Theo Khoa/Phòng'} }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
         });
     }
 </script>
-
 </body>
 </html>
