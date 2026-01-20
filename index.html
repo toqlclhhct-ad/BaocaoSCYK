@@ -89,47 +89,36 @@
     </div>
 </div>
 
-<script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzZUa09ezczYmB0-o-QHP-HCy7Qe52EImsVcyLxcYY-vEP58baJxhcMDCf8PKBGRks/exec';
-
-    window.onload = function() {
-        // Gọi hàm doGet của script để lấy danh sách sự cố (5-10 dòng gần nhất)
-        fetch(scriptURL + '?action=read')
-        .then(res => res.json())
-        .then(data => {
-            const tbody = document.querySelector('#incidentTable tbody');
-            tbody.innerHTML = '';
-            data.forEach(row => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><b>${row.id}</b></td>
-                    <td>${row.date}</td>
-                    <td>${row.dept}</td>
-                    <td>${row.desc}</td>
-                    <td><span class="status-pill status-${row.levelClass}">${row.level}</span></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        });
-    }
-</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzZUa09ezczYmB0-o-QHP-HCy7Qe52EImsVcyLxcYY-vEP58baJxhcMDCf8PKBGRks/exec';
+    // Dùng link Web App mới nhất của bạn
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwsgg3TyHuF60XbkdaHr6uTrXW8akj5Np9f9MjKoC0nNhZoFHnekWpkqpQzAYPpdjQ/exec';
 
     window.onload = function() {
+        // Chỉ gọi Fetch một lần duy nhất khi load trang
         fetch(scriptURL + '?action=read')
         .then(res => res.json())
         .then(data => {
-            renderTable(data);
-            renderCharts(data);
+            renderTable(data);  // Vẽ bảng
+            renderCharts(data); // Vẽ biểu đồ
+        })
+        .catch(err => {
+            console.error('Lỗi kết nối dữ liệu:', err);
+            document.querySelector('#incidentTable tbody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Không thể tải dữ liệu từ hệ thống.</td></tr>';
         });
     }
 
+    // Hàm vẽ bảng danh sách
     function renderTable(data) {
         const tbody = document.querySelector('#incidentTable tbody');
         tbody.innerHTML = '';
+        
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có dữ liệu báo cáo.</td></tr>';
+            return;
+        }
+
         data.forEach(row => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -143,40 +132,62 @@
         });
     }
 
+    // Hàm vẽ biểu đồ
     function renderCharts(data) {
-        // Xử lý dữ liệu cho biểu đồ Mức độ
         const levels = { 'Nhẹ': 0, 'Trung bình': 0, 'Nặng': 0 };
         const depts = {};
 
         data.forEach(item => {
-            levels[item.level] = (levels[item.level] || 0) + 1;
+            // Đếm mức độ
+            if (levels.hasOwnProperty(item.level)) {
+                levels[item.level]++;
+            }
+            // Đếm theo khoa phòng
             depts[item.dept] = (depts[item.dept] || 0) + 1;
         });
 
-        // Biểu đồ hình tròn (Mức độ)
+        // Biểu đồ hình tròn (Mức độ ảnh hưởng)
         new Chart(document.getElementById('levelChart'), {
             type: 'pie',
             data: {
                 labels: Object.keys(levels),
                 datasets: [{
                     data: Object.values(levels),
-                    backgroundColor: ['#3498db', '#f39c12', '#e74c3c']
+                    backgroundColor: ['#3498db', '#f39c12', '#e74c3c'],
+                    borderWidth: 1
                 }]
+            },
+            options: {
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
             }
         });
 
-        // Biểu đồ cột (Khoa/Phòng)
+        // Biểu đồ cột (Top các khoa phòng xảy ra sự cố)
         new Chart(document.getElementById('deptChart'), {
             type: 'bar',
             data: {
                 labels: Object.keys(depts),
                 datasets: [{
-                    label: 'Số vụ',
+                    label: 'Số vụ việc',
                     data: Object.values(depts),
-                    backgroundColor: '#2980b9'
+                    backgroundColor: '#2980b9',
+                    borderRadius: 5
                 }]
             },
-            options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            options: {
+                responsive: true,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { stepSize: 1 } 
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
         });
     }
 </script>
