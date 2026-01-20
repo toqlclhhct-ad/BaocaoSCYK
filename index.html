@@ -3,224 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Báo cáo Sự cố Y khoa - TT43</title>
+    <title>Tổng hợp Sự cố Y khoa Bệnh viện Huyết học - Truyền máu</title>
     <style>
-        :root { 
-            --title-color: #2980b9; 
-            --btn-color: #27ae60;   
-            --bg-body: #f4f7f6; 
-        }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); padding: 20px; line-height: 1.5; }
+        :root { --title-color: #2980b9; --bg-body: #f4f7f6; --success-color: #27ae60; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); padding: 20px; }
         .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
         header { 
-    display: grid;
-    grid-template-columns: 80px 1fr 80px; /* Chia 3 phần: Logo - Chữ - Khoảng trống cân bằng */
-    align-items: center; 
-    border-bottom: 3px solid var(--title-color); 
-    margin-bottom: 30px; 
-    padding-bottom: 15px;
-}
-.logo-bv { width: 80px; height: auto; }
-.header-text { 
-    text-align: center; /* Căn giữa nội dung chữ */
-}
-.header-text h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 24px; }
-.header-text p { margin: 5px 0 0; font-size: 13px; color: #7f8c8d; }
+            display: flex; align-items: center; justify-content: space-between; 
+            border-bottom: 3px solid var(--title-color); margin-bottom: 30px; padding-bottom: 15px;
+        }
+        .btn-new { background: var(--success-color); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; font-size: 14px; }
+        
+        h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 20px; }
+        
+        /* Bảng danh sách */
+        .table-container { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background-color: var(--title-color); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #ddd; }
+        tr:hover { background-color: #f1f1f1; }
 
-        fieldset { border: 1px solid #dcdde1; border-radius: 10px; margin-bottom: 25px; padding: 20px; background: #fff; }
-        legend { font-weight: bold; color: var(--title-color); padding: 0 15px; font-size: 16px; text-transform: uppercase; }
-        
-        /* CHIA 4 CỘT ĐỀU NHAU */
-        .grid-4 { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 15px; 
-            margin-bottom: 15px; 
-        }
-        
-        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 7px; color: #34495e; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 13.5px; }
-        textarea { height: 80px; }
-        
-        .btn-submit { 
-            background: var(--btn-color); color: white; border: none; padding: 18px; width: 100%; border-radius: 8px; 
-            font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; 
-            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); 
-        }
-        .btn-submit:hover { background: #219150; transform: translateY(-2px); }
-
-        /* Responsive cho điện thoại (chuyển về 1 cột nếu màn hình nhỏ) */
-        @media (max-width: 768px) {
-            .grid-4 { grid-template-columns: 1fr; }
-        }
+        .status-pill { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
+        .status-heavy { background: #e74c3c; } /* Nặng */
+        .status-medium { background: #f39c12; } /* Trung bình */
+        .status-light { background: #3498db; } /* Nhẹ */
     </style>
 </head>
 <body>
 
 <div class="container">
-    
     <header>
-    <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" alt="Logo" class="logo-bv">
-    <div class="header-text">
-        <h2>Báo cáo sự cố y khoa</h2>
-        <p>(Mẫu Phụ lục III - Ban hành kèm theo Thông tư số 43/2018/TT-BYT)</p>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" style="width: 50px; height: auto;">
+            <h2>Hệ thống quản lý sự cố</h2>
+        </div>
+        <a href="index.html" class="btn-new">+ TẠO MỚI</a>
+    </header>
+
+    <div class="table-container">
+        <h3>Danh sách sự cố vừa báo cáo</h3>
+        <p style="font-size: 13px; color: #666;">Dữ liệu cập nhật từ hệ thống Google Sheets</p>
+        <table id="incidentTable">
+            <thead>
+                <tr>
+                    <th>Số BC</th>
+                    <th>Ngày BC</th>
+                    <th>Khoa/Phòng</th>
+                    <th>Mô tả sự cố</th>
+                    <th>Mức độ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="5" style="text-align:center;">Đang tải dữ liệu...</td></tr>
+            </tbody>
+        </table>
     </div>
-    <div style="width: 80px;"></div> </header>
-
-    <form id="incidentForm">
-        <fieldset>
-            <legend>I. Thông tin hành chính</legend>
-            <div class="grid-4">
-                <div>
-                    <label>1. Hình thức báo cáo</label>
-                    <select name="hinhThuc" required>
-                        <option value="Tự nguyện">Tự nguyện</option>
-                        <option value="Bắt buộc">Bắt buộc</option>
-                    </select>
-                </div>
-                <div><label>2. Số báo cáo</label><input type="text" name="soBaoCao" required></div>
-                <div><label>3. Ngày báo cáo</label><input type="date" name="ngayBaoCao" required></div>
-                <div>
-                    <label>4. Đơn vị báo cáo</label>
-                    <select name="donViBaoCao" required>
-                        <option value="">-- Chọn khoa/phòng --</option>
-                        <option>Khoa Khám bệnh</option><option>Khoa Điều trị</option>
-                        <option>Khoa KSNK</option><option>Khoa Dược</option>
-                        <option>Khoa SL-ĐC-CP</option><option>Khoa Tiếp  nhận máu</option>
-                        <option>Khoa XN - CĐHA</option><option>Phòng Điều dưỡng</option>
-                        <option>Phòng TCKT</option><option>Phòng TCHC</option>
-                        <option>Phòng KHTH</option>
-                    </select>
-                </div>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>II. Thông tin người bệnh</legend>
-            <div class="grid-4">
-                <div><label>5. Họ và tên</label><input type="text" name="tenBN" placeholder="Nguyễn Văn A"></div>
-                <div><label>6. Số bệnh án</label><input type="text" name="soBA"></div>
-                <div><label>7. Ngày sinh</label><input type="date" name="ngaySinhBN"></div>
-                <div><label>8. Giới tính</label><select name="gioiTinhBN"><option>Nam</option><option>Nữ</option></select></div>
-            </div>
-            <div style="margin-top:10px;">
-                <label>9. Khoa/Phòng đang nằm viện</label><input type="text" name="khoaDangNam">
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>III. Chi tiết sự cố</legend>
-            <div class="grid-4">
-                <div>
-                    <label>10. Đối tượng xảy ra</label>
-                    <select name="doiTuongSuCo" required>
-                        <option>Người bệnh<option>Người nhà/khách đến thăm</option><option>NVYT</option><option>TTB/cơ sở hạ tầng</option>
-                    </select>
-                </div>
-                <div><label>11. Vị trí (Khoa/Phòng) xảy ra</label><input type="text" name="viTriChung" required></div>
-                <div><label>12. Vị trí cụ thể</label><input type="text" name="viTriCuThe"></div>
-                <div><label>13. Ngày xảy ra</label><input type="date" name="ngayXayRa" required></div>
-            </div>
-            <div class="grid-4" style="margin-top:10px;">
-                <div><label>14. Giờ xảy ra</label><input type="time" name="gioXayRa" required></div>
-            </div>
-            <div style="margin-top:10px;">
-                <label>15. Mô tả ngắn gọn</label><textarea name="moTa" required></textarea>
-                <label>16. Đề xuất giải pháp ban đầu</label><textarea name="deXuat"></textarea>
-                <label>17. Điều trị/Xử lý ban đầu đã thực hiện</label><textarea name="xuLyBanDau"></textarea>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>IV. Thông báo & V. Đánh giá</legend>
-            <div class="grid-4">
-                <div><label>18. Thông báo BS</label><select name="tbBacSi"><option>Có</option><option>Không</option></select></div>
-                <div><label>19. Ghi vào HSBA</label><select name="ghiHSBA"><option>Có</option><option>Không</option></select></div>
-                <div><label>20. TB người nhà</label><select name="tbNguoiNha"><option>Có</option><option>Không</option></select></div>
-                <div><label>21. TB người bệnh</label><select name="tbNguoiBenh"><option>Có</option><option>Không</option></select></div>
-            </div>
-            <div class="grid-4" style="margin-top:15px;">
-                <div><label>22. Phân loại ban đầu</label><select name="phanLoaiBanDau"><option>Chưa xảy ra</option><option>Đã xảy ra</option></select></div>
-                <div><label>23. Mức độ ảnh hưởng</label><select name="mucDoAnhHuong"><option>Nhẹ</option><option>Trung bình</option><option>Nặng</option></select></div>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>VI. Thông tin người báo cáo</legend>
-            <div class="grid-4">
-                <div><label>24. Họ tên</label><input type="text" name="tenNguoiBao"></div>
-                <div><label>25. SĐT</label><input type="text" name="sdtNguoiBao"></div>
-                <div><label>26. Email</label><input type="email" name="emailNguoiBao"></div>
-                <div>
-                    <label>27. Đối tượng</label>
-                    <select name="loaiNguoiBao">
-                        <option>Bác sĩ</option><option>Điều dưỡng</option><option>Khác</option>
-                    </select>
-                </div>
-                <div><label>28. Người chứng kiến 1</label><input type="text" name="tenNguoiChungKien1"></div>
-                <div><label>29. Người chứng kiến 2</label><input type="text" name="tenNguoiChungKien2"></div>
-            </div>
-        </fieldset>
-
-        <button type="submit" id="submitBtn" class="btn-submit">GỬI BÁO CÁO VỀ HỆ THỐNG</button>
-    </form>
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxVFtVjkvxAAehLc48bXLk8DNKsKC0-XLq0-6-2X3u0BtRnI1VRaoivb9UJtzupRvw/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzZUa09ezczYmB0-o-QHP-HCy7Qe52EImsVcyLxcYY-vEP58baJxhcMDCf8PKBGRks/exec';
+
     window.onload = function() {
-        const now = new Date();
-        
-        // 1. Điền Ngày báo cáo và Ngày xảy ra (Hôm nay)
-        const today = now.toISOString().split('T')[0];
-        document.getElementsByName('ngayBaoCao')[0].value = today;
-        document.getElementsByName('ngayXayRa')[0].value = today;
-
-        // 2. Điền Giờ xảy ra (Bây giờ)
-        const hh = String(now.getHours()).padStart(2, '0');
-        const min = String(now.getMinutes()).padStart(2, '0');
-        document.getElementsByName('gioXayRa')[0].value = `${hh}:${min}`;
-
-        // 3. Tự sinh Số báo cáo (ddmmyy.stt tăng dần)
-        const dd = String(now.getDate()).padStart(2, '0');
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        const yy = String(now.getFullYear()).slice(-2);
-        const datePart = `${dd}${mm}${yy}`;
-
-        // Gọi đến Script để lấy STT tiếp theo từ Sheet
-        fetch(scriptURL)
-        .then(response => response.text())
-        .then(stt => {
-            const sttFormatted = String(stt).padStart(2, '0');
-            document.getElementsByName('soBaoCao')[0].value = `${datePart}.${sttFormatted}`;
-        })
-        .catch(() => {
-            // Nếu lỗi kết nối, lấy ngẫu nhiên để không bị trống
-            const randomStt = String(Math.floor(Math.random() * 100)).padStart(2, '0');
-            document.getElementsByName('soBaoCao')[0].value = `${datePart}.${randomStt}`;
+        // Gọi hàm doGet của script để lấy danh sách sự cố (5-10 dòng gần nhất)
+        fetch(scriptURL + '?action=read')
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector('#incidentTable tbody');
+            tbody.innerHTML = '';
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${row.id}</b></td>
+                    <td>${row.date}</td>
+                    <td>${row.dept}</td>
+                    <td>${row.desc}</td>
+                    <td><span class="status-pill status-${row.levelClass}">${row.level}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
         });
-    };
-
-    // Script xử lý Gửi Form (giữ nguyên logic bạn đã ưng ý)
-    const form = document.getElementById('incidentForm');
-    const btn = document.getElementById('submitBtn');
-
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        btn.disabled = true;
-        btn.innerText = 'Đang gửi dữ liệu...';
-        fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-        .then(res => {
-            alert('Gửi báo cáo THÀNH CÔNG!');
-            location.reload(); // Tải lại trang để cập nhật Số báo cáo mới cho lần sau
-        })
-        .catch(err => {
-            alert('Lỗi kết nối!');
-            btn.disabled = false;
-            btn.innerText = 'GỬI BÁO CÁO VỀ HỆ THỐNG';
-        });
-    });
+    }
 </script>
 </body>
 </html>
