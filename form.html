@@ -58,7 +58,7 @@
         <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" alt="Logo" class="logo-bv">
         <div class="header-text">
             <h2>Báo cáo sự cố y khoa</h2>
-            <p>(Mẫu Phụ lục III - Ban hành kèm theo Thông tư số 43/2018/TT-BYT)</p>
+            <p>(Phụ lục III - Ban hành kèm theo Thông tư số 43/2018/TT-BYT)</p>
         </div>
     </header>
 
@@ -82,12 +82,12 @@
                     <label>4. Đơn vị báo cáo</label>
                     <select name="donViBaoCao" id="donViBaoCao" required onchange="syncDept()">
                         <option value="">-- Chọn khoa/phòng --</option>
-                        <option>Khoa Khám bệnh</option><option>Khoa Điều trị</option>
-                        <option>Khoa KSNK</option><option>Khoa Dược</option>
-                        <option>Khoa SL-ĐC-CP</option><option>Khoa Tiếp nhận máu</option>
-                        <option>Khoa XN - CĐHA</option><option>Phòng Điều dưỡng</option>
-                        <option>Phòng TCKT</option><option>Phòng TCHC</option>
-                        <option>Phòng KHTH</option>
+                        <option>Khám bệnh</option><option>Điều trị</option>
+                        <option>KSNK</option><option>Dược</option>
+                        <option>SL-ĐC-CP</option><option>Tiếp nhận máu</option>
+                        <option>XN-CĐHA</option><option>Điều dưỡng</option>
+                        <option>TCKT</option><option>TCHC</option>
+                        <option>KHTH</option>
                     </select>
                 </div>
             </div>
@@ -100,6 +100,9 @@
                 <div><label>6. Số bệnh án</label><input type="text" name="soBA"></div>
                 <div><label>7. Ngày sinh</label><input type="date" name="ngaySinhBN"></div>
                 <div><label>8. Giới tính</label><select name="gioiTinhBN"><option>Nam</option><option>Nữ</option></select></div>
+            </div>
+            <div style="margin-top:10px;">
+                <label>9. Khoa/Phòng đang nằm viện</label><input type="text" name="khoaDangNam">
             </div>
         </fieldset>
 
@@ -116,15 +119,15 @@
                     <label>11. Vị trí (Khoa/Phòng) xảy ra</label>
                     <select name="viTriChung" id="viTriChung" required>
                         <option value="">-- Chọn khoa/phòng --</option>
-                        <option>Khoa Khám bệnh</option><option>Khoa Điều trị</option>
-                        <option>Khoa KSNK</option><option>Khoa Dược</option>
-                        <option>Khoa SL-ĐC-CP</option><option>Khoa Tiếp nhận máu</option>
-                        <option>Khoa XN - CĐHA</option><option>Phòng Điều dưỡng</option>
-                        <option>Phòng TCKT</option><option>Phòng TCHC</option>
-                        <option>Phòng KHTH</option>
+                        <option>Khám bệnh</option><option>Điều trị</option>
+                        <option>KSNK</option><option>Dược</option>
+                        <option>SL-ĐC-CP</option><option>Tiếp nhận máu</option>
+                        <option>XN-CĐHA</option><option>Điều dưỡng</option>
+                        <option>TCKT</option><option>TCHC</option>
+                        <option>KHTH</option>
                     </select>
                 </div>
-                <div><label>12. Vị trí cụ thể</label><input type="text" name="viTriCuThe" placeholder="Ví dụ: Phòng số 5..."></div>
+                <div><label>12. Vị trí cụ thể</label><input type="text" name="viTriCuThe" placeholder="Ví dụ: Phòng số 5, Tủ thuốc xx,..."></div>
             </div>
             
             <div class="grid-2-short">
@@ -142,10 +145,33 @@
         <fieldset>
             <legend>IV. Thông báo & Đánh giá</legend>
             <div class="grid-4">
-                <div><label>18. Thông báo BS</label><select name="tbBacSi"><option>Có</option><option>Không</option></select></div>
-                <div><label>19. Ghi vào HSBA</label><select name="ghiHSBA"><option>Có</option><option>Không</option></select></div>
-                <div><label>22. Phân loại</label><select name="phanLoaiBanDau"><option>Chưa xảy ra</option><option>Đã xảy ra</option></select></div>
-                <div><label>23. Mức độ</label><select name="mucDoAnhHuong"><option>Nhẹ</option><option>Trung bình</option><option>Nặng</option></select></div>
+                <div><label>18. Thông báo BS</label><select name="tbBacSi"><option>Có</option><option>Không</option><option>Không ghi nhận</option></select></div>
+                <div><label>19. Ghi vào HSBA</label><select name="ghiHSBA"><option>Có</option><option>Không</option><option>Không ghi nhận</option></select></div>
+                <div><label>20. TB người nhà</label><select name="tbNguoiNha"><option>Có</option><option>Không</option><option>Không ghi nhận</option></select></div>
+                <div><label>21. TB người bệnh</label><select name="tbNguoiBenh"><option>Có</option><option>Không</option><option>Không ghi nhận</option></select></div>
+            </div>
+            <div class="grid-4" style="margin-top:15px;">
+                <div><label>22. Phân loại ban đầu</label><select name="phanLoaiBanDau"><option>Chưa xảy ra</option><option>Đã xảy ra</option></select></div>
+                <div><label>23. Mức độ ảnh hưởng</label><select name="mucDoAnhHuong"><option>Nhẹ</option><option>Trung bình</option><option>Nặng</option></select></div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>V. Thông tin người báo cáo</legend>
+            <div class="grid-4">
+                <div><label>24. Họ tên</label><input type="text" name="tenNguoiBao"></div>
+                <div><label>25. SĐT</label><input type="text" name="sdtNguoiBao"></div>
+                <div><label>26. Email</label><input type="email" name="emailNguoiBao"></div>
+                <div>
+                    <label>27. Đối tượng</label>
+                    <select name="loaiNguoiBao">
+                        <option>Bác sĩ</option><option>Điều dưỡng/KTV</option><option>Khác</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid-2-short" style="max-width: 100%; grid-template-columns: 1fr 1fr; margin-top:10px;">
+                <div><label>28. Người chứng kiến 1</label><input type="text" name="tenNguoiChungKien1"></div>
+                <div><label>29. Người chứng kiến 2</label><input type="text" name="tenNguoiChungKien2"></div>
             </div>
         </fieldset>
 
@@ -167,14 +193,18 @@
 
     window.onload = function() {
         const now = new Date();
+        
+        // Điền Ngày hiện tại
         const today = now.toISOString().split('T')[0];
         document.getElementsByName('ngayBaoCao')[0].value = today;
         document.getElementsByName('ngayXayRa')[0].value = today;
+        
+        // Điền Giờ hiện tại
         const hh = String(now.getHours()).padStart(2, '0');
         const min = String(now.getMinutes()).padStart(2, '0');
         document.getElementsByName('gioXayRa')[0].value = `${hh}:${min}`;
 
-        // Sinh số báo cáo
+        // Sinh số báo cáo (ddmmyy.stt)
         const dd = String(now.getDate()).padStart(2, '0');
         const mm = String(now.getMonth() + 1).padStart(2, '0');
         const yy = String(now.getFullYear()).slice(-2);
@@ -187,7 +217,9 @@
             document.getElementsByName('soBaoCao')[0].value = `${datePart}.${sttFormatted}`;
         })
         .catch(() => {
-            document.getElementsByName('soBaoCao')[0].value = `${datePart}.XX`;
+            // Backup nếu lỗi mạng
+            const randomStt = String(Math.floor(Math.random() * 99)).padStart(2, '0');
+            document.getElementsByName('soBaoCao')[0].value = `${datePart}.${randomStt}`;
         });
     };
 
@@ -198,6 +230,7 @@
         e.preventDefault();
         btn.disabled = true;
         btn.innerText = 'Đang gửi dữ liệu...';
+        
         fetch(scriptURL, { method: 'POST', body: new FormData(form)})
         .then(res => {
             alert('Gửi báo cáo THÀNH CÔNG!');
