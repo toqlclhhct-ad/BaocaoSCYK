@@ -3,144 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Báo cáo sự cố y khoa</title>
+    <title>Báo cáo Sự cố Y khoa - TT43</title>
     <style>
-        :root { --primary-color: #2980b9; --bg-body: #f4f7f6; --gray-light: #e9ecef; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); padding: 20px; margin: 0; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        :root { 
+            --title-color: #2980b9; 
+            --btn-color: #27ae60;   
+            --bg-body: #f4f7f6; 
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); padding: 20px; line-height: 1.5; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
         header { 
-            display: flex; align-items: center; gap: 15px;
-            border-bottom: 3px solid var(--primary-color); margin-bottom: 25px; padding-bottom: 15px;
+            display: flex; /* Thay đổi từ grid sang flex để dễ căn trái toàn bộ */
+            align-items: center; 
+            gap: 20px;
+            border-bottom: 3px solid var(--title-color); 
+            margin-bottom: 30px; 
+            padding-bottom: 15px;
         }
-        
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; color: #333; }
-        input, select, textarea { 
-            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; 
-            box-sizing: border-box; font-size: 14px; outline: none;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 5px rgba(41,128,185,0.2); }
-        
-        /* Ô Số báo cáo xám nhẹ */
-        .readonly-field { background-color: var(--gray-light); color: #666; cursor: not-allowed; font-weight: bold; }
+        .logo-bv { width: 80px; height: auto; }
+        .header-text { text-align: left; } /* Căn lề trái toàn bộ cụm tiêu đề */
+        .header-text h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 22px; }
+        .header-text p { margin: 5px 0 0; font-size: 13px; color: #7f8c8d; }
 
-        .btn-submit { 
-            background: #27ae60; color: white; border: none; padding: 12px 30px; 
-            border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; 
-            width: 100%; transition: 0.3s; margin-top: 20px;
+        fieldset { border: 1px solid #dcdde1; border-radius: 10px; margin-bottom: 25px; padding: 20px; background: #fff; }
+        legend { font-weight: bold; color: var(--title-color); padding: 0 15px; font-size: 16px; text-transform: uppercase; }
+        
+        .grid-4 { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 15px; 
+            margin-bottom: 15px; 
         }
-        .btn-submit:hover { background: #219150; }
-        .loading { display: none; text-align: center; margin-top: 10px; color: var(--primary-color); font-weight: bold; }
+        
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 7px; color: #34495e; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 13.5px; outline: none; }
+        
+        /* Style cho ô Số báo cáo tự động */
+        input[name="soBaoCao"] {
+            background-color: #f0f0f0; /* Màu xám nhẹ */
+            color: #7f8c8d;
+            cursor: not-allowed;
+            border: 1px dashed #bdc3c7;
+        }
+
+        textarea { height: 80px; }
+        
+        .btn-submit { 
+            background: var(--btn-color); color: white; border: none; padding: 18px; width: 100%; border-radius: 8px; 
+            font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; 
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); 
+        }
+        .btn-submit:hover { background: #219150; transform: translateY(-2px); }
+
+        @media (max-width: 768px) {
+            .grid-4 { grid-template-columns: 1fr; }
+            header { flex-direction: column; text-align: center; }
+            .header-text { text-align: center; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" alt="Logo" style="width: 50px; height: auto;">
-        <h2 style="color: var(--primary-color); text-transform: uppercase; margin: 0; font-size: 18px;">MẪU BÁO CÁO SỰ CỐ Y KHOA (Phụ lục III Ban hành kèm theo Thông tư 43/2018/TT-BYT)</h2>
+        <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" alt="Logo" class="logo-bv">
+        <div class="header-text">
+            <h2>Báo cáo sự cố y khoa</h2>
+            <p>(Mẫu Phụ lục III - Ban hành kèm theo Thông tư số 43/2018/TT-BYT)</p>
+        </div>
     </header>
 
     <form id="incidentForm">
-        <div class="form-group">
-            <label>Số báo cáo (Hệ thống tự tạo):</label>
-            <input type="text" id="reportId" name="reportId" class="readonly-field" readonly>
-        </div>
+        <fieldset>
+            <legend>I. Thông tin hành chính</legend>
+            <div class="grid-4">
+                <div>
+                    <label>1. Hình thức báo cáo</label>
+                    <select name="hinhThuc" required>
+                        <option value="Tự nguyện">Tự nguyện</option>
+                        <option value="Bắt buộc">Bắt buộc</option>
+                    </select>
+                </div>
+                <div>
+                    <label>2. Số báo cáo (Hệ thống tự tạo)</label>
+                    <input type="text" name="soBaoCao" readonly placeholder="Đang tạo mã...">
+                </div>
+                <div><label>3. Ngày báo cáo</label><input type="date" name="ngayBaoCao" required></div>
+                <div>
+                    <label>4. Đơn vị báo cáo</label>
+                    <select name="donViBaoCao" required>
+                        <option value="">-- Chọn khoa/phòng --</option>
+                        <option>Khoa Khám bệnh</option><option>Khoa Điều trị</option>
+                        <option>Khoa KSNK</option><option>Khoa Dược</option>
+                        <option>Khoa SL-ĐC-CP</option><option>Khoa Tiếp nhận máu</option>
+                        <option>Khoa XN - CĐHA</option><option>Phòng Điều dưỡng</option>
+                        <option>Phòng TCKT</option><option>Phòng TCHC</option>
+                        <option>Phòng KHTH</option>
+                    </select>
+                </div>
+            </div>
+        </fieldset>
 
-        <div class="form-group">
-            <label>1. Ngày báo cáo:</label>
-            <input type="date" id="reportDate" name="reportDate" required>
-        </div>
+        <fieldset>
+            <legend>II. Thông tin người bệnh</legend>
+            <div class="grid-4">
+                <div><label>5. Họ và tên</label><input type="text" name="tenBN" placeholder="Nguyễn Văn A"></div>
+                <div><label>6. Số bệnh án</label><input type="text" name="soBA"></div>
+                <div><label>7. Ngày sinh</label><input type="date" name="ngaySinhBN"></div>
+                <div><label>8. Giới tính</label><select name="gioiTinhBN"><option>Nam</option><option>Nữ</option></select></div>
+            </div>
+            <div style="margin-top:10px;">
+                <label>9. Khoa/Phòng đang nằm viện</label><input type="text" name="khoaDangNam">
+            </div>
+        </fieldset>
 
-        <div class="form-group">
-            <label>4. Khoa/Phòng xảy ra sự cố:</label>
-            <select name="dept" required>
-                <option value="">-- Chọn khoa/phòng --</option>
-                <option value="Khoa Khám bệnh">Khoa Khám bệnh</option>
-                <option value="Khoa Dược">Khoa Dược</option>
-                <option value="Khoa Tiếp nhận máu">Khoa Tiếp nhận máu</option>
-                <option value="Khoa Xét nghiệm">Khoa Xét nghiệm</option>
-            </select>
-        </div>
+        <fieldset>
+            <legend>III. Chi tiết sự cố</legend>
+            <div class="grid-4">
+                <div>
+                    <label>10. Đối tượng xảy ra</label>
+                    <select name="doiTuongSuCo" required>
+                        <option>Người bệnh</option><option>Người nhà/khách đến thăm</option><option>NVYT</option><option>TTB/cơ sở hạ tầng</option>
+                    </select>
+                </div>
+                <div><label>11. Vị trí (Khoa/Phòng) xảy ra</label><input type="text" name="viTriChung" required></div>
+                <div><label>12. Vị trí cụ thể</label><input type="text" name="viTriCuThe"></div>
+                <div><label>13. Ngày xảy ra</label><input type="date" name="ngayXayRa" required></div>
+            </div>
+            <div class="grid-4" style="margin-top:10px;">
+                <div><label>14. Giờ xảy ra</label><input type="time" name="gioXayRa" required></div>
+            </div>
+            <div style="margin-top:10px;">
+                <label>15. Mô tả ngắn gọn</label><textarea name="moTa" required></textarea>
+                <label>16. Đề xuất giải pháp ban đầu</label><textarea name="deXuat"></textarea>
+                <label>17. Điều trị/Xử lý ban đầu đã thực hiện</label><textarea name="xuLyBanDau"></textarea>
+            </div>
+        </fieldset>
 
-        <div class="form-group">
-            <label>11. Vị trí xảy ra sự cố:</label>
-            <select name="location" required>
-                <option value="">-- Chọn vị trí --</option>
-                <option value="Phòng bệnh">Phòng bệnh</option>
-                <option value="Hành lang">Hành lang</option>
-                <option value="Phòng khám">Phòng khám</option>
-                <option value="Khu vực chờ">Khu vực chờ</option>
-                <option value="Nhà vệ sinh">Nhà vệ sinh</option>
-            </select>
-        </div>
+        <fieldset>
+            <legend>IV. Thông báo & Đánh giá</legend>
+            <div class="grid-4">
+                <div><label>18. Thông báo BS</label><select name="tbBacSi"><option>Có</option><option>Không</option></select></div>
+                <div><label>19. Ghi vào HSBA</label><select name="ghiHSBA"><option>Có</option><option>Không</option></select></div>
+                <div><label>20. TB người nhà</label><select name="tbNguoiNha"><option>Có</option><option>Không</option></select></div>
+                <div><label>21. TB người bệnh</label><select name="tbNguoiBenh"><option>Có</option><option>Không</option></select></div>
+            </div>
+            <div class="grid-4" style="margin-top:15px;">
+                <div><label>22. Phân loại ban đầu</label><select name="phanLoaiBanDau"><option>Chưa xảy ra</option><option>Đã xảy ra</option></select></div>
+                <div><label>23. Mức độ ảnh hưởng</label><select name="mucDoAnhHuong"><option>Nhẹ</option><option>Trung bình</option><option>Nặng</option></select></div>
+            </div>
+        </fieldset>
 
-        <div class="form-group">
-            <label>Mô tả sự cố:</label>
-            <textarea name="description" rows="4" placeholder="Mô tả chi tiết diễn biến sự cố..." required></textarea>
-        </div>
+        <fieldset>
+            <legend>V. Thông tin người báo cáo</legend>
+            <div class="grid-4">
+                <div><label>24. Họ tên</label><input type="text" name="tenNguoiBao"></div>
+                <div><label>25. SĐT</label><input type="text" name="sdtNguoiBao"></div>
+                <div><label>26. Email</label><input type="email" name="emailNguoiBao"></div>
+                <div>
+                    <label>27. Đối tượng</label>
+                    <select name="loaiNguoiBao">
+                        <option>Bác sĩ</option><option>Điều dưỡng</option><option>Khác</option>
+                    </select>
+                </div>
+                <div><label>28. Người chứng kiến 1</label><input type="text" name="tenNguoiChungKien1"></div>
+                <div><label>29. Người chứng kiến 2</label><input type="text" name="tenNguoiChungKien2"></div>
+            </div>
+        </fieldset>
 
-        <div class="form-group">
-            <label>Mức độ sự cố:</label>
-            <select name="level" required>
-                <option value="Nhẹ">Nhẹ</option>
-                <option value="Trung bình">Trung bình</option>
-                <option value="Nặng">Nặng</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn-submit" id="submitBtn">GỬI BÁO CÁO</button>
-        <div class="loading" id="loader">Đang gửi dữ liệu, vui lòng đợi...</div>
+        <button type="submit" id="submitBtn" class="btn-submit">GỬI BÁO CÁO</button>
     </form>
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwsgg3TyHuF60XbkdaHr6uTrXW8akj5Np9f9MjKoC0nNhZoFHnekWpkqpQzAYPpdjQ/exec';
-
-    // Tự động sinh Số báo cáo và Ngày khi vừa load trang
-    window.onload = () => {
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzZUa09ezczYmB0-o-QHP-HCy7Qe52EImsVcyLxcYY-vEP58baJxhcMDCf8PKBGRks/exec';
+    
+    window.onload = function() {
         const now = new Date();
         
-        // Sinh số BC định dạng: DDMMYY.HHMM
-        const d = String(now.getDate()).padStart(2, '0');
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const y = String(now.getFullYear()).slice(-2);
+        // 1. Điền Ngày báo cáo và Ngày xảy ra (Hôm nay)
+        const today = now.toISOString().split('T')[0];
+        document.getElementsByName('ngayBaoCao')[0].value = today;
+        document.getElementsByName('ngayXayRa')[0].value = today;
+
+        // 2. Điền Giờ xảy ra (Bây giờ)
         const hh = String(now.getHours()).padStart(2, '0');
-        const mm = String(now.getMinutes()).padStart(2, '0');
-        
-        document.getElementById('reportId').value = `${d}${m}${y}.${hh}${mm}`;
-        
-        // Gán ngày hiện tại cho ô Ngày báo cáo
-        document.getElementById('reportDate').valueAsDate = now;
+        const min = String(now.getMinutes()).padStart(2, '0');
+        document.getElementsByName('gioXayRa')[0].value = `${hh}:${min}`;
+
+        // 3. Tự sinh Số báo cáo (ddmmyy.stt tăng dần)
+        const dd = String(now.getDate()).padStart(2, '0');
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const yy = String(now.getFullYear()).slice(-2);
+        const datePart = `${dd}${mm}${yy}`;
+
+        fetch(scriptURL)
+        .then(response => response.text())
+        .then(stt => {
+            const sttFormatted = String(stt).padStart(2, '0');
+            document.getElementsByName('soBaoCao')[0].value = `${datePart}.${sttFormatted}`;
+        })
+        .catch(() => {
+            const randomStt = String(Math.floor(Math.random() * 100)).padStart(2, '0');
+            document.getElementsByName('soBaoCao')[0].value = `${datePart}.${randomStt}`;
+        });
     };
 
-    document.getElementById('incidentForm').addEventListener('submit', e => {
+    const form = document.getElementById('incidentForm');
+    const btn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', e => {
         e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        const loader = document.getElementById('loader');
-        
-        btn.style.display = 'none';
-        loader.style.display = 'block';
-
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
-
-        fetch(scriptURL + '?action=add', {
-            method: 'POST',
-            body: JSON.stringify(data)
-        })
+        btn.disabled = true;
+        btn.innerText = 'Đang gửi dữ liệu...';
+        fetch(scriptURL, { method: 'POST', body: new FormData(form)})
         .then(res => {
             alert('Gửi báo cáo THÀNH CÔNG!');
-            window.location.href = 'index.html'; // Quay lại trang chủ
+            window.location.href = 'index.html'; 
         })
         .catch(err => {
-            alert('Có lỗi xảy ra, vui lòng thử lại!');
-            btn.style.display = 'block';
-            loader.style.display = 'none';
+            alert('Lỗi kết nối!');
+            btn.disabled = false;
+            btn.innerText = 'GỬI BÁO CÁO';
         });
     });
 </script>
-
 </body>
 </html>
