@@ -14,40 +14,28 @@
         .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
         header { 
-            display: flex; /* Thay đổi từ grid sang flex để dễ căn trái toàn bộ */
-            align-items: center; 
-            gap: 20px;
+            display: flex; align-items: center; gap: 20px;
             border-bottom: 3px solid var(--title-color); 
-            margin-bottom: 30px; 
-            padding-bottom: 15px;
+            margin-bottom: 30px; padding-bottom: 15px;
         }
         .logo-bv { width: 80px; height: auto; }
-        .header-text { text-align: left; } /* Căn lề trái toàn bộ cụm tiêu đề */
+        .header-text { text-align: left; }
         .header-text h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 22px; }
         .header-text p { margin: 5px 0 0; font-size: 13px; color: #7f8c8d; }
 
         fieldset { border: 1px solid #dcdde1; border-radius: 10px; margin-bottom: 25px; padding: 20px; background: #fff; }
         legend { font-weight: bold; color: var(--title-color); padding: 0 15px; font-size: 16px; text-transform: uppercase; }
         
-        .grid-4 { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 15px; 
-            margin-bottom: 15px; 
-        }
+        /* Layout Grid */
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; }
+        .grid-2-short { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; max-width: 50%; }
         
         label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 7px; color: #34495e; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 13.5px; outline: none; }
         
-        /* Style cho ô Số báo cáo tự động */
-        input[name="soBaoCao"] {
-            background-color: #f0f0f0; /* Màu xám nhẹ */
-            color: #7f8c8d;
-            cursor: not-allowed;
-            border: 1px dashed #bdc3c7;
-        }
-
-        textarea { height: 80px; }
+        input[name="soBaoCao"] { background-color: #f0f0f0; color: #7f8c8d; cursor: not-allowed; border: 1px dashed #bdc3c7; }
+        textarea { height: 80px; margin-bottom: 10px; }
         
         .btn-submit { 
             background: var(--btn-color); color: white; border: none; padding: 18px; width: 100%; border-radius: 8px; 
@@ -57,7 +45,7 @@
         .btn-submit:hover { background: #219150; transform: translateY(-2px); }
 
         @media (max-width: 768px) {
-            .grid-4 { grid-template-columns: 1fr; }
+            .grid-4, .grid-3, .grid-2-short { grid-template-columns: 1fr; max-width: 100%; }
             header { flex-direction: column; text-align: center; }
             .header-text { text-align: center; }
         }
@@ -87,12 +75,12 @@
                 </div>
                 <div>
                     <label>2. Số báo cáo (Hệ thống tự tạo)</label>
-                    <input type="text" name="soBaoCao" readonly placeholder="Đang tạo mã...">
+                    <input type="text" name="soBaoCao" readonly>
                 </div>
                 <div><label>3. Ngày báo cáo</label><input type="date" name="ngayBaoCao" required></div>
                 <div>
                     <label>4. Đơn vị báo cáo</label>
-                    <select name="donViBaoCao" required>
+                    <select name="donViBaoCao" id="donViBaoCao" required onchange="syncDept()">
                         <option value="">-- Chọn khoa/phòng --</option>
                         <option>Khoa Khám bệnh</option><option>Khoa Điều trị</option>
                         <option>Khoa KSNK</option><option>Khoa Dược</option>
@@ -113,29 +101,39 @@
                 <div><label>7. Ngày sinh</label><input type="date" name="ngaySinhBN"></div>
                 <div><label>8. Giới tính</label><select name="gioiTinhBN"><option>Nam</option><option>Nữ</option></select></div>
             </div>
-            <div style="margin-top:10px;">
-                <label>9. Khoa/Phòng đang nằm viện</label><input type="text" name="khoaDangNam">
-            </div>
         </fieldset>
 
         <fieldset>
             <legend>III. Chi tiết sự cố</legend>
-            <div class="grid-4">
+            <div class="grid-3">
                 <div>
                     <label>10. Đối tượng xảy ra</label>
                     <select name="doiTuongSuCo" required>
                         <option>Người bệnh</option><option>Người nhà/khách đến thăm</option><option>NVYT</option><option>TTB/cơ sở hạ tầng</option>
                     </select>
                 </div>
-                <div><label>11. Vị trí (Khoa/Phòng) xảy ra</label><input type="text" name="viTriChung" required></div>
-                <div><label>12. Vị trí cụ thể</label><input type="text" name="viTriCuThe"></div>
-                <div><label>13. Ngày xảy ra</label><input type="date" name="ngayXayRa" required></div>
+                <div>
+                    <label>11. Vị trí (Khoa/Phòng) xảy ra</label>
+                    <select name="viTriChung" id="viTriChung" required>
+                        <option value="">-- Chọn khoa/phòng --</option>
+                        <option>Khoa Khám bệnh</option><option>Khoa Điều trị</option>
+                        <option>Khoa KSNK</option><option>Khoa Dược</option>
+                        <option>Khoa SL-ĐC-CP</option><option>Khoa Tiếp nhận máu</option>
+                        <option>Khoa XN - CĐHA</option><option>Phòng Điều dưỡng</option>
+                        <option>Phòng TCKT</option><option>Phòng TCHC</option>
+                        <option>Phòng KHTH</option>
+                    </select>
+                </div>
+                <div><label>12. Vị trí cụ thể</label><input type="text" name="viTriCuThe" placeholder="Ví dụ: Phòng số 5..."></div>
             </div>
-            <div class="grid-4" style="margin-top:10px;">
+            
+            <div class="grid-2-short">
+                <div><label>13. Ngày xảy ra</label><input type="date" name="ngayXayRa" required></div>
                 <div><label>14. Giờ xảy ra</label><input type="time" name="gioXayRa" required></div>
             </div>
+
             <div style="margin-top:10px;">
-                <label>15. Mô tả ngắn gọn</label><textarea name="moTa" required></textarea>
+                <label>15. Mô tả ngắn gọn sự cố</label><textarea name="moTa" required></textarea>
                 <label>16. Đề xuất giải pháp ban đầu</label><textarea name="deXuat"></textarea>
                 <label>17. Điều trị/Xử lý ban đầu đã thực hiện</label><textarea name="xuLyBanDau"></textarea>
             </div>
@@ -146,29 +144,8 @@
             <div class="grid-4">
                 <div><label>18. Thông báo BS</label><select name="tbBacSi"><option>Có</option><option>Không</option></select></div>
                 <div><label>19. Ghi vào HSBA</label><select name="ghiHSBA"><option>Có</option><option>Không</option></select></div>
-                <div><label>20. TB người nhà</label><select name="tbNguoiNha"><option>Có</option><option>Không</option></select></div>
-                <div><label>21. TB người bệnh</label><select name="tbNguoiBenh"><option>Có</option><option>Không</option></select></div>
-            </div>
-            <div class="grid-4" style="margin-top:15px;">
-                <div><label>22. Phân loại ban đầu</label><select name="phanLoaiBanDau"><option>Chưa xảy ra</option><option>Đã xảy ra</option></select></div>
-                <div><label>23. Mức độ ảnh hưởng</label><select name="mucDoAnhHuong"><option>Nhẹ</option><option>Trung bình</option><option>Nặng</option></select></div>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>V. Thông tin người báo cáo</legend>
-            <div class="grid-4">
-                <div><label>24. Họ tên</label><input type="text" name="tenNguoiBao"></div>
-                <div><label>25. SĐT</label><input type="text" name="sdtNguoiBao"></div>
-                <div><label>26. Email</label><input type="email" name="emailNguoiBao"></div>
-                <div>
-                    <label>27. Đối tượng</label>
-                    <select name="loaiNguoiBao">
-                        <option>Bác sĩ</option><option>Điều dưỡng</option><option>Khác</option>
-                    </select>
-                </div>
-                <div><label>28. Người chứng kiến 1</label><input type="text" name="tenNguoiChungKien1"></div>
-                <div><label>29. Người chứng kiến 2</label><input type="text" name="tenNguoiChungKien2"></div>
+                <div><label>22. Phân loại</label><select name="phanLoaiBanDau"><option>Chưa xảy ra</option><option>Đã xảy ra</option></select></div>
+                <div><label>23. Mức độ</label><select name="mucDoAnhHuong"><option>Nhẹ</option><option>Trung bình</option><option>Nặng</option></select></div>
             </div>
         </fieldset>
 
@@ -179,20 +156,25 @@
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzZUa09ezczYmB0-o-QHP-HCy7Qe52EImsVcyLxcYY-vEP58baJxhcMDCf8PKBGRks/exec';
     
+    // Tự động đồng bộ mục 4 sang mục 11
+    function syncDept() {
+        const source = document.getElementById('donViBaoCao').value;
+        const target = document.getElementById('viTriChung');
+        if (source) {
+            target.value = source;
+        }
+    }
+
     window.onload = function() {
         const now = new Date();
-        
-        // 1. Điền Ngày báo cáo và Ngày xảy ra (Hôm nay)
         const today = now.toISOString().split('T')[0];
         document.getElementsByName('ngayBaoCao')[0].value = today;
         document.getElementsByName('ngayXayRa')[0].value = today;
-
-        // 2. Điền Giờ xảy ra (Bây giờ)
         const hh = String(now.getHours()).padStart(2, '0');
         const min = String(now.getMinutes()).padStart(2, '0');
         document.getElementsByName('gioXayRa')[0].value = `${hh}:${min}`;
 
-        // 3. Tự sinh Số báo cáo (ddmmyy.stt tăng dần)
+        // Sinh số báo cáo
         const dd = String(now.getDate()).padStart(2, '0');
         const mm = String(now.getMonth() + 1).padStart(2, '0');
         const yy = String(now.getFullYear()).slice(-2);
@@ -205,8 +187,7 @@
             document.getElementsByName('soBaoCao')[0].value = `${datePart}.${sttFormatted}`;
         })
         .catch(() => {
-            const randomStt = String(Math.floor(Math.random() * 100)).padStart(2, '0');
-            document.getElementsByName('soBaoCao')[0].value = `${datePart}.${randomStt}`;
+            document.getElementsByName('soBaoCao')[0].value = `${datePart}.XX`;
         });
     };
 
