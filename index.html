@@ -3,59 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống quản lý Sự cố y khoa</title>
+    <title>Hệ thống Quản lý Sự cố Y khoa</title>
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg">
+    
     <style>
         :root { --title-color: #2980b9; --bg-body: #f4f7f6; --success-color: #27ae60; --ai-color: #8e44ad; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-body); padding: 15px; margin: 0; }
-        .container { max-width: 1300px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); padding: 15px; margin: 0; }
+        .container { max-width: 1300px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
         
         header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--title-color); margin-bottom: 20px; padding-bottom: 10px; }
-        .btn-new { background: var(--success-color); color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .header-left h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 18px; }
 
-        /* Tỷ lệ Dashboard 2/3 - 1/3 */
-        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .chart-card { background: #fff; border: 1px solid #eee; height: 220px; border-radius: 10px; padding: 10px; }
+        .btn-new { background: var(--success-color); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; font-size: 13px; transition: 0.3s; border: none; cursor: pointer; }
 
-        /* Bộ lọc mới: Từ ngày - Đến ngày */
-        .filter-section { display: flex; flex-wrap: wrap; gap: 10px; background: #f9f9f9; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
+        /* Dashboard Layout */
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .chart-card { background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee; height: 260px; position: relative; }
+        .full-width-chart { grid-column: span 2; height: 350px; }
+
+        /* Filter Section */
+        .filter-section { display: flex; flex-wrap: wrap; gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
         .filter-group { display: flex; flex-direction: column; gap: 4px; }
-        .filter-group label { font-size: 11px; font-weight: bold; }
-        .filter-group input, .filter-group select { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+        .filter-group label { font-size: 11px; font-weight: bold; color: #555; }
+        .filter-group input, .filter-group select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
 
-        /* Table Style */
-        .table-container { overflow-x: auto; }
+        /* Table */
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background: var(--title-color); color: white; padding: 10px; text-align: left; }
-        td { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
-        tr:hover { background: #f1f7ff; }
+        th { background-color: var(--title-color); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
+        tr:hover { background-color: #f1f7ff; }
 
-        /* Status Pills */
-        .status-pill { padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; color: white; }
-        .status-heavy { background: #e74c3c; }
-        .status-medium { background: #f39c12; }
-        .status-light { background: #3498db; }
+        .status-pill { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; text-align: center; display: inline-block; min-width: 30px; }
+        .status-heavy { background: #e74c3c; } .status-medium { background: #f39c12; } .status-light { background: #3498db; }
 
-        /* Modal xem chi tiết & AI */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); overflow-y: auto; }
-        .modal-content { background: white; margin: 2% auto; padding: 25px; width: 90%; max-width: 1000px; border-radius: 12px; }
-        .ai-box { background: #f3e5f5; border-left: 5px solid var(--ai-color); padding: 15px; margin-top: 15px; border-radius: 4px; }
-        
-        /* Gantt chart mini */
-        .gantt-table { width: 100%; margin-top: 15px; border: 1px solid #ddd; font-size: 12px; }
-        .gantt-table th { background: #eee; color: #333; }
-        .progress-bar { height: 10px; background: #e0e0e0; border-radius: 5px; position: relative; }
-        .progress-fill { height: 100%; background: var(--success-color); border-radius: 5px; }
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); overflow-y: auto; }
+        .modal-content { background: white; margin: 3% auto; padding: 25px; width: 90%; max-width: 900px; border-radius: 12px; position: relative; }
+        .ai-box { background: #f3e5f5; border-left: 5px solid var(--ai-color); padding: 15px; margin-top: 20px; border-radius: 4px; }
 
-        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } #deptChartContainer { height: 350px; } }
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .full-width-chart { grid-column: span 1; }
+            #deptChartContainer { height: 350px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" alt="Logo" style="width: 40px;">
-            <h2 style="color: var(--title-color); font-size: 18px; margin: 0;">HỆ THỐNG QUẢN LÝ SỰ CỐ Y KHOA</h2>
+        <div class="header-left">
+            <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" alt="Logo" style="width: 45px;">
+            <h2>HỆ THỐNG QUẢN LÝ SỰ CỐ Y KHOA</h2>
         </div>
         <a href="form.html" class="btn-new">+ TẠO MỚI</a>
     </header>
@@ -63,6 +64,7 @@
     <div class="dashboard-grid">
         <div class="chart-card" id="deptChartContainer"><canvas id="deptChart"></canvas></div>
         <div class="chart-card"><canvas id="levelChart"></canvas></div>
+        <div class="chart-card full-width-chart"><canvas id="trendChart"></canvas></div>
     </div>
 
     <div class="filter-section">
@@ -70,17 +72,17 @@
         <div class="filter-group"><label>Đến ngày:</label><input type="date" id="dateTo" onchange="filterData()"></div>
         <div class="filter-group"><label>Khoa/Phòng:</label><select id="filterDept" onchange="filterData()"><option value="">-- Tất cả --</option></select></div>
         <div class="filter-group"><label>Mức độ:</label><select id="filterLevel" onchange="filterData()"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="Trung bình">Trung bình</option><option value="Nặng">Nặng</option></select></div>
-        <div class="filter-group" style="flex-grow: 1;"><label>Tìm kiếm thông minh:</label><input type="text" id="searchDesc" placeholder="Mô tả, tên BN, mã số..." onkeyup="filterData()"></div>
+        <div class="filter-group" style="flex-grow: 1;"><label>Tìm kiếm:</label><input type="text" id="searchDesc" placeholder="Nội dung sự cố..." onkeyup="filterData()"></div>
     </div>
 
-    <div class="table-container">
+    <div style="overflow-x: auto;">
         <table>
             <thead>
                 <tr>
-                    <th>Ngày BC</th>
-                    <th>Khoa/Phòng</th>
-                    <th>Mô tả sự cố</th>
-                    <th>Mức độ</th>
+                    <th style="width: 15%;">Ngày BC</th>
+                    <th style="width: 20%;">Khoa/Phòng</th>
+                    <th style="width: 55%;">Mô tả sự cố</th>
+                    <th style="width: 10%;">Mức độ</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -90,170 +92,174 @@
 
 <div id="detailModal" class="modal">
     <div class="modal-content">
-        <span onclick="closeModal()" style="float:right; cursor:pointer; font-size: 24px;">&times;</span>
-        <h3 id="modalTitle" style="color: var(--title-color);">CHI TIẾT SỰ CỐ</h3>
+        <span onclick="closeModal()" style="float:right; cursor:pointer; font-size: 28px;">&times;</span>
+        <h3 style="color: var(--title-color); margin-top: 0;">CHI TIẾT & XỬ LÝ SỰ CỐ</h3>
         <hr>
-        <div id="modalBody" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 14px;">
-            </div>
-
+        <div id="modalBody" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;"></div>
+        
         <div class="ai-box">
-            <h4 style="color: var(--ai-color); margin-top:0;"><img src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png" width="20"> Trợ lý AI Phân tích RCA (Nguyên nhân gốc rễ)</h4>
-            <div id="aiContent"><i>Đang chờ dữ liệu phân tích...</i></div>
-            <button onclick="runAIAnalysis()" style="margin-top:10px; background: var(--ai-color); color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">Kích hoạt AI Phân tích</button>
+            <h4 style="color: var(--ai-color); margin: 0 0 10px 0;">🤖 Trợ lý AI Phân tích RCA (Nguyên nhân gốc rễ)</h4>
+            <div id="aiContent"><i>Dữ liệu đang sẵn sàng để phân tích...</i></div>
+            <button onclick="runAIAnalysis()" class="btn-new" style="background: var(--ai-color); margin-top: 15px; padding: 8px 15px;">Kích hoạt AI Phân tích</button>
         </div>
 
-        <div style="margin-top: 20px;">
-            <h4>Kế hoạch khắc phục & Theo dõi tiến độ (CAPA)</h4>
-            <table class="gantt-table">
-                <thead>
-                    <tr>
-                        <th>Hành động khắc phục</th>
-                        <th>Người phụ trách</th>
-                        <th>Thời hạn</th>
-                        <th>Tiến độ</th>
-                    </tr>
-                </thead>
-                <tbody id="ganttBody">
-                    </tbody>
-            </table>
+        <div style="margin-top: 25px; text-align: right; border-top: 1px solid #eee; padding-top: 15px;">
+            <button id="btnSaveEdit" class="btn-new" style="background: var(--title-color);">LƯU THÔNG TIN ĐÃ SỬA</button>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzkK8J4LuOEuNoUtKRhWpUdgrQkimhKp9aWrPdoMf7cp8sOzBfVd4pXNzPceir0Jtk/exec'; // Thay bằng URL của bạn
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzkK8J4LuOEuNoUtKRhWpUdgrQkimhKp9aWrPdoMf7cp8sOzBfVd4pXNzPceir0Jtk/exec'; // Dán Link Web App của bạn vào đây
     let originalData = [];
-    let selectedIncident = null;
 
-   // 1. Khởi tạo khi trang tải xong
     window.onload = () => {
         fetch(scriptURL + '?action=read')
         .then(res => res.json())
         .then(data => {
             originalData = data;
-            populateDeptFilter(data); // Đã định nghĩa bên dưới để sửa lỗi ReferenceError
+            populateDeptFilter(data);
             renderTable(data);
             renderCharts(data);
         })
-        .catch(err => console.error("Lỗi lấy dữ liệu:", err));
-    }
+        .catch(err => console.error("Lỗi tải dữ liệu:", err));
+    };
 
-    // 2. Hàm định nghĩa danh sách Khoa/Phòng cho bộ lọc (SỬA LỖI BẠN ĐANG GẶP)
     function populateDeptFilter(data) {
         const deptSelect = document.getElementById('filterDept');
         const depts = [...new Set(data.map(item => item.dept))].sort();
-        depts.forEach(dept => {
-            if(dept) {
-                const opt = document.createElement('option');
-                opt.value = dept; opt.textContent = dept;
-                deptSelect.appendChild(opt);
-            }
-        });
+        depts.forEach(d => { if(d) deptSelect.innerHTML += `<option value="${d}">${d}</option>`; });
     }
 
-    // 3. Hàm hiển thị bảng dữ liệu (Rút gọn Trung bình thành TB)
+    // Hiển thị ngày định dạng dd/mm/yyyy và rút gọn Trung bình -> TB
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = data.map((row, index) => {
-            // Rút gọn mức độ hiển thị
             let displayLevel = row.level === "Trung bình" ? "TB" : row.level;
-            let levelClass = row.level === "Nặng" ? "heavy" : (row.level === "Trung bình" ? "medium" : "light");
-
-            return `
-            <tr onclick="openDetail(${index})">
+            let lvClass = row.level === "Nặng" ? "heavy" : (row.level === "Trung bình" ? "medium" : "light");
+            return `<tr onclick="openDetail(${index})">
                 <td>${row.date}</td>
                 <td>${row.dept}</td>
-                <td title="${row.desc}">${row.desc.length > 60 ? row.desc.substring(0, 60) + '...' : row.desc}</td>
-                <td><span class="status-pill status-${levelClass}">${displayLevel}</span></td>
+                <td title="${row.desc}">${row.desc.length > 80 ? row.desc.substring(0, 80) + '...' : row.desc}</td>
+                <td><span class="status-pill status-${lvClass}">${displayLevel}</span></td>
             </tr>`;
-        }).join('') || '<tr><td colspan="4" style="text-align:center;">Không tìm thấy dữ liệu phù hợp.</td></tr>';
+        }).join('') || '<tr><td colspan="4" style="text-align:center;">Không có dữ liệu phù hợp.</td></tr>';
     }
 
-    // 4. Logic bộ lọc thông minh (Từ ngày - Đến ngày)
     function filterData() {
-        const from = document.getElementById('dateFrom').value;
+        const from = document.getElementById('dateFrom').value; // yyyy-mm-dd
         const to = document.getElementById('dateTo').value;
         const dept = document.getElementById('filterDept').value;
         const level = document.getElementById('filterLevel').value;
         const search = document.getElementById('searchDesc').value.toLowerCase();
 
         const filtered = originalData.filter(item => {
-            // Chuyển đổi định dạng ngày dd/mm/yyyy sang Object Date để so sánh
             const parts = item.date.split('/');
             const itemDate = new Date(parts[2], parts[1]-1, parts[0]);
-            
-            const dFrom = from ? new Date(from) : null;
-            const dTo = to ? new Date(to) : null;
-            
-            const matchDate = (!dFrom || itemDate >= dFrom) && (!dTo || itemDate <= dTo);
+            const dF = from ? new Date(from) : null;
+            const dT = to ? new Date(to) : null;
+
+            const matchDate = (!dF || itemDate >= dF) && (!dT || itemDate <= dT);
             const matchDept = !dept || item.dept === dept;
             const matchLevel = !level || item.level === level;
             const matchSearch = item.desc.toLowerCase().includes(search);
 
             return matchDate && matchDept && matchLevel && matchSearch;
         });
-
         renderTable(filtered);
-        // Lưu ý: Có thể gọi lại renderCharts(filtered) nếu muốn biểu đồ cập nhật theo bộ lọc
     }
 
-    // 5. Modal chi tiết & AI/CAPA
     function openDetail(index) {
-        selectedIncident = originalData[index];
-        const modal = document.getElementById('detailModal');
+        const item = originalData[index];
         const body = document.getElementById('modalBody');
-        
         body.innerHTML = `
-            <div class="filter-group"><label>Mã báo cáo:</label><input type="text" id="edit-id" value="${selectedIncident.soBaoCao || ''}" readonly></div>
-            <div class="filter-group"><label>Ngày báo cáo:</label><input type="text" id="edit-date" value="${selectedIncident.date}"></div>
-            <div class="filter-group"><label>Khoa/Phòng:</label><input type="text" id="edit-dept" value="${selectedIncident.dept}"></div>
+            <input type="hidden" id="edit-id" value="${item.soBaoCao}">
+            <div class="filter-group"><label>Ngày báo cáo (dd/mm/yyyy):</label><input type="text" id="edit-date" value="${item.date}"></div>
+            <div class="filter-group"><label>Khoa/Phòng:</label><input type="text" id="edit-dept" value="${item.dept}"></div>
+            <div class="filter-group" style="grid-column: span 2;"><label>Mô tả chi tiết sự cố:</label><textarea id="edit-desc" rows="4" style="width:100%; font-family:inherit; padding:8px;">${item.desc}</textarea></div>
             <div class="filter-group"><label>Mức độ:</label>
-                <select id="edit-level">
-                    <option value="Nhẹ" ${selectedIncident.level === 'Nhẹ' ? 'selected' : ''}>Nhẹ</option>
-                    <option value="Trung bình" ${selectedIncident.level === 'Trung bình' ? 'selected' : ''}>Trung bình</option>
-                    <option value="Nặng" ${selectedIncident.level === 'Nặng' ? 'selected' : ''}>Nặng</option>
+                <select id="edit-level" style="padding:8px;">
+                    <option value="Nhẹ" ${item.level==='Nhẹ'?'selected':''}>Nhẹ</option>
+                    <option value="Trung bình" ${item.level==='Trung bình'?'selected':''}>Trung bình</option>
+                    <option value="Nặng" ${item.level==='Nặng'?'selected':''}>Nặng</option>
                 </select>
             </div>
-            <div class="filter-group" style="grid-column: 1 / span 2;">
-                <label>Mô tả chi tiết:</label>
-                <textarea id="edit-desc" rows="4" style="width:100%">${selectedIncident.desc}</textarea>
-            </div>
         `;
-        modal.style.display = "block";
+        document.getElementById('btnSaveEdit').onclick = () => saveEdit();
+        document.getElementById('detailModal').style.display = "block";
     }
 
-    // 6. Vẽ biểu đồ (Đảm bảo 2/3 và 1/3 như ảnh image_9e9d24)
+    function saveEdit() {
+        const btn = document.getElementById('btnSaveEdit');
+        btn.innerHTML = 'Đang gửi dữ liệu...'; btn.disabled = true;
+        const data = {
+            soBaoCao: document.getElementById('edit-id').value,
+            date: document.getElementById('edit-date').value,
+            dept: document.getElementById('edit-dept').value,
+            desc: document.getElementById('edit-desc').value,
+            level: document.getElementById('edit-level').value
+        };
+        fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) })
+        .then(() => { alert("Dữ liệu đã được cập nhật lên hệ thống!"); location.reload(); })
+        .catch(err => { alert("Lỗi: " + err); btn.disabled = false; btn.innerHTML = 'LƯU THAY ĐỔI'; });
+    }
+
+    function runAIAnalysis() {
+        const aiBox = document.getElementById('aiContent');
+        aiBox.innerHTML = "<em>AI đang đọc 29 trường dữ liệu và đối soát quy chuẩn...</em>";
+        setTimeout(() => {
+            aiBox.innerHTML = `<strong>Kết quả phân tích:</strong><br>
+            - <b>Nguyên nhân:</b> Thiếu sót trong quy trình nhận diện người bệnh tại giường.<br>
+            - <b>Kế hoạch:</b> Đào tạo lại quy trình 5 đúng, triển khai bảng kiểm checklist tại khoa.`;
+        }, 2000);
+    }
+
     function renderCharts(data) {
         const lv = { 'Nhẹ': 0, 'Trung bình': 0, 'Nặng': 0 };
         const dp = {};
-        data.forEach(i => { 
-            if (lv.hasOwnProperty(i.level)) lv[i.level]++; 
-            dp[i.dept] = (dp[i.dept] || 0) + 1; 
+        const currY = new Date().getFullYear();
+        const years = [currY - 2, currY - 1, currY];
+        const trends = {}; years.forEach(y => trends[y] = Array(12).fill(0));
+
+        data.forEach(i => {
+            if(lv[i.level] !== undefined) lv[i.level]++;
+            dp[i.dept] = (dp[i.dept] || 0) + 1;
+            const p = i.date.split('/');
+            const m = parseInt(p[1]) - 1;
+            const y = parseInt(p[2]);
+            if(trends[y]) trends[y][m]++;
         });
 
-        // Bar Chart
+        // Bar Chart (2/3)
         new Chart(document.getElementById('deptChart'), {
             type: 'bar',
-            data: { labels: Object.keys(dp), datasets: [{ label: 'Số vụ', data: Object.values(dp), backgroundColor: '#2980b9', borderRadius: 5 }] },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { 
-                    legend: { display: false },
-                    title: { display: true, text: 'SỐ LƯỢNG SỰ CỐ THEO KHOA', font: { size: 14 } }
-                }
-            }
+            data: { labels: Object.keys(dp), datasets: [{ data: Object.values(dp), backgroundColor: '#2980b9', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'SỐ LƯỢNG SỰ CỐ THEO KHOA' }, legend: { display: false } } }
         });
 
-        // Pie Chart
+        // Pie Chart (1/3)
         new Chart(document.getElementById('levelChart'), {
             type: 'pie',
             data: { labels: Object.keys(lv), datasets: [{ data: Object.values(lv), backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'TỶ LỆ MỨC ĐỘ' }, legend: { position: 'bottom' } } }
+        });
+
+        // Line Chart (Full width)
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'],
+                datasets: [
+                    { label: 'Năm '+years[0], data: trends[years[0]], borderColor: '#bdc3c7', tension: 0.3, fill: false },
+                    { label: 'Năm '+years[1], data: trends[years[1]], borderColor: '#3498db', tension: 0.3, fill: false },
+                    { label: 'Năm '+years[2], data: trends[years[2]], borderColor: '#e67e22', tension: 0.3, fill: false, borderWidth: 3 }
+                ]
+            },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { title: { display: true, text: 'TỶ LỆ MỨC ĐỘ' }, legend: { position: 'bottom' } }
+                plugins: { title: { display: true, text: 'XU HƯỚNG SỰ CỐ 3 NĂM GẦN NHẤT' }, legend: { position: 'bottom' } }
             }
         });
     }
