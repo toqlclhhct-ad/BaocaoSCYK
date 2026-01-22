@@ -6,36 +6,30 @@
     <title>Hệ thống Quản lý Sự cố Y khoa</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg">
     <style>
-        :root { --title-color: #2980b9; --bg-body: #f4f7f6; --success-color: #27ae60; --ai-color: #8e44ad; }
+        :root { --title-color: #2980b9; --bg-body: #f4f7f6; --success-color: #27ae60; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); padding: 15px; margin: 0; }
-        .container { max-width: 1300px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .container { max-width: 1400px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
         
         header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--title-color); margin-bottom: 20px; padding-bottom: 10px; }
         .btn-new { background: var(--success-color); color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer; text-decoration: none; display: inline-block; }
 
-        /* Dashboard Layout 2/3 - 1/3 */
-        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .chart-card { background: #fff; border: 1px solid #eee; height: 260px; border-radius: 10px; padding: 10px; position: relative; }
-        .full-width-chart { grid-column: span 2; height: 350px; }
+        .dashboard-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .chart-card { background: #fff; border: 1px solid #eee; height: 300px; border-radius: 10px; padding: 10px; }
 
-        /* Filter Section (image_8f6ef0) */
-        .filter-section { display: flex; flex-wrap: wrap; gap: 10px; background: #f9f9f9; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
+        .filter-section { display: flex; flex-wrap: wrap; gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
         .filter-group { display: flex; flex-direction: column; gap: 4px; }
         .filter-group label { font-size: 11px; font-weight: bold; color: #555; }
         .filter-group input, .filter-group select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
 
-        /* Table Style (image_8f6ef0) */
         table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
-        th { background-color: var(--title-color); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
-        tr:hover { background-color: #f1f7ff; }
+        th { background-color: var(--title-color); color: white; padding: 12px; text-align: left; position: sticky; top: 0; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        tr:hover { background-color: #f1f7ff; cursor: pointer; }
 
-        .status-pill { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; text-align: center; display: inline-block; }
+        .status-pill { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
         .status-heavy { background: #e74c3c; } .status-medium { background: #f39c12; } .status-light { background: #3498db; }
-
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); overflow-y: auto; }
-        .modal-content { background: white; margin: 3% auto; padding: 25px; width: 90%; max-width: 900px; border-radius: 12px; position: relative; }
+        
+        #loading { text-align: center; padding: 20px; font-weight: bold; color: var(--title-color); }
     </style>
 </head>
 <body>
@@ -52,7 +46,6 @@
     <div class="dashboard-grid">
         <div class="chart-card"><canvas id="deptChart"></canvas></div>
         <div class="chart-card"><canvas id="levelChart"></canvas></div>
-        <div class="chart-card full-width-chart"><canvas id="trendChart"></canvas></div>
     </div>
 
     <div class="filter-section">
@@ -60,21 +53,22 @@
         <div class="filter-group"><label>Đến ngày:</label><input type="date" id="dateTo" onchange="filterData()"></div>
         <div class="filter-group"><label>Khoa/Phòng:</label><select id="filterDept" onchange="filterData()"><option value="">-- Tất cả --</option></select></div>
         <div class="filter-group"><label>Mức độ:</label><select id="filterLevel" onchange="filterData()"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="Trung bình">Trung bình</option><option value="Nặng">Nặng</option></select></div>
-        <div class="filter-group" style="flex-grow: 1;"><label>Tìm kiếm thông minh:</label><input type="text" id="searchDesc" placeholder="Mô tả, tên bệnh nhân..." onkeyup="filterData()"></div>
+        <div class="filter-group" style="flex-grow: 1;"><label>Tìm kiếm thông minh:</label><input type="text" id="searchDesc" placeholder="Mô tả sự cố, tên bệnh nhân, số báo cáo..." onkeyup="filterData()"></div>
     </div>
 
-    <div style="overflow-x: auto;">
+    <div style="overflow-x: auto; max-height: 500px;">
         <table>
             <thead>
                 <tr>
-                    <th style="width: 15%;">Ngày BC</th>
-                    <th style="width: 20%;">Khoa/Phòng</th>
-                    <th style="width: 55%;">Mô tả sự cố</th>
-                    <th style="width: 10%;">Mức độ</th>
+                    <th style="width: 10%;">Số BC</th>
+                    <th style="width: 12%;">Ngày BC</th>
+                    <th style="width: 18%;">Đơn vị báo cáo</th>
+                    <th style="width: 45%;">Mô tả ngắn gọn sự cố</th>
+                    <th style="width: 15%;">Mức độ</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="4" style="text-align:center;">Đang tải dữ liệu...</td></tr>
+                <tr><td colspan="5" id="loading">Đang tải dữ liệu từ hệ thống...</td></tr>
             </tbody>
         </table>
     </div>
@@ -82,117 +76,136 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxd2Cf4IdTFogeC1iRrh_krhofkxnZADB00arGJ3OnDSYOeH3NFi4-cW7ZrmktRJt8/exec'; // Thay link tại đây
+    // 1. CẤU HÌNH LINK WEB APP (Thay link mới nhất của bạn vào đây)
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwhddoy_kv6FaHQHV-LM4pHnCvhiCnW1SQpf2hZGOjAmA7EPgx-0EE8j43SgPDa_5A/exec'; 
+    
     let originalData = [];
     let charts = {};
 
-    // 1. Khai báo hàm xử lý định dạng ngày dd/mm/yyyy
-    const parseDate = (dateStr) => {
-        const p = dateStr.split('/');
-        return new Date(p[2], p[1] - 1, p[0]);
+    // 2. HÀM XỬ LÝ NGÀY THÁNG (Sheet gửi về dd/mm/yyyy)
+    const parseSheetDate = (dateStr) => {
+        if (!dateStr || typeof dateStr !== 'string') return new Date(0);
+        const parts = dateStr.split('/');
+        return new Date(parts[2], parts[1] - 1, parts[0]);
     };
 
+    // 3. HÀM HIỂN THỊ BẢNG (Khớp với 30 cột của bạn)
     const renderTable = (data) => {
         const tbody = document.getElementById('tableBody');
         if (!data || data.length === 0) {
-            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Không tìm thấy dữ liệu phù hợp.</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Không tìm thấy dữ liệu phù hợp.</td></tr>";
             return;
         }
-        tbody.innerHTML = data.map((row) => {
-            let lvClass = row.level === "Nặng" ? "heavy" : (row.level === "Trung bình" ? "medium" : "light");
+
+        tbody.innerHTML = data.map(row => {
+            // Mapping chính xác theo tên cột bạn cung cấp
+            const soBC = row["3. Số báo cáo"] || "N/A";
+            const ngayBC = row["4. Ngày báo cáo"] || "";
+            const khoa = row["5. Đơn vị báo cáo"] || "";
+            const moTa = row["16. Mô tả ngắn gọn"] || "";
+            const mucDo = row["24. Đánh giá ban đầu về mức độ ảnh hưởng"] || "Nhẹ";
+
+            let lvClass = mucDo.includes("Nặng") ? "heavy" : (mucDo.includes("Trung bình") ? "medium" : "light");
+            
             return `<tr>
-                <td>${row.date}</td>
-                <td>${row.dept}</td>
-                <td title="${row.desc}">${row.desc.length > 80 ? row.desc.substring(0, 80) + '...' : row.desc}</td>
-                <td><span class="status-pill status-${lvClass}">${row.level}</span></td>
+                <td><b>${soBC}</b></td>
+                <td>${ngayBC}</td>
+                <td>${khoa}</td>
+                <td title="${moTa}">${moTa.length > 90 ? moTa.substring(0, 90) + '...' : moTa}</td>
+                <td><span class="status-pill status-${lvClass}">${mucDo}</span></td>
             </tr>`;
         }).join('');
     };
 
-    const populateDeptFilter = (data) => {
-        const deptSelect = document.getElementById('filterDept');
-        const depts = [...new Set(data.map(item => item.dept))].filter(d => d).sort();
-        deptSelect.innerHTML = '<option value="">-- Tất cả --</option>';
-        depts.forEach(d => { deptSelect.innerHTML += `<option value="${d}">${d}</option>`; });
+    // 4. HÀM VẼ BIỂU ĐỒ
+    const renderCharts = (data) => {
+        if (charts.dept) charts.dept.destroy();
+        if (charts.level) charts.level.destroy();
+
+        const lvCount = { 'Nhẹ': 0, 'Trung bình': 0, 'Nặng': 0 };
+        const deptCount = {};
+
+        data.forEach(item => {
+            const m = item["24. Đánh giá ban đầu về mức độ ảnh hưởng"] || "";
+            if (m.includes("Nặng")) lvCount['Nặng']++;
+            else if (m.includes("Trung bình")) lvCount['Trung bình']++;
+            else lvCount['Nhẹ']++;
+
+            const d = item["5. Đơn vị báo cáo"] || "Khác";
+            deptCount[d] = (deptCount[d] || 0) + 1;
+        });
+
+        // Biểu đồ cột theo Khoa
+        charts.dept = new Chart(document.getElementById('deptChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(deptCount),
+                datasets: [{ label: 'Số vụ sự cố', data: Object.values(deptCount), backgroundColor: '#2980b9' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'SỰ CỐ THEO ĐƠN VỊ' } } }
+        });
+
+        // Biểu đồ tròn theo Mức độ
+        charts.level = new Chart(document.getElementById('levelChart'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(lvCount),
+                datasets: [{ data: Object.values(lvCount), backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'TỶ LỆ MỨC ĐỘ ẢNH HƯỞNG' } } }
+        });
     };
 
+    // 5. BỘ LỌC DỮ LIỆU
     function filterData() {
-        const from = document.getElementById('dateFrom').value;
-        const to = document.getElementById('dateTo').value;
+        const fDate = document.getElementById('dateFrom').value;
+        const tDate = document.getElementById('dateTo').value;
         const dept = document.getElementById('filterDept').value;
         const level = document.getElementById('filterLevel').value;
         const search = document.getElementById('searchDesc').value.toLowerCase();
 
         const filtered = originalData.filter(item => {
-            const itemDate = parseDate(item.date);
-            const dF = from ? new Date(from) : null;
-            const dT = to ? new Date(to) : null;
-            if (dF) dF.setHours(0,0,0,0);
-            if (dT) dT.setHours(23,59,59,999);
+            const itemDate = parseSheetDate(item["4. Ngày báo cáo"]);
+            const dStart = fDate ? new Date(fDate) : null;
+            const dEnd = tDate ? new Date(tDate) : null;
+            if(dStart) dStart.setHours(0,0,0,0);
+            if(dEnd) dEnd.setHours(23,59,59,999);
 
-            return (!dF || itemDate >= dF) && 
-                   (!dT || itemDate <= dT) &&
-                   (!dept || item.dept === dept) && 
-                   (!level || item.level === level) &&
-                   (item.desc.toLowerCase().includes(search));
+            const matchDate = (!dStart || itemDate >= dStart) && (!dEnd || itemDate <= dEnd);
+            const matchDept = !dept || item["5. Đơn vị báo cáo"] === dept;
+            const matchLevel = !level || (item["24. Đánh giá ban đầu về mức độ ảnh hưởng"] || "").includes(level);
+            const matchSearch = !search || 
+                                (item["16. Mô tả ngắn gọn"] || "").toLowerCase().includes(search) || 
+                                (item["6. Họ và tên BN"] || "").toLowerCase().includes(search) ||
+                                (item["3. Số báo cáo"] || "").toString().includes(search);
+
+            return matchDate && matchDept && matchLevel && matchSearch;
         });
+
         renderTable(filtered);
+        renderCharts(filtered);
     }
 
-    const renderCharts = (data) => {
-        Object.values(charts).forEach(c => c.destroy());
-        const lv = { 'Nhẹ': 0, 'Trung bình': 0, 'Nặng': 0 };
-        const dp = {};
-        const curY = new Date().getFullYear();
-        const years = [curY - 2, curY - 1, curY];
-        const trends = {}; years.forEach(y => trends[y] = Array(12).fill(0));
-
-        data.forEach(i => {
-            if(lv[i.level] !== undefined) lv[i.level]++;
-            dp[i.dept] = (dp[i.dept] || 0) + 1;
-            const itemDate = parseDate(i.date);
-            const m = itemDate.getMonth();
-            const y = itemDate.getFullYear();
-            if(trends[y]) trends[y][m]++;
-        });
-
-        charts.dept = new Chart(document.getElementById('deptChart'), {
-            type: 'bar',
-            data: { labels: Object.keys(dp), datasets: [{ data: Object.values(dp), backgroundColor: '#2980b9' }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'SỐ LƯỢNG THEO KHOA' }, legend: { display: false } } }
-        });
-
-        charts.level = new Chart(document.getElementById('levelChart'), {
-            type: 'pie',
-            data: { labels: Object.keys(lv), datasets: [{ data: Object.values(lv), backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'TỶ LỆ MỨC ĐỘ' } } }
-        });
-
-        charts.trend = new Chart(document.getElementById('trendChart'), {
-            type: 'line',
-            data: {
-                labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'],
-                datasets: [
-                    { label: years[0], data: trends[years[0]], borderColor: '#bdc3c7', tension: 0.3 },
-                    { label: years[1], data: trends[years[1]], borderColor: '#3498db', tension: 0.3 },
-                    { label: years[2], data: trends[years[2]], borderColor: '#e67e22', tension: 0.3, borderWidth: 3 }
-                ]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'XU HƯỚNG SỰ CỐ 3 NĂM' } } }
-        });
+    const populateDeptFilter = (data) => {
+        const deptSelect = document.getElementById('filterDept');
+        const depts = [...new Set(data.map(item => item["5. Đơn vị báo cáo"]))].filter(d => d).sort();
+        depts.forEach(d => { deptSelect.innerHTML += `<option value="${d}">${d}</option>`; });
     };
 
+    // 6. KHỞI CHẠY
     window.onload = () => {
         fetch(scriptURL + '?action=read')
         .then(res => res.json())
         .then(data => {
+            if(data.error) throw new Error(data.error);
             originalData = data;
             populateDeptFilter(data);
             renderTable(data);
             renderCharts(data);
         })
         .catch(err => {
-            document.getElementById('tableBody').innerHTML = "<tr><td colspan='4' style='color:red; text-align:center;'>Lỗi: Không thể kết nối dữ liệu. Hãy kiểm tra Deployment!</td></tr>";
+            console.error(err);
+            document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Lỗi kết nối: ${err.message}. Hãy chắc chắn bạn đã Deploy Web App ở chế độ 'Anyone'.</td></tr>`;
         });
     };
 </script>
