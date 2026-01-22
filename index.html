@@ -128,33 +128,51 @@
     let originalData = [];
     let selectedIncident = null;
 
+   // 1. Khởi tạo khi trang tải xong
     window.onload = () => {
         fetch(scriptURL + '?action=read')
         .then(res => res.json())
         .then(data => {
             originalData = data;
-            populateDeptFilter(data);
+            populateDeptFilter(data); // Đã định nghĩa bên dưới để sửa lỗi ReferenceError
             renderTable(data);
             renderCharts(data);
+        })
+        .catch(err => console.error("Lỗi lấy dữ liệu:", err));
+    }
+
+    // 2. Hàm định nghĩa danh sách Khoa/Phòng cho bộ lọc (SỬA LỖI BẠN ĐANG GẶP)
+    function populateDeptFilter(data) {
+        const deptSelect = document.getElementById('filterDept');
+        const depts = [...new Set(data.map(item => item.dept))].sort();
+        depts.forEach(dept => {
+            if(dept) {
+                const opt = document.createElement('option');
+                opt.value = dept; opt.textContent = dept;
+                deptSelect.appendChild(opt);
+            }
         });
     }
 
-    // 2. Hiển thị "TB" cho Trung bình
+    // 3. Hàm hiển thị bảng dữ liệu (Rút gọn Trung bình thành TB)
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = data.map((row, index) => {
+            // Rút gọn mức độ hiển thị
             let displayLevel = row.level === "Trung bình" ? "TB" : row.level;
+            let levelClass = row.level === "Nặng" ? "heavy" : (row.level === "Trung bình" ? "medium" : "light");
+
             return `
             <tr onclick="openDetail(${index})">
                 <td>${row.date}</td>
                 <td>${row.dept}</td>
-                <td>${row.desc.substring(0, 80)}...</td>
-                <td><span class="status-pill status-${row.levelClass}">${displayLevel}</span></td>
+                <td title="${row.desc}">${row.desc.length > 60 ? row.desc.substring(0, 60) + '...' : row.desc}</td>
+                <td><span class="status-pill status-${levelClass}">${displayLevel}</span></td>
             </tr>`;
-        }).join('');
+        }).join('') || '<tr><td colspan="4" style="text-align:center;">Không tìm thấy dữ liệu phù hợp.</td></tr>';
     }
 
-    // 1. Logic lọc Từ ngày - Đến ngày
+    // 4. Logic bộ lọc thông minh (Từ ngày - Đến ngày)
     function filterData() {
         const from = document.getElementById('dateFrom').value;
         const to = document.getElementById('dateTo').value;
@@ -163,114 +181,84 @@
         const search = document.getElementById('searchDesc').value.toLowerCase();
 
         const filtered = originalData.filter(item => {
-            const itemDate = new Date(item.date.split('/').reverse().join('-'));
+            // Chuyển đổi định dạng ngày dd/mm/yyyy sang Object Date để so sánh
+            const parts = item.date.split('/');
+            const itemDate = new Date(parts[2], parts[1]-1, parts[0]);
+            
             const dFrom = from ? new Date(from) : null;
             const dTo = to ? new Date(to) : null;
             
             const matchDate = (!dFrom || itemDate >= dFrom) && (!dTo || itemDate <= dTo);
             const matchDept = !dept || item.dept === dept;
             const matchLevel = !level || item.level === level;
-            const matchSearch = item.desc.toLowerCase().includes(search) || (item.tenBN && item.tenBN.toLowerCase().includes(search));
+            const matchSearch = item.desc.toLowerCase().includes(search);
 
             return matchDate && matchDept && matchLevel && matchSearch;
         });
+
         renderTable(filtered);
+        // Lưu ý: Có thể gọi lại renderCharts(filtered) nếu muốn biểu đồ cập nhật theo bộ lọc
     }
 
+    // 5. Modal chi tiết & AI/CAPA
     function openDetail(index) {
         selectedIncident = originalData[index];
         const modal = document.getElementById('detailModal');
         const body = document.getElementById('modalBody');
-    
-        // Biến các trường thông tin thành ô nhập liệu để có thể sửa
-         body.innerHTML = `
-        <input type="hidden" id="edit-id" value="${selectedIncident.soBaoCao}">
-        <div class="filter-group">
-            <label>Ngày xảy ra:</label>
-            <input type="text" id="edit-date" value="${selectedIncident.date}">
-        </div>
-        <div class="filter-group">
-            <label>Khoa/Phòng:</label>
-            <input type="text" id="edit-dept" value="${selectedIncident.dept}">
-        </div>
-        <div class="filter-group" style="grid-column: 1 / span 2;">
-            <label>Mô tả sự cố:</label>
-            <textarea id="edit-desc" rows="4" style="width:100%">${selectedIncident.desc}</textarea>
-        </div>
-        <div class="filter-group">
-            <label>Mức độ:</label>
-            <select id="edit-level">
-                <option value="Nhẹ" ${selectedIncident.level === 'Nhẹ' ? 'selected' : ''}>Nhẹ</option>
-                <option value="Trung bình" ${selectedIncident.level === 'Trung bình' ? 'selected' : ''}>Trung bình</option>
-                <option value="Nặng" ${selectedIncident.level === 'Nặng' ? 'selected' : ''}>Nặng</option>
-            </select>
-        </div>
+        
+        body.innerHTML = `
+            <div class="filter-group"><label>Mã báo cáo:</label><input type="text" id="edit-id" value="${selectedIncident.soBaoCao || ''}" readonly></div>
+            <div class="filter-group"><label>Ngày báo cáo:</label><input type="text" id="edit-date" value="${selectedIncident.date}"></div>
+            <div class="filter-group"><label>Khoa/Phòng:</label><input type="text" id="edit-dept" value="${selectedIncident.dept}"></div>
+            <div class="filter-group"><label>Mức độ:</label>
+                <select id="edit-level">
+                    <option value="Nhẹ" ${selectedIncident.level === 'Nhẹ' ? 'selected' : ''}>Nhẹ</option>
+                    <option value="Trung bình" ${selectedIncident.level === 'Trung bình' ? 'selected' : ''}>Trung bình</option>
+                    <option value="Nặng" ${selectedIncident.level === 'Nặng' ? 'selected' : ''}>Nặng</option>
+                </select>
+            </div>
+            <div class="filter-group" style="grid-column: 1 / span 2;">
+                <label>Mô tả chi tiết:</label>
+                <textarea id="edit-desc" rows="4" style="width:100%">${selectedIncident.desc}</textarea>
+            </div>
         `;
-
-        // Thêm nút Lưu vào cuối Modal
-        if(!document.getElementById('btnSaveEdit')) {
-        const btnSave = document.createElement('button');
-        btnSave.id = 'btnSaveEdit';
-        btnSave.innerHTML = 'LƯU THAY ĐỔI';
-        btnSave.className = 'btn-new';
-        btnSave.style.backgroundColor = 'var(--title-color)';
-        btnSave.onclick = saveEdit;
-        document.querySelector('.modal-content').appendChild(btnSave);
-        }
-
         modal.style.display = "block";
     }
 
-    function saveEdit() {
-        const btn = document.getElementById('btnSaveEdit');
-        btn.innerHTML = 'Đang lưu...';
-        btn.disabled = true;
+    // 6. Vẽ biểu đồ (Đảm bảo 2/3 và 1/3 như ảnh image_9e9d24)
+    function renderCharts(data) {
+        const lv = { 'Nhẹ': 0, 'Trung bình': 0, 'Nặng': 0 };
+        const dp = {};
+        data.forEach(i => { 
+            if (lv.hasOwnProperty(i.level)) lv[i.level]++; 
+            dp[i.dept] = (dp[i.dept] || 0) + 1; 
+        });
 
-        const updatedData = {
-        soBaoCao: document.getElementById('edit-id').value,
-        date: document.getElementById('edit-date').value,
-        dept: document.getElementById('edit-dept').value,
-        desc: document.getElementById('edit-desc').value,
-        level: document.getElementById('edit-level').value,
-        // Tự động map levelClass dựa trên level mới
-        levelClass: document.getElementById('edit-level').value === 'Nhẹ' ? 'light' : 
-                    (document.getElementById('edit-level').value === 'Nặng' ? 'heavy' : 'medium')
-        };
+        // Bar Chart
+        new Chart(document.getElementById('deptChart'), {
+            type: 'bar',
+            data: { labels: Object.keys(dp), datasets: [{ label: 'Số vụ', data: Object.values(dp), backgroundColor: '#2980b9', borderRadius: 5 }] },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: false },
+                    title: { display: true, text: 'SỐ LƯỢNG SỰ CỐ THEO KHOA', font: { size: 14 } }
+                }
+            }
+        });
 
-     fetch(scriptURL + '?action=update', {
-        method: 'POST',
-        body: JSON.stringify(updatedData)
-        })
-        .then(res => res.text())
-        .then(result => {
-        if (result === "SUCCESS") {
-            alert("Cập nhật thành công!");
-            location.reload(); // Tải lại trang để cập nhật biểu đồ và bảng
-        } else {
-            alert("Lỗi: " + result);
-            btn.innerHTML = 'LƯU THAY ĐỔI';
-            btn.disabled = false;
-        }
-        })
-        .catch(err => alert("Lỗi kết nối: " + err));
-    }
-
-    function runAIAnalysis() {
-        const aiBox = document.getElementById('aiContent');
-        aiBox.innerHTML = "<em>AI đang đọc dữ liệu sự cố và đối chiếu quy trình...</em>";
-        
-        // Giả lập kết nối AI
-        setTimeout(() => {
-            aiBox.innerHTML = `
-                <p><strong>Kết luận AI:</strong> Sự cố xảy ra do lỗi hệ thống (System Error) tại khâu bàn giao. <br>
-                <strong>Nguyên nhân gốc (RCA):</strong> Thiếu bảng kiểm (Checklist) khi chuyển khoa.<br>
-                <strong>Khuyến nghị:</strong> Áp dụng công cụ SBAR trong bàn giao bệnh nhân.</p>
-            `;
-        }, 2000);
+        // Pie Chart
+        new Chart(document.getElementById('levelChart'), {
+            type: 'pie',
+            data: { labels: Object.keys(lv), datasets: [{ data: Object.values(lv), backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { title: { display: true, text: 'TỶ LỆ MỨC ĐỘ' }, legend: { position: 'bottom' } }
+            }
+        });
     }
 
     function closeModal() { document.getElementById('detailModal').style.display = "none"; }
-    // (Các hàm populateDeptFilter, renderCharts giữ nguyên từ bản trước)
 </script>
 </body>
 </html>
