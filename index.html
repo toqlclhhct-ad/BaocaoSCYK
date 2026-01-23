@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ thống Quản lý Sự cố - Dashboard</title>
     <style>
-        :root { --title-color: #2980b9; --bg-body: #f4f7f6; --success-color: #27ae60; }
+        :root { --title-color: #2980b9; --bg-body: #f4f7f6; --success-color: #27ae60; --orange-color: #f39c12; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); padding: 15px; margin: 0; }
         .container { max-width: 1200px; margin: 10px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
@@ -14,8 +14,8 @@
         .header-left h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 16px; }
 
         .btn-new { background: var(--success-color); color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 13px; transition: 0.3s; }
+        .btn-new:hover { background: #219150; }
 
-        /* Chia tỷ lệ 2/3 và 1/3 */
         .dashboard-grid { 
             display: grid; 
             grid-template-columns: 2fr 1fr; 
@@ -23,13 +23,12 @@
             margin-bottom: 20px; 
         }
         
-        /* Chiều cao tổng thể giảm xuống còn khoảng 250px */
         .chart-card { 
             background: #fff; 
             padding: 10px; 
             border-radius: 10px; 
             border: 1px solid #eee; 
-            height: 250px; 
+            height: 280px; 
             position: relative;
         }
         
@@ -38,23 +37,20 @@
         .filter-group label { font-size: 11px; font-weight: bold; color: #555; }
         .filter-group input, .filter-group select { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
         
-        .table-container { overflow-x: auto; }
+        .table-container { overflow-x: auto; max-height: 400px; border: 1px solid #eee; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background-color: var(--title-color); color: white; padding: 10px; text-align: left; }
+        th { background-color: var(--title-color); color: white; padding: 10px; text-align: left; position: sticky; top: 0; }
         td { padding: 10px; border-bottom: 1px solid #eee; }
 
-        .status-pill { padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; color: white; }
+        .status-pill { padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; color: white; display: inline-block; min-width: 60px; text-align: center; }
         .status-heavy { background: #e74c3c; }
-        .status-medium { background: #f39c12; }
+        .status-medium, .status-TB { background: var(--orange-color); } /* Đổi sang màu cam */
         .status-light { background: #3498db; }
 
-        /* Responsive cho Mobile */
         @media (max-width: 768px) {
             .dashboard-grid { grid-template-columns: 1fr; }
-            .chart-card { height: 220px; }
-            /* Tăng chiều cao riêng cho biểu đồ cột trên mobile để nhìn rõ các khoa */
-            #deptChartContainer { height: 350px; } 
             header { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .filter-group { width: 45%; }
         }
     </style>
 </head>
@@ -79,9 +75,10 @@
     </div>
 
     <div class="filter-section">
-        <div class="filter-group"><label>Ngày:</label><input type="date" id="filterDate" onchange="filterData()"></div>
+        <div class="filter-group"><label>Từ ngày:</label><input type="date" id="startDate" onchange="filterData()"></div>
+        <div class="filter-group"><label>Đến ngày:</label><input type="date" id="endDate" onchange="filterData()"></div>
         <div class="filter-group"><label>Khoa/Phòng:</label><select id="filterDept" onchange="filterData()"><option value="">-- Tất cả --</option></select></div>
-        <div class="filter-group"><label>Mức độ:</label><select id="filterLevel" onchange="filterData()"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="Trung bình">Trung bình</option><option value="Nặng">Nặng</option></select></div>
+        <div class="filter-group"><label>Mức độ:</label><select id="filterLevel" onchange="filterData()"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
         <div class="filter-group" style="flex-grow: 1;"><label>Tìm kiếm:</label><input type="text" id="searchDesc" placeholder="Từ khóa..." onkeyup="filterData()"></div>
     </div>
 
@@ -89,10 +86,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>Ngày BC</th>
-                    <th>Khoa/Phòng</th>
+                    <th style="width: 100px;">Ngày BC</th>
+                    <th style="width: 200px;">Khoa/Phòng</th>
                     <th>Mô tả</th>
-                    <th>Mức độ</th>
+                    <th style="width: 100px;">Mức độ</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -106,37 +103,60 @@
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwsgg3TyHuF60XbkdaHr6uTrXW8akj5Np9f9MjKoC0nNhZoFHnekWpkqpQzAYPpdjQ/exec';
     let originalData = [];
+    let deptChart, levelChart;
 
     window.onload = function() {
         fetch(scriptURL + '?action=read')
         .then(res => res.json())
         .then(data => {
-            originalData = data;
-            populateDeptFilter(data);
-            renderTable(data);
-            renderCharts(data);
+            // Chuẩn hóa dữ liệu "Trung bình" thành "TB" để đồng nhất
+            originalData = data.map(item => ({
+                ...item,
+                level: (item.level === "Trung bình") ? "TB" : item.level,
+                levelClass: (item.level === "Trung bình" || item.level === "TB") ? "TB" : item.levelClass
+            }));
+            
+            populateDeptFilter(originalData);
+            renderTable(originalData);
+            renderCharts(originalData);
         });
     }
 
     function populateDeptFilter(data) {
         const deptSelect = document.getElementById('filterDept');
-        [...new Set(data.map(item => item.dept))].sort().forEach(dept => {
+        const depts = [...new Set(data.map(item => item.dept))].filter(Boolean).sort();
+        depts.forEach(dept => {
             const opt = document.createElement('option');
             opt.value = dept; opt.textContent = dept;
             deptSelect.appendChild(opt);
         });
     }
 
+    function parseDate(dateStr) {
+        const parts = dateStr.split('/');
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+
     function filterData() {
         const s = document.getElementById('searchDesc').value.toLowerCase();
         const d = document.getElementById('filterDept').value;
         const l = document.getElementById('filterLevel').value;
-        const t = document.getElementById('filterDate').value;
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+
         const filtered = originalData.filter(item => {
-            const matchDate = t === "" || item.date.split('/').reverse().join('-') === t;
-            return item.desc.toLowerCase().includes(s) && (d === "" || item.dept === d) && (l === "" || item.level === l) && matchDate;
+            const itemDate = parseDate(item.date);
+            const startCheck = start === "" || itemDate >= new Date(start);
+            const endCheck = end === "" || itemDate <= new Date(end);
+            const matchSearch = item.desc.toLowerCase().includes(s) || item.dept.toLowerCase().includes(s);
+            const matchDept = d === "" || item.dept === d;
+            const matchLevel = l === "" || item.level === l;
+
+            return startCheck && endCheck && matchSearch && matchDept && matchLevel;
         });
+
         renderTable(filtered);
+        updateCharts(filtered);
     }
 
     function renderTable(data) {
@@ -147,25 +167,25 @@
                 <td>${row.dept}</td>
                 <td title="${row.desc}">${row.desc}</td>
                 <td><span class="status-pill status-${row.levelClass}">${row.level}</span></td>
-            </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;">Không có dữ liệu.</td></tr>';
+            </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;">Không tìm thấy dữ liệu phù hợp.</td></tr>';
     }
 
     function renderCharts(data) {
-        const lv = { 'Nhẹ': 0, 'Trung bình': 0, 'Nặng': 0 };
-        const dp = {};
-        data.forEach(i => { if (lv.hasOwnProperty(i.level)) lv[i.level]++; dp[i.dept] = (dp[i.dept] || 0) + 1; });
-
         Chart.register(ChartDataLabels);
+        const counts = getChartData(data);
 
-        // Bar Chart (2/3 width)
-        new Chart(document.getElementById('deptChart'), {
+        // Bar Chart
+        deptChart = new Chart(document.getElementById('deptChart'), {
             type: 'bar',
-            data: { labels: Object.keys(dp), datasets: [{ data: Object.values(dp), backgroundColor: '#2980b9' }] },
+            data: { 
+                labels: counts.deptLabels, 
+                datasets: [{ data: counts.deptValues, backgroundColor: '#2980b9' }] 
+            },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    title: { display: true, text: 'Số lượng theo Khoa/Phòng', font: {size: 13} },
+                    title: { display: true, text: 'SỐ LƯỢNG THEO KHOA/PHÒNG', font: {size: 12} },
                     legend: { display: false },
                     datalabels: { anchor: 'end', align: 'top', color: '#2980b9', font: { weight: 'bold' } }
                 },
@@ -173,26 +193,61 @@
             }
         });
 
-        // Pie Chart (1/3 width)
-        new Chart(document.getElementById('levelChart'), {
-            type: 'pie',
-            data: { labels: Object.keys(lv), datasets: [{ data: Object.values(lv), backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
+        // Doughnut Chart (Bánh xe)
+        levelChart = new Chart(document.getElementById('levelChart'), {
+            type: 'doughnut',
+            data: { 
+                labels: ['Nhẹ', 'TB', 'Nặng'], 
+                datasets: [{ 
+                    data: [counts.lv['Nhẹ'] || 0, counts.lv['TB'] || 0, counts.lv['Nặng'] || 0], 
+                    backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] 
+                }] 
+            },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '60%', // Tạo hình bánh xe
                 plugins: {
-                    title: { display: true, text: 'Tỷ lệ Mức độ', font: {size: 13} },
+                    title: { display: true, text: 'TỶ LỆ MỨC ĐỘ', font: {size: 12} },
                     legend: { position: 'bottom', labels: { boxWidth: 10, font: {size: 10} } },
                     datalabels: {
                         color: '#fff',
+                        font: { weight: 'bold', size: 11 },
                         formatter: (v, c) => {
-                            let s = c.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                            return v > 0 ? `${(v*100/s).toFixed(0)}%` : '';
-                        }
+                            let sum = c.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            let percentage = sum > 0 ? ((v * 100) / sum).toFixed(0) + '%' : '';
+                            return v > 0 ? v + '\n(' + percentage + ')' : ''; // Hiện Số lượng và %
+                        },
+                        textAlign: 'center'
                     }
                 }
             }
         });
+    }
+
+    function getChartData(data) {
+        const lv = { 'Nhẹ': 0, 'TB': 0, 'Nặng': 0 };
+        const dp = {};
+        data.forEach(i => { 
+            if (lv.hasOwnProperty(i.level)) lv[i.level]++; 
+            dp[i.dept] = (dp[i.dept] || 0) + 1; 
+        });
+        return {
+            lv,
+            deptLabels: Object.keys(dp),
+            deptValues: Object.values(dp)
+        };
+    }
+
+    function updateCharts(data) {
+        const counts = getChartData(data);
+        
+        deptChart.data.labels = counts.deptLabels;
+        deptChart.data.datasets[0].data = counts.deptValues;
+        deptChart.update();
+
+        levelChart.data.datasets[0].data = [counts.lv['Nhẹ'] || 0, counts.lv['TB'] || 0, counts.lv['Nặng'] || 0];
+        levelChart.update();
     }
 </script>
 </body>
