@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Sự cố - Dashboard</title>
+    <title>Hệ thống Quản lý Sự cố - High Performance</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <style>
         :root { --title-color: #2980b9; --bg-body: #f4f7f6; --success-color: #27ae60; --orange-color: #f39c12; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); padding: 15px; margin: 0; }
@@ -14,44 +15,27 @@
         .header-left h2 { color: var(--title-color); text-transform: uppercase; margin: 0; font-size: 16px; }
 
         .btn-new { background: var(--success-color); color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 13px; transition: 0.3s; }
-        .btn-new:hover { background: #219150; }
 
-        .dashboard-grid { 
-            display: grid; 
-            grid-template-columns: 2fr 1fr; 
-            gap: 15px; 
-            margin-bottom: 20px; 
-        }
-        
-        .chart-card { 
-            background: #fff; 
-            padding: 10px; 
-            border-radius: 10px; 
-            border: 1px solid #eee; 
-            height: 280px; 
-            position: relative;
-        }
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .chart-card { background: #fff; padding: 10px; border-radius: 10px; border: 1px solid #eee; height: 280px; }
         
         .filter-section { display: flex; flex-wrap: wrap; gap: 10px; background: #f9f9f9; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
         .filter-group { display: flex; flex-direction: column; gap: 4px; }
         .filter-group label { font-size: 11px; font-weight: bold; color: #555; }
         .filter-group input, .filter-group select { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
         
-        .table-container { overflow-x: auto; max-height: 400px; border: 1px solid #eee; border-radius: 8px; }
+        .table-container { overflow-x: auto; max-height: 450px; border: 1px solid #eee; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background-color: var(--title-color); color: white; padding: 10px; text-align: left; position: sticky; top: 0; }
+        th { background-color: var(--title-color); color: white; padding: 10px; text-align: left; position: sticky; top: 0; z-index: 5; }
         td { padding: 10px; border-bottom: 1px solid #eee; }
 
-        .status-pill { padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; color: white; display: inline-block; min-width: 60px; text-align: center; }
+        .status-pill { padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; color: white; display: inline-block; min-width: 55px; text-align: center; }
         .status-heavy { background: #e74c3c; }
-        .status-medium, .status-TB { background: var(--orange-color); } /* Đổi sang màu cam */
+        .status-TB { background: var(--orange-color); }
         .status-light { background: #3498db; }
 
-        @media (max-width: 768px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-            header { flex-direction: column; gap: 10px; align-items: flex-start; }
-            .filter-group { width: 45%; }
-        }
+        /* Hiệu ứng loading giả lập (Skeleton) */
+        .loading-text { color: #999; text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
@@ -66,20 +50,16 @@
     </header>
 
     <div class="dashboard-grid">
-        <div class="chart-card" id="deptChartContainer">
-            <canvas id="deptChart"></canvas>
-        </div>
-        <div class="chart-card">
-            <canvas id="levelChart"></canvas>
-        </div>
+        <div class="chart-card"><canvas id="deptChart"></canvas></div>
+        <div class="chart-card"><canvas id="levelChart"></canvas></div>
     </div>
 
     <div class="filter-section">
-        <div class="filter-group"><label>Từ ngày:</label><input type="date" id="startDate" onchange="filterData()"></div>
-        <div class="filter-group"><label>Đến ngày:</label><input type="date" id="endDate" onchange="filterData()"></div>
-        <div class="filter-group"><label>Khoa/Phòng:</label><select id="filterDept" onchange="filterData()"><option value="">-- Tất cả --</option></select></div>
-        <div class="filter-group"><label>Mức độ:</label><select id="filterLevel" onchange="filterData()"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
-        <div class="filter-group" style="flex-grow: 1;"><label>Tìm kiếm:</label><input type="text" id="searchDesc" placeholder="Từ khóa..." onkeyup="filterData()"></div>
+        <div class="filter-group"><label>Từ ngày:</label><input type="date" id="startDate"></div>
+        <div class="filter-group"><label>Đến ngày:</label><input type="date" id="endDate"></div>
+        <div class="filter-group"><label>Khoa:</label><select id="filterDept"><option value="">-- Tất cả --</option></select></div>
+        <div class="filter-group"><label>Mức độ:</label><select id="filterLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
+        <div class="filter-group" style="flex-grow: 1;"><label>Tìm kiếm:</label><input type="text" id="searchDesc" placeholder="Từ khóa..."></div>
     </div>
 
     <div class="table-container">
@@ -87,12 +67,14 @@
             <thead>
                 <tr>
                     <th style="width: 100px;">Ngày BC</th>
-                    <th style="width: 200px;">Khoa/Phòng</th>
+                    <th style="width: 180px;">Khoa/Phòng</th>
                     <th>Mô tả</th>
-                    <th style="width: 100px;">Mức độ</th>
+                    <th style="width: 80px;">Mức độ</th>
                 </tr>
             </thead>
-            <tbody id="tableBody"></tbody>
+            <tbody id="tableBody">
+                <tr><td colspan="4" class="loading-text">Đang tải dữ liệu nhanh...</td></tr>
+            </tbody>
         </table>
     </div>
 </div>
@@ -105,31 +87,49 @@
     let originalData = [];
     let deptChart, levelChart;
 
-    window.onload = function() {
-        fetch(scriptURL + '?action=read')
-        .then(res => res.json())
-        .then(data => {
-            // Chuẩn hóa dữ liệu "Trung bình" thành "TB" để đồng nhất
-            originalData = data.map(item => ({
-                ...item,
-                level: (item.level === "Trung bình") ? "TB" : item.level,
-                levelClass: (item.level === "Trung bình" || item.level === "TB") ? "TB" : item.levelClass
-            }));
+    // Sử dụng DOMContentLoaded để thực thi ngay khi HTML sẵn sàng
+    document.addEventListener('DOMContentLoaded', async () => {
+        setupEventListeners();
+        await loadData();
+    });
+
+    async function loadData() {
+        try {
+            const response = await fetch(`${scriptURL}?action=read`);
+            const rawData = await response.json();
             
+            // Xử lý dữ liệu song song với quá trình duyệt
+            originalData = rawData.map(item => ({
+                ...item,
+                level: (item.level === "Trung bình" || item.level === "TB") ? "TB" : item.level,
+                levelClass: (item.level === "Trung bình" || item.level === "TB") ? "TB" : item.levelClass,
+                timestamp: parseDate(item.date).getTime()
+            }));
+
+            // Thực hiện render đồng thời
             populateDeptFilter(originalData);
             renderTable(originalData);
-            renderCharts(originalData);
+            initCharts(originalData);
+        } catch (error) {
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="color:red; text-align:center;">Lỗi tải dữ liệu. Vui lòng kiểm tra kết nối.</td></tr>';
+        }
+    }
+
+    function setupEventListeners() {
+        const filters = ['startDate', 'endDate', 'filterDept', 'filterLevel', 'searchDesc'];
+        filters.forEach(id => {
+            const el = document.getElementById(id);
+            el.addEventListener(id === 'searchDesc' ? 'keyup' : 'change', debounce(filterData, 300));
         });
     }
 
-    function populateDeptFilter(data) {
-        const deptSelect = document.getElementById('filterDept');
-        const depts = [...new Set(data.map(item => item.dept))].filter(Boolean).sort();
-        depts.forEach(dept => {
-            const opt = document.createElement('option');
-            opt.value = dept; opt.textContent = dept;
-            deptSelect.appendChild(opt);
-        });
+    // Kỹ thuật Debounce: Tránh render liên tục khi gõ phím, tăng hiệu suất tìm kiếm
+    function debounce(func, timeout = 300) {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => { func.apply(this, args); }, timeout);
+        };
     }
 
     function parseDate(dateStr) {
@@ -137,86 +137,55 @@
         return new Date(parts[2], parts[1] - 1, parts[0]);
     }
 
-    function filterData() {
-        const s = document.getElementById('searchDesc').value.toLowerCase();
-        const d = document.getElementById('filterDept').value;
-        const l = document.getElementById('filterLevel').value;
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
-
-        const filtered = originalData.filter(item => {
-            const itemDate = parseDate(item.date);
-            const startCheck = start === "" || itemDate >= new Date(start);
-            const endCheck = end === "" || itemDate <= new Date(end);
-            const matchSearch = item.desc.toLowerCase().includes(s) || item.dept.toLowerCase().includes(s);
-            const matchDept = d === "" || item.dept === d;
-            const matchLevel = l === "" || item.level === l;
-
-            return startCheck && endCheck && matchSearch && matchDept && matchLevel;
-        });
-
-        renderTable(filtered);
-        updateCharts(filtered);
-    }
-
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = data.map(row => `
-            <tr>
+        // Sử dụng DocumentFragment để tối ưu việc chèn hàng loạt vào DOM
+        const fragment = document.createDocumentFragment();
+        
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
                 <td>${row.date}</td>
                 <td>${row.dept}</td>
-                <td title="${row.desc}">${row.desc}</td>
+                <td>${row.desc}</td>
                 <td><span class="status-pill status-${row.levelClass}">${row.level}</span></td>
-            </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;">Không tìm thấy dữ liệu phù hợp.</td></tr>';
-    }
-
-    function renderCharts(data) {
-        Chart.register(ChartDataLabels);
-        const counts = getChartData(data);
-
-        // Bar Chart
-        deptChart = new Chart(document.getElementById('deptChart'), {
-            type: 'bar',
-            data: { 
-                labels: counts.deptLabels, 
-                datasets: [{ data: counts.deptValues, backgroundColor: '#2980b9' }] 
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: { display: true, text: 'SỐ LƯỢNG THEO KHOA/PHÒNG', font: {size: 12} },
-                    legend: { display: false },
-                    datalabels: { anchor: 'end', align: 'top', color: '#2980b9', font: { weight: 'bold' } }
-                },
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-            }
+            `;
+            fragment.appendChild(tr);
         });
 
-        // Doughnut Chart (Bánh xe)
+        tbody.innerHTML = '';
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Không tìm thấy dữ liệu.</td></tr>';
+        } else {
+            tbody.appendChild(fragment);
+        }
+    }
+
+    function initCharts(data) {
+        const counts = getAggregatedData(data);
+        Chart.register(ChartDataLabels);
+
+        deptChart = new Chart(document.getElementById('deptChart'), {
+            type: 'bar',
+            data: { labels: counts.deptLabels, datasets: [{ data: counts.deptValues, backgroundColor: '#2980b9' }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'top', color: '#2980b9', font: { weight: 'bold' } } } }
+        });
+
         levelChart = new Chart(document.getElementById('levelChart'), {
             type: 'doughnut',
             data: { 
                 labels: ['Nhẹ', 'TB', 'Nặng'], 
-                datasets: [{ 
-                    data: [counts.lv['Nhẹ'] || 0, counts.lv['TB'] || 0, counts.lv['Nặng'] || 0], 
-                    backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] 
-                }] 
+                datasets: [{ data: counts.lvData, backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] 
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '60%', // Tạo hình bánh xe
+                responsive: true, maintainAspectRatio: false, cutout: '65%',
                 plugins: {
-                    title: { display: true, text: 'TỶ LỆ MỨC ĐỘ', font: {size: 12} },
                     legend: { position: 'bottom', labels: { boxWidth: 10, font: {size: 10} } },
                     datalabels: {
-                        color: '#fff',
-                        font: { weight: 'bold', size: 11 },
-                        formatter: (v, c) => {
-                            let sum = c.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                            let percentage = sum > 0 ? ((v * 100) / sum).toFixed(0) + '%' : '';
-                            return v > 0 ? v + '\n(' + percentage + ')' : ''; // Hiện Số lượng và %
+                        color: '#fff', font: { weight: 'bold', size: 10 },
+                        formatter: (v, ctx) => {
+                            const sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                            return v > 0 ? `${v}\n(${(v*100/sum).toFixed(0)}%)` : '';
                         },
                         textAlign: 'center'
                     }
@@ -225,29 +194,51 @@
         });
     }
 
-    function getChartData(data) {
+    function getAggregatedData(data) {
         const lv = { 'Nhẹ': 0, 'TB': 0, 'Nặng': 0 };
         const dp = {};
-        data.forEach(i => { 
-            if (lv.hasOwnProperty(i.level)) lv[i.level]++; 
-            dp[i.dept] = (dp[i.dept] || 0) + 1; 
-        });
+        for (const item of data) {
+            if (lv.hasOwnProperty(item.level)) lv[item.level]++;
+            dp[item.dept] = (dp[item.dept] || 0) + 1;
+        }
         return {
-            lv,
+            lvData: [lv['Nhẹ'], lv['TB'], lv['Nặng']],
             deptLabels: Object.keys(dp),
             deptValues: Object.values(dp)
         };
     }
 
-    function updateCharts(data) {
-        const counts = getChartData(data);
+    function filterData() {
+        const s = document.getElementById('searchDesc').value.toLowerCase();
+        const d = document.getElementById('filterDept').value;
+        const l = document.getElementById('filterLevel').value;
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
         
+        const startTime = start ? new Date(start).getTime() : 0;
+        const endTime = end ? new Date(end).setHours(23,59,59,999) : Infinity;
+
+        const filtered = originalData.filter(item => {
+            const time = item.timestamp;
+            return (time >= startTime && time <= endTime) &&
+                   (d === "" || item.dept === d) &&
+                   (l === "" || item.level === l) &&
+                   (item.desc.toLowerCase().includes(s) || item.dept.toLowerCase().includes(s));
+        });
+
+        renderTable(filtered);
+        const counts = getAggregatedData(filtered);
         deptChart.data.labels = counts.deptLabels;
         deptChart.data.datasets[0].data = counts.deptValues;
-        deptChart.update();
+        deptChart.update('none'); // Update không hiệu ứng để tăng tốc
+        levelChart.data.datasets[0].data = counts.lvData;
+        levelChart.update('none');
+    }
 
-        levelChart.data.datasets[0].data = [counts.lv['Nhẹ'] || 0, counts.lv['TB'] || 0, counts.lv['Nặng'] || 0];
-        levelChart.update();
+    function populateDeptFilter(data) {
+        const deptSelect = document.getElementById('filterDept');
+        const depts = [...new Set(data.map(i => i.dept))].filter(Boolean).sort();
+        deptSelect.innerHTML = '<option value="">-- Tất cả --</option>' + depts.map(d => `<option value="${d}">${d}</option>`).join('');
     }
 </script>
 </body>
