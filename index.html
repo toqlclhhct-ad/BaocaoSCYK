@@ -3,71 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Sự cố - Dashboard</title>
+    <title>Hệ thống Quản lý Sự cố - Bệnh viện</title>
     <style>
-        :root { --blue: #2980b9; --bg: #f4f7f6; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .container { background: white; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; height: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        :root { --primary: #2980b9; --bg: #f4f7f6; --success: #27ae60; --orange: #f39c12; --danger: #e74c3c; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .container { max-width: 1600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
         
-        /* Dashboard 3 biểu đồ cùng hàng */
-        .chart-row { display: grid; grid-template-columns: 1.2fr 0.8fr 1fr; gap: 10px; height: 180px; margin-bottom: 10px; }
-        .chart-box { border: 1px solid #eee; border-radius: 5px; padding: 5px; position: relative; }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; }
+        .btn-new { background: var(--success); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; }
 
-        .filter-bar { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; background: #f9f9f9; padding: 8px; border-radius: 5px; font-size: 12px; }
-        .filter-bar input, .filter-bar select { padding: 4px; border: 1px solid #ddd; border-radius: 4px; }
-
-        /* Bảng dữ liệu */
-        .table-wrap { flex-grow: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 5px; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { background: var(--blue); color: white; padding: 8px; position: sticky; top: 0; text-align: left; }
-        td { padding: 8px; border-bottom: 1px solid #eee; }
+        /* Dashboard Layout */
+        .dashboard { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .card { background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee; height: 300px; }
         
-        .status-pill { padding: 2px 8px; border-radius: 10px; color: white; font-weight: bold; font-size: 10px; }
-        .status-Nặng { background: #e74c3c; } .status-TB { background: #f39c12; } .status-Nhẹ { background: #3498db; }
+        /* Filter Section */
+        .filters { display: flex; flex-wrap: wrap; gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .f-group { display: flex; flex-direction: column; gap: 5px; }
+        .f-group label { font-size: 12px; font-weight: bold; color: #666; }
+        .f-group input, .f-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
 
-        /* THANH PHÂN TRANG - Đã làm nổi bật */
-        .pagination-container { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 2px solid #eee; margin-top: 5px; }
-        #pageInfo { font-size: 12px; font-weight: bold; color: #333; }
-        .page-nav { display: flex; gap: 5px; }
-        .btn-page { padding: 6px 12px; border: 1px solid var(--blue); background: white; color: var(--blue); cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .btn-page.active { background: var(--blue); color: white; }
-        .btn-page:hover { background: #ebf5fb; }
+        /* Table Style */
+        .table-area { overflow-y: auto; height: 450px; border: 1px solid #eee; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: var(--primary); color: white; position: sticky; top: 0; padding: 12px; text-align: left; z-index: 10; }
+        td { padding: 12px; border-bottom: 1px solid #f0f0f0; }
+        tr:hover { background: #f1f7ff; }
+
+        /* Status Pills */
+        .pill { padding: 4px 10px; border-radius: 20px; color: white; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        .status-Nhẹ { background: #3498db; }
+        .status-TB { background: var(--orange); }
+        .status-Nặng { background: var(--danger); }
+
+        /* Pagination */
+        .paging { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 10px; }
+        .page-btns { display: flex; gap: 5px; }
+        .btn-p { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; }
+        .btn-p.active { background: var(--primary); color: white; border-color: var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="chart-row">
-        <div class="chart-box"><canvas id="deptChart"></canvas></div>
-        <div class="chart-box"><canvas id="levelChart"></canvas></div>
-        <div class="chart-box"><canvas id="trendChart"></canvas></div>
+    <header>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" width="50" alt="Logo">
+            <h2 style="color:var(--primary); margin:0;">QUẢN LÝ SỰ CỐ Y KHOA</h2>
+        </div>
+        <a href="form.html" class="btn-new">+ BÁO CÁO MỚI</a>
+    </header>
+
+    <div class="dashboard">
+        <div class="card"><canvas id="deptChart"></canvas></div>
+        <div class="card"><canvas id="levelChart"></canvas></div>
     </div>
 
-    <div class="filter-bar">
-        <input type="date" id="startDate">
-        <input type="date" id="endDate">
-        <select id="filterDept"><option value="">-- Khoa --</option></select>
-        <select id="filterLevel"><option value="">-- Mức độ --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select>
-        <input type="text" id="searchDesc" placeholder="Tìm kiếm nội dung..." style="flex-grow: 1;">
+    <div class="filters">
+        <div class="f-group"><label>Từ ngày</label><input type="date" id="startD"></div>
+        <div class="f-group"><label>Đến ngày</label><input type="date" id="endD"></div>
+        <div class="f-group"><label>Khoa xảy ra</label><select id="fDept"><option value="">-- Tất cả --</option></select></div>
+        <div class="f-group"><label>Mức độ</label><select id="fLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">Trung bình</option><option value="Nặng">Nặng</option></select></div>
+        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm thông minh</label><input type="text" id="sKey" placeholder="Tên BN, Số hồ sơ, nội dung sự cố..."></div>
     </div>
 
-    <div class="table-wrap">
+    <div class="table-area">
         <table>
             <thead>
                 <tr>
-                    <th style="width: 100px;">Ngày BC</th>
-                    <th style="width: 150px;">Khoa/Phòng</th>
-                    <th>Mô tả sự cố</th>
-                    <th style="width: 80px; text-align: center;">Mức độ</th>
+                    <th>Ngày BC</th>
+                    <th>Khoa xảy ra</th>
+                    <th>Tên bệnh nhân</th>
+                    <th>Mô tả tóm tắt</th>
+                    <th style="text-align:center">Mức độ</th>
                 </tr>
             </thead>
-            <tbody id="tableBody"></tbody>
+            <tbody id="tableBody">
+                <tr><td colspan="5" style="text-align:center; padding:50px;">Đang đồng bộ dữ liệu từ hệ thống...</td></tr>
+            </tbody>
         </table>
     </div>
 
-    <div class="pagination-container">
-        <div id="pageInfo">Đang tải...</div>
-        <div class="page-nav" id="pageNav"></div>
+    <div class="paging">
+        <div id="pageInfo" style="font-size:13px; color:#666;"></div>
+        <div class="page-btns" id="pageNav"></div>
     </div>
 </div>
 
@@ -75,121 +93,160 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwsgg3TyHuF60XbkdaHr6uTrXW8akj5Np9f9MjKoC0nNhZoFHnekWpkqpQzAYPpdjQ/exec';
-    let originalData = [], filteredData = [], currentPage = 1;
-    const rowsPerPage = 10;
-    let charts = {};
+    // URL Web App từ Google Apps Script của bạn
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbynaVlHpUE79D4fnczE04D_r83k0F3d_V4YBRVwOsWfhbWv47rdiGomoqQAdtX784U/exec'; 
+    
+    let db = [], filtered = [];
+    let currentPage = 1;
+    const limit = 10;
+    let chart1, chart2;
 
-    document.addEventListener('DOMContentLoaded', async () => {
-        ['startDate', 'endDate', 'filterDept', 'filterLevel', 'searchDesc'].forEach(id => {
-            document.getElementById(id).addEventListener('input', () => { currentPage = 1; filterData(); });
-        });
-        await loadData();
-    });
+    document.addEventListener('DOMContentLoaded', loadData);
+    document.querySelectorAll('.filters input, .filters select').forEach(el => el.oninput = filterData);
 
     async function loadData() {
         try {
             const res = await fetch(`${scriptURL}?action=read`);
-            const raw = await res.json();
-            originalData = raw.map(i => {
-                const d = parseDate(i.date || "");
-                let lv = i.level || "Nhẹ";
-                if(lv.includes("Trung bình") || lv === "TB") lv = "TB";
-                return { ...i, level: lv, ts: d.getTime(), yr: d.getFullYear(), mo: d.getMonth() };
+            const json = await res.json();
+
+            // ÁNH XẠ DỮ LIỆU THEO ĐÚNG THỨ TỰ CỘT BẠN ĐÃ CUNG CẤP
+            db = json.map(row => {
+                // Tận dụng cả tên cột hoặc chỉ số index để lấy dữ liệu chính xác
+                const val = Object.values(row); 
+                const dateRaw = row["Ngày báo cáo"] || val[3] || "";
+                const dept = row["Khoa/phòng/vị trí xảy ra"] || val[11] || "Không xác định";
+                const patient = row["Họ và tên BN"] || val[5] || "N/A";
+                const desc = row["Mô tả ngắn gọn"] || val[15] || "";
+                const levelRaw = row["Đánh giá ban đầu về mức độ ảnh hưởng"] || val[23] || "Nhẹ";
+
+                let lv = "Nhẹ";
+                if(levelRaw.includes("Trung bình") || levelRaw.includes("TB")) lv = "TB";
+                if(levelRaw.includes("Nặng")) lv = "Nặng";
+
+                return {
+                    date: dateRaw,
+                    dept: dept,
+                    patient: patient,
+                    desc: desc,
+                    level: lv,
+                    ts: parseDate(dateRaw).getTime()
+                };
             });
-            filteredData = [...originalData];
-            populateDeptFilter(originalData);
-            initCharts(originalData);
-            renderDisplay();
-        } catch (e) { document.getElementById('pageInfo').innerText = "Lỗi dữ liệu!"; }
-    }
 
-    function parseDate(s) {
-        const p = s.split('/');
-        return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date();
-    }
-
-    function renderDisplay() {
-        // Cắt dữ liệu: 1-10 cho trang 1, 11-14 cho trang 2
-        const start = (currentPage - 1) * rowsPerPage;
-        const pageData = filteredData.slice(start, start + rowsPerPage);
-        
-        document.getElementById('tableBody').innerHTML = pageData.map(row => `
-            <tr>
-                <td>${row.date}</td>
-                <td><b>${row.dept}</b></td>
-                <td>${row.desc}</td>
-                <td style="text-align: center;"><span class="status-pill status-${row.level}">${row.level}</span></td>
-            </tr>`).join('');
-
-        const total = filteredData.length;
-        document.getElementById('pageInfo').innerText = `Hiển thị ${total > 0 ? start + 1 : 0} - ${Math.min(start + rowsPerPage, total)} / Tổng số ${total}`;
-        
-        // Tạo nút [1] [2]
-        const totalPages = Math.ceil(total / rowsPerPage);
-        const nav = document.getElementById('pageNav');
-        nav.innerHTML = '';
-        for (let i = 1; i <= totalPages; i++) {
-            const btn = document.createElement('button');
-            btn.className = `btn-page ${i === currentPage ? 'active' : ''}`;
-            btn.innerText = i;
-            btn.onclick = () => { currentPage = i; renderDisplay(); };
-            nav.appendChild(btn);
+            filtered = [...db];
+            updateFilters();
+            initCharts();
+            render();
+        } catch (e) {
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">Lỗi kết nối dữ liệu. Vui lòng kiểm tra Deployment.</td></tr>';
         }
     }
 
-    function initCharts(data) {
-        const r = getAgg(data);
-        Chart.register(ChartDataLabels);
-        const commonOpt = { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } };
-
-        charts.dept = new Chart(document.getElementById('deptChart'), {
-            type: 'bar',
-            data: { labels: Object.keys(r.dp), datasets: [{ data: Object.values(r.dp), backgroundColor: '#2980b9' }] },
-            options: { ...commonOpt, plugins: { legend: false, title: { display: true, text: 'SỐ VỤ THEO KHOA' }, datalabels: { anchor: 'end', align: 'top' } } }
-        });
-
-        charts.level = new Chart(document.getElementById('levelChart'), {
-            type: 'pie',
-            data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: [r.lv['Nhẹ'], r.lv['TB'], r.lv['Nặng']], backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'MỨC ĐỘ' } } }
-        });
-
-        charts.trend = new Chart(document.getElementById('trendChart'), {
-            type: 'line',
-            data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: '2026', data: r.tr[2026] || Array(12).fill(0), borderColor: '#e67e22' }] },
-            options: commonOpt
-        });
+    function parseDate(s) {
+        if(!s) return new Date();
+        const p = s.split('/');
+        return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date(s);
     }
 
     function filterData() {
-        const s = document.getElementById('searchDesc').value.toLowerCase(), d = document.getElementById('filterDept').value, l = document.getElementById('filterLevel').value;
-        filteredData = originalData.filter(i => (d==="" || i.dept===d) && (l==="" || i.level===l) && (i.desc.toLowerCase().includes(s)));
-        renderDisplay();
+        const start = document.getElementById('startD').value;
+        const end = document.getElementById('endD').value;
+        const dept = document.getElementById('fDept').value;
+        const level = document.getElementById('fLevel').value;
+        const key = document.getElementById('sKey').value.toLowerCase();
+
+        const sTs = start ? new Date(start).getTime() : 0;
+        const eTs = end ? new Date(end).setHours(23,59,59) : Infinity;
+
+        filtered = db.filter(i => 
+            (i.ts >= sTs && i.ts <= eTs) &&
+            (dept === "" || i.dept === dept) &&
+            (level === "" || i.level === level) &&
+            (i.patient.toLowerCase().includes(key) || i.desc.toLowerCase().includes(key) || i.dept.toLowerCase().includes(key))
+        );
+
+        currentPage = 1;
+        render();
         updateCharts();
     }
 
-    function updateCharts() {
-        const r = getAgg(filteredData);
-        charts.dept.data.labels = Object.keys(r.dp);
-        charts.dept.data.datasets[0].data = Object.values(r.dp);
-        charts.level.data.datasets[0].data = [r.lv['Nhẹ'], r.lv['TB'], r.lv['Nặng']];
-        charts.dept.update(); charts.level.update();
+    function render() {
+        const start = (currentPage - 1) * limit;
+        const data = filtered.slice(start, start + limit);
+        
+        document.getElementById('tableBody').innerHTML = data.map(i => `
+            <tr>
+                <td>${i.date}</td>
+                <td><b>${i.dept}</b></td>
+                <td>${i.patient}</td>
+                <td>${i.desc}</td>
+                <td style="text-align:center"><span class="pill status-${i.level}">${i.level}</span></td>
+            </tr>
+        `).join('') || '<tr><td colspan="5" style="text-align:center">Không tìm thấy kết quả</td></tr>';
+
+        document.getElementById('pageInfo').innerText = `Hiển thị ${data.length > 0 ? start+1 : 0}-${Math.min(start+limit, filtered.length)} / Tổng ${filtered.length}`;
+        renderPaging();
     }
 
-    function getAgg(data) {
-        const lv = { 'Nhẹ': 0, 'TB': 0, 'Nặng': 0 }, dp = {}, tr = { 2026: Array(12).fill(0) };
-        data.forEach(i => {
-            if(lv.hasOwnProperty(i.level)) lv[i.level]++;
-            dp[i.dept] = (dp[i.dept] || 0) + 1;
-            if(i.yr === 2026) tr[2026][i.mo]++;
+    function renderPaging() {
+        const total = Math.ceil(filtered.length / limit);
+        const nav = document.getElementById('pageNav');
+        nav.innerHTML = '';
+        if(total <= 1) return;
+
+        for(let i=1; i<=total; i++) {
+            const b = document.createElement('button');
+            b.className = `btn-p ${i === currentPage ? 'active' : ''}`;
+            b.innerText = i;
+            b.onclick = () => { currentPage = i; render(); };
+            nav.appendChild(b);
+        }
+    }
+
+    function updateFilters() {
+        const depts = [...new Set(db.map(i => i.dept))].sort();
+        const sel = document.getElementById('fDept');
+        depts.forEach(d => sel.add(new Option(d, d)));
+    }
+
+    function initCharts() {
+        const ctx1 = document.getElementById('deptChart');
+        const ctx2 = document.getElementById('levelChart');
+        const data = getAgg();
+
+        chart1 = new Chart(ctx1, {
+            type: 'bar',
+            data: { labels: data.labels, datasets: [{ label: 'Số vụ', data: data.counts, backgroundColor: '#2980b9' }] },
+            options: { maintainAspectRatio: false, plugins: { title: { display:true, text:'SỰ CỐ THEO KHOA/PHÒNG' } } }
         });
-        return { lv, dp, tr };
+
+        chart2 = new Chart(ctx2, {
+            type: 'doughnut',
+            data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: data.lv, backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
+            options: { maintainAspectRatio: false, plugins: { legend:{position:'bottom'}, title:{display:true, text:'TỶ LỆ MỨC ĐỘ'} } }
+        });
     }
 
-    function populateDeptFilter(data) {
-        const depts = [...new Set(data.map(i => i.dept))].filter(Boolean).sort();
-        document.getElementById('filterDept').innerHTML = '<option value="">-- Khoa --</option>' + depts.map(d => `<option value="${d}">${d}</option>`).join('');
+    function updateCharts() {
+        const data = getAgg();
+        chart1.data.labels = data.labels;
+        chart1.data.datasets[0].data = data.counts;
+        chart2.data.datasets[0].data = data.lv;
+        chart1.update(); chart2.update();
+    }
+
+    function getAgg() {
+        const depts = {};
+        const lv = { Nhẹ: 0, TB: 0, Nặng: 0 };
+        filtered.forEach(i => {
+            depts[i.dept] = (depts[i.dept] || 0) + 1;
+            if(lv.hasOwnProperty(i.level)) lv[i.level]++;
+        });
+        return {
+            labels: Object.keys(depts),
+            counts: Object.values(depts),
+            lv: [lv.Nhẹ, lv.TB, lv.Nặng]
+        };
     }
 </script>
 </body>
