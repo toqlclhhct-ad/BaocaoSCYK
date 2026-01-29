@@ -72,7 +72,7 @@
         <div class="filter-group"><label>Đến ngày:</label><input type="date" id="endDate"></div>
         <div class="filter-group"><label>Khoa:</label><select id="filterDept"><option value="">-- Tất cả khoa --</option></select></div>
         <div class="filter-group"><label>Mức độ:</label><select id="filterLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
-        <div class="filter-group" style="flex-grow: 1;"><label>Tìm kiếm:</label><input type="text" id="searchDesc" placeholder="Từ khóa nội dung sự cố..."></div>
+        <div class="filter-group" style="flex-grow: 1;"><label>Tìm kiếm theo mô tả:</label><input type="text" id="searchDesc" placeholder="Từ khóa nội dung sự cố..."></div>
     </div>
 
     <div class="table-container">
@@ -90,7 +90,7 @@
     </div>
 
     <div class="pagination-bar">
-        <div class="page-info" id="pageInfo">Đang nạp dữ liệu...</div>
+        <div class="page-info" id="pageInfo">Đang thêm dữ liệu...</div>
         <div class="page-nav" id="pageNav"></div>
     </div>
 </div>
@@ -99,13 +99,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwsgg3TyHuF60XbkdaHr6uTrXW8akj5Np9f9MjKoC0nNhZoFHnekWpkqpQzAYPpdjQ/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbx0d2JBoEo85sMsGhPs3bgy7eNmuhg05z8fsuOL6M5imB0s7922hcguVxWhbOszWkE/exec';
     let originalData = [], filteredData = [];
     let deptChart, levelChart, trendChart;
     
     // Cài đặt phân trang
     let currentPage = 1;
-    const rowsPerPage = 10; // Thay đổi số này nếu muốn hiển thị nhiều hơn 10 dòng/trang
+    const rowsPerPage = 15; // Thay đổi số này nếu muốn hiển thị nhiều hơn 10 dòng/trang
 
     document.addEventListener('DOMContentLoaded', async () => {
         await loadData();
