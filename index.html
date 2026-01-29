@@ -48,7 +48,7 @@
     <header>
         <div style="display:flex; align-items:center; gap:15px;">
             <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" width="50" alt="Logo">
-            <h2 style="color:var(--primary); margin:0;">QUẢN LÝ SỰ CỐ Y KHOA</h2>
+            <h2 style="color:var(--primary); margin:0;">HỆ THỐNGQUẢN LÝ SỰ CỐ Y KHOA</h2>
         </div>
         <a href="form.html" class="btn-new">+ BÁO CÁO MỚI</a>
     </header>
@@ -64,7 +64,7 @@
         <div class="f-group"><label>Đến ngày</label><input type="date" id="endD"></div>
         <div class="f-group"><label>Khoa xảy ra</label><select id="fDept"><option value="">-- Tất cả --</option></select></div>
         <div class="f-group"><label>Mức độ</label><select id="fLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
-        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm thông minh</label><input type="text" id="sKey" placeholder="Số hồ sơ, nội dung sự cố..."></div>
+        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm theo MÔ TẢ</label><input type="text" id="sKey" placeholder="Số hồ sơ, nội dung sự cố..."></div>
     </div>
 
     <div class="table-area">
@@ -232,7 +232,7 @@
                 maintainAspectRatio: false,
                 plugins: { 
                     legend: { position:'right', labels: { boxWidth: 12, font: {size: 10} } },
-                    title: { display:true, text:'MỨC ĐỘ (%)' },
+                    title: { display:true, text:'TỶ LỆ % THEO MỨC ĐỘ' },
                     datalabels: {
                         color: '#fff',
                         formatter: (val, ctx) => {
@@ -260,7 +260,7 @@
                 scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
                 plugins: { 
                     legend: { position: 'bottom', labels: { boxWidth: 10, font: {size: 10} } },
-                    title: { display: true, text: 'XU HƯỚNG 3 NĂM' },
+                    title: { display: true, text: 'XU HƯỚNG 3 NĂM GẦN NHẤT' },
                     datalabels: { display: false }
                 }
             }
