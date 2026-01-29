@@ -50,7 +50,7 @@
             <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" width="50" alt="Logo">
             <h2 style="color:var(--primary); margin:0;">QUẢN LÝ SỰ CỐ Y KHOA</h2>
         </div>
-        <a href="form.html" class="btn-new">+ BÁO CÁO MỚI</a>
+        <a href="form.html" class="btn-new">+ TẠO MỚI</a>
     </header>
 
     <div class="dashboard">
@@ -63,7 +63,7 @@
         <div class="f-group"><label>Đến ngày</label><input type="date" id="endD"></div>
         <div class="f-group"><label>Khoa xảy ra</label><select id="fDept"><option value="">-- Tất cả --</option></select></div>
         <div class="f-group"><label>Mức độ</label><select id="fLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">Trung bình</option><option value="Nặng">Nặng</option></select></div>
-        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm thông minh</label><input type="text" id="sKey" placeholder="Tên BN, Số hồ sơ, nội dung sự cố..."></div>
+        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm theo Mô tả</label><input type="text" id="sKey" placeholder="Tên BN, Số hồ sơ, nội dung sự cố..."></div>
     </div>
 
     <div class="table-area">
@@ -94,7 +94,7 @@
 
 <script>
     // URL Web App từ Google Apps Script của bạn
-    const scriptURL = 'YOUR_APPS_SCRIPT_URL_HERE'; 
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbynaVlHpUE79D4fnczE04D_r83k0F3d_V4YBRVwOsWfhbWv47rdiGomoqQAdtX784U/exec'; 
     
     let db = [], filtered = [];
     let currentPage = 1;
