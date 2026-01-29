@@ -23,7 +23,7 @@
         .table-area { overflow-x: auto; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
         th { background: var(--primary); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; } /* Thêm cursor pointer */
+        td { padding: 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
         tr:hover { background: #f1f7ff; }
 
         .pill { padding: 4px 10px; border-radius: 20px; color: white; font-weight: bold; font-size: 11px; }
@@ -36,14 +36,23 @@
         .btn-p { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-p.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* MODAL STYLES (Popup) */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background: white; margin: 2% auto; padding: 20px; width: 80%; max-width: 900px; border-radius: 12px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
-        .close { font-size: 28px; font-weight: bold; cursor: pointer; color: #666; }
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .detail-item { border-bottom: 1px solid #eee; padding: 8px 0; font-size: 13px; }
+        /* MODAL STYLES CẢI TIẾN */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
+        .modal-content { background: white; margin: 2% auto; width: 85%; max-width: 1000px; border-radius: 12px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        
+        /* Header cố định khi cuộn */
+        .modal-header { position: sticky; top: 0; background: white; z-index: 10; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding: 15px 20px; }
+        .close { font-size: 32px; font-weight: bold; cursor: pointer; color: #e74c3c; line-height: 1; }
+        .close:hover { color: #c0392b; }
+
+        .detail-body { padding: 20px; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 25px; }
+        .detail-item { border-bottom: 1px solid #f0f0f0; padding: 10px 0; font-size: 13px; line-height: 1.4; }
         .detail-label { font-weight: bold; color: var(--primary); margin-right: 5px; }
+        
+        /* Màu đỏ cho các mục chỉ định */
+        .highlight-red .detail-label { color: var(--danger) !important; }
+        .highlight-red { border-bottom: 1px solid #ffcccc; background-color: #fff9f9; }
     </style>
 </head>
 <body>
@@ -71,7 +80,7 @@
         <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm theo MÔ TẢ</label><input type="text" id="sKey" placeholder="Số hồ sơ, nội dung sự cố..."></div>
     </div>
 
-    <div style="font-size: 12px; color: #e67e22; margin-bottom: 5px; font-weight: bold;">* Bấm vào hàng để xem chi tiết 30 thông tin sự cố</div>
+    <div style="font-size: 12px; color: #e67e22; margin-bottom: 5px; font-weight: bold;">* Bấm vào hàng để xem chi tiết 30 thông tin sự cố (Nhấn ESC để thoát)</div>
     <div class="table-area">
         <table>
             <thead>
@@ -98,10 +107,11 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3 style="margin:0; color:var(--primary);">CHI TIẾT THÔNG TIN SỰ CỐ</h3>
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" onclick="closeModal()" title="Nhấn ESC để đóng">&times;</span>
         </div>
-        <div id="modalBody" class="detail-grid">
-            </div>
+        <div class="detail-body">
+            <div id="modalBody" class="detail-grid"></div>
+        </div>
     </div>
 </div>
 
@@ -118,6 +128,11 @@
 
     document.addEventListener('DOMContentLoaded', loadData);
     document.querySelectorAll('.filters input, .filters select').forEach(el => el.oninput = filterData);
+
+    // Lắng nghe phím ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") closeModal();
+    });
 
     async function loadData() {
         try {
@@ -142,7 +157,7 @@
                     ts: dateObj.getTime(),
                     month: dateObj.getMonth(),
                     year: dateObj.getFullYear(),
-                    fullData: row // Lưu toàn bộ hàng để xem chi tiết
+                    fullData: row
                 };
             });
 
@@ -200,16 +215,21 @@
         renderPaging();
     }
 
-    // HÀM HIỂN THỊ POPUP
     function showDetail(index) {
         const item = filtered[index].fullData;
         const body = document.getElementById('modalBody');
-        body.innerHTML = Object.keys(item).map(key => `
-            <div class="detail-item">
-                <span class="detail-label">${key}:</span>
-                <span>${item[key] || "---"}</span>
-            </div>
-        `).join('');
+        const redItems = [16, 17, 18, 24]; // Danh sách các mục cần tô đỏ
+
+        body.innerHTML = Object.keys(item).map((key, i) => {
+            const itemNumber = i + 1;
+            const isRed = redItems.includes(itemNumber);
+            return `
+                <div class="detail-item ${isRed ? 'highlight-red' : ''}">
+                    <span class="detail-label">${key}:</span>
+                    <span>${item[key] || "---"}</span>
+                </div>
+            `;
+        }).join('');
         document.getElementById('detailModal').style.display = "block";
     }
 
@@ -217,10 +237,9 @@
         document.getElementById('detailModal').style.display = "none";
     }
 
-    // Đóng modal khi bấm ra ngoài
     window.onclick = function(event) {
         let modal = document.getElementById('detailModal');
-        if (event.target == modal) modal.style.display = "none";
+        if (event.target == modal) closeModal();
     }
 
     function renderPaging() {
