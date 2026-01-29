@@ -6,38 +6,39 @@
     <title>Hệ thống Quản lý Sự cố - Bệnh viện</title>
     <style>
         :root { --primary: #2980b9; --bg: #f4f7f6; --success: #27ae60; --orange: #f39c12; --danger: #e74c3c; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 10px; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
-        .container { flex: 1; display: flex; flex-direction: column; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); overflow: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .container { max-width: 1600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
         
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 10px; }
-        .btn-new { background: var(--success); color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 13px; }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
+        .btn-new { background: var(--success); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; }
 
-        /* Dashboard Layout - 3 biểu đồ 1 hàng */
-        .dashboard { display: grid; grid-template-columns: 1fr 0.8fr 1.2fr; gap: 10px; margin-bottom: 10px; height: 220px; }
-        .card { background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #eee; position: relative; }
+        /* Dashboard Layout - 3 biểu đồ trên 1 hàng ngang */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 0.8fr 1.2fr; gap: 15px; margin-bottom: 20px; }
+        .card { background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee; height: 250px; position: relative; }
         
-        /* Filter Section */
-        .filters { display: flex; flex-wrap: wrap; gap: 8px; background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
-        .f-group { display: flex; flex-direction: column; gap: 3px; }
-        .f-group label { font-size: 11px; font-weight: bold; color: #666; }
-        .f-group input, .f-group select { padding: 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; }
+        /* Filter Section - Bộ lọc đã quay trở lại */
+        .filters { display: flex; flex-wrap: wrap; gap: 12px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
+        .f-group { display: flex; flex-direction: column; gap: 5px; }
+        .f-group label { font-size: 12px; font-weight: bold; color: #666; }
+        .f-group input, .f-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
 
         /* Table Area */
-        .table-area { flex: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { background: var(--primary); color: white; position: sticky; top: 0; padding: 10px; text-align: left; z-index: 10; }
-        td { padding: 10px; border-bottom: 1px solid #f0f0f0; }
+        .table-area { overflow-x: auto; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #f0f0f0; }
+        tr:hover { background: #f1f7ff; }
 
         /* Status Pills */
-        .pill { padding: 3px 8px; border-radius: 12px; color: white; font-weight: bold; font-size: 10px; }
+        .pill { padding: 4px 10px; border-radius: 20px; color: white; font-weight: bold; font-size: 11px; }
         .status-Nhẹ { background: #3498db; }
         .status-TB { background: var(--orange); }
         .status-Nặng { background: var(--danger); }
 
-        /* Pagination - Giữ nguyên phong cách bạn thích */
-        .paging { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; }
-        .page-btns { display: flex; gap: 4px; }
-        .btn-p { padding: 5px 10px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; font-size: 12px; }
+        /* Pagination [1] [2] */
+        .paging { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 10px; background: #fff; border-radius: 8px; }
+        .page-btns { display: flex; gap: 5px; }
+        .btn-p { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-p.active { background: var(--primary); color: white; border-color: var(--primary); }
     </style>
 </head>
@@ -45,14 +46,14 @@
 
 <div class="container">
     <header>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" width="40" alt="Logo">
-            <h3 style="color:var(--primary); margin:0; font-size: 18px;">hệ thống QUẢN LÝ SỰ CỐ Y KHOA</h3>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" width="50" alt="Logo">
+            <h2 style="color:var(--primary); margin:0;">QUẢN LÝ SỰ CỐ Y KHOA</h2>
         </div>
-        <a href="form.html" class="btn-new">+ TẠO MỚI</a>
+        <a href="form.html" class="btn-new">+ BÁO CÁO MỚI</a>
     </header>
 
-    <div class="dashboard">
+    <div class="dashboard-grid">
         <div class="card"><canvas id="deptChart"></canvas></div>
         <div class="card"><canvas id="levelChart"></canvas></div>
         <div class="card"><canvas id="trendChart"></canvas></div>
@@ -63,7 +64,7 @@
         <div class="f-group"><label>Đến ngày</label><input type="date" id="endD"></div>
         <div class="f-group"><label>Khoa xảy ra</label><select id="fDept"><option value="">-- Tất cả --</option></select></div>
         <div class="f-group"><label>Mức độ</label><select id="fLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
-        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm theo Mô tả</label><input type="text" id="sKey" placeholder="Số hồ sơ, nội dung sự cố..."></div>
+        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm thông minh</label><input type="text" id="sKey" placeholder="Số hồ sơ, nội dung sự cố..."></div>
     </div>
 
     <div class="table-area">
@@ -71,19 +72,19 @@
             <thead>
                 <tr>
                     <th style="width: 100px;">Ngày BC</th>
-                    <th style="width: 200px;">Khoa xảy ra</th>
+                    <th style="width: 220px;">Khoa xảy ra</th>
                     <th>Mô tả tóm tắt sự cố</th>
                     <th style="width: 100px; text-align:center">Mức độ</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="4" style="text-align:center; padding:50px;">Đang đồng bộ dữ liệu...</td></tr>
+                <tr><td colspan="4" style="text-align:center; padding:50px;">Đang tải dữ liệu sự cố...</td></tr>
             </tbody>
         </table>
     </div>
 
     <div class="paging">
-        <div id="pageInfo"></div>
+        <div id="pageInfo" style="font-size:13px; color:#666; font-weight: bold;"></div>
         <div class="page-btns" id="pageNav"></div>
     </div>
 </div>
@@ -133,7 +134,7 @@
             initCharts();
             render();
         } catch (e) {
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Lỗi kết nối dữ liệu.</td></tr>';
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Lỗi đồng bộ dữ liệu.</td></tr>';
         }
     }
 
@@ -178,7 +179,7 @@
             </tr>
         `).join('') || '<tr><td colspan="4" style="text-align:center">Không tìm thấy kết quả</td></tr>';
 
-        document.getElementById('pageInfo').innerText = `Hiển thị ${data.length > 0 ? start+1 : 0}-${Math.min(start+limit, filtered.length)} / Tổng ${filtered.length}`;
+        document.getElementById('pageInfo').innerText = `Hiển thị ${data.length > 0 ? start+1 : 0}-${Math.min(start+limit, filtered.length)} / Tổng ${filtered.length} sự cố`;
         renderPaging();
     }
 
@@ -199,15 +200,16 @@
     function updateFilters() {
         const depts = [...new Set(db.map(i => i.dept))].sort();
         const sel = document.getElementById('fDept');
+        sel.innerHTML = '<option value="">-- Tất cả --</option>';
         depts.forEach(d => sel.add(new Option(d, d)));
     }
 
     function initCharts() {
         Chart.register(ChartDataLabels);
         const data = getAgg();
-        const currentYear = new Date().getFullYear();
+        const cy = 2026; // Theo yêu cầu năm hiện tại
 
-        // 1. Biểu đồ cột (Số nguyên dương)
+        // Biểu đồ Cột (Số nguyên)
         charts.dept = new Chart(document.getElementById('deptChart'), {
             type: 'bar',
             data: { labels: data.labels, datasets: [{ data: data.counts, backgroundColor: '#2980b9' }] },
@@ -216,13 +218,13 @@
                 scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
                 plugins: { 
                     legend: { display: false },
-                    title: { display:true, text:'SỰ CỐ THEO ĐƠN VỊ', font: {size: 11} },
-                    datalabels: { color: '#fff', anchor: 'end', align: 'bottom', offset: 5, font: {weight: 'bold'} }
+                    title: { display:true, text:'SỰ CỐ THEO KHOA/PHÒNG' },
+                    datalabels: { color: '#fff', anchor: 'end', align: 'bottom', font: {weight: 'bold'} }
                 }
             }
         });
 
-        // 2. Biểu đồ Pie (Số lượng & %)
+        // Biểu đồ Pie (% và số lượng)
         charts.level = new Chart(document.getElementById('levelChart'), {
             type: 'pie',
             data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: data.lv, backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
@@ -230,37 +232,35 @@
                 maintainAspectRatio: false,
                 plugins: { 
                     legend: { position:'right', labels: { boxWidth: 12, font: {size: 10} } },
-                    title: { display:true, text:'MỨC ĐỘ (%)', font: {size: 11} },
+                    title: { display:true, text:'MỨC ĐỘ (%)' },
                     datalabels: {
                         color: '#fff',
-                        font: { weight: 'bold', size: 10 },
                         formatter: (val, ctx) => {
                             let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                            let perc = (val * 100 / sum).toFixed(1) + "%";
-                            return val > 0 ? `${val}\n(${perc})` : '';
+                            return val > 0 ? `${val} (${(val*100/sum).toFixed(0)}%)` : '';
                         }
                     }
                 }
             }
         });
 
-        // 3. Biểu đồ đường (3 năm gần nhất)
+        // Biểu đồ Đường (3 năm)
         charts.trend = new Chart(document.getElementById('trendChart'), {
             type: 'line',
             data: {
                 labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'],
                 datasets: [
-                    { label: currentYear-2, data: data.trend[currentYear-2], borderColor: '#bdc3c7', tension: 0.3 },
-                    { label: currentYear-1, data: data.trend[currentYear-1], borderColor: '#95a5a6', tension: 0.3 },
-                    { label: currentYear, data: data.trend[currentYear], borderColor: '#2980b9', tension: 0.3, borderWidth: 3 }
+                    { label: cy-2, data: data.trend[cy-2], borderColor: '#bdc3c7', tension: 0.3 },
+                    { label: cy-1, data: data.trend[cy-1], borderColor: '#95a5a6', tension: 0.3 },
+                    { label: cy, data: data.trend[cy], borderColor: '#2980b9', tension: 0.3, borderWidth: 3 }
                 ]
             },
             options: { 
                 maintainAspectRatio: false,
                 scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
                 plugins: { 
-                    legend: { position: 'bottom', labels: { boxWidth: 12, font: {size: 10} } },
-                    title: { display: true, text: 'XU HƯỚNG 3 NĂM', font: {size: 11} },
+                    legend: { position: 'bottom', labels: { boxWidth: 10, font: {size: 10} } },
+                    title: { display: true, text: 'XU HƯỚNG 3 NĂM' },
                     datalabels: { display: false }
                 }
             }
@@ -272,17 +272,13 @@
         charts.dept.data.labels = data.labels;
         charts.dept.data.datasets[0].data = data.counts;
         charts.level.data.datasets[0].data = data.lv;
-        // Chỉ cập nhật dữ liệu năm hiện tại cho trend khi lọc nhanh
-        const cy = new Date().getFullYear();
-        charts.trend.data.datasets[2].data = data.trend[cy];
+        charts.trend.data.datasets[2].data = data.trend[2026];
         charts.dept.update(); charts.level.update(); charts.trend.update();
     }
 
     function getAgg() {
         const depts = {}, lv = { Nhẹ: 0, TB: 0, Nặng: 0 }, trend = {};
-        const cy = new Date().getFullYear();
-        
-        // Khởi tạo khung trend 3 năm
+        const cy = 2026;
         [cy, cy-1, cy-2].forEach(y => trend[y] = Array(12).fill(0));
 
         filtered.forEach(i => {
@@ -291,12 +287,7 @@
             if(trend[i.year]) trend[i.year][i.month]++;
         });
 
-        return {
-            labels: Object.keys(depts),
-            counts: Object.values(depts),
-            lv: [lv.Nhẹ, lv.TB, lv.Nặng],
-            trend: trend
-        };
+        return { labels: Object.keys(depts), counts: Object.values(depts), lv: [lv.Nhẹ, lv.TB, lv.Nặng], trend: trend };
     }
 </script>
 </body>
