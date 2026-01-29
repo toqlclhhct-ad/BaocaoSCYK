@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Sự cố - Full Data</title>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <title>Hệ thống Quản lý Sự cố - Full Data & Pagination</title>
     <style>
         :root { --title-color: #2980b9; --bg-body: #f4f7f6; --success-color: #27ae60; --orange-color: #f39c12; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); padding: 10px; margin: 0; }
@@ -24,30 +23,20 @@
         .filter-group label { font-size: 11px; font-weight: bold; color: #555; }
         .filter-group input, .filter-group select { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
         
-        /* Bảng & Phân trang tối ưu */
-        .table-container { 
-            overflow-y: auto; 
-            height: calc(100vh - 650px); 
-            min-height: 450px;
-            border: 1px solid #eee; 
-            border-radius: 8px; 
-        }
+        .table-container { overflow-y: auto; height: calc(100vh - 650px); min-height: 400px; border: 1px solid #eee; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         th { background-color: var(--title-color); color: white; padding: 12px 10px; text-align: left; position: sticky; top: 0; z-index: 10; }
         td { padding: 12px 10px; border-bottom: 1px solid #f0f0f0; }
-        tr:nth-child(even) { background-color: #fcfcfc; }
 
-        .pagination-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 10px; background: #fff; border-top: 1px solid #eee; }
-        .page-info { font-size: 13px; color: #666; font-style: italic; }
+        .pagination-container { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; background: #fff; border-top: 1px solid #eee; }
+        .page-info { font-size: 13px; color: #666; }
         .page-nav { display: flex; gap: 5px; }
-        .btn-nav { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; font-size: 13px; }
-        .btn-nav.active { background: var(--title-color); color: white; border-color: var(--title-color); font-weight: bold; }
-        .btn-nav:disabled { color: #ccc; cursor: not-allowed; border-color: #eee; }
+        .btn-page { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; font-size: 13px; }
+        .btn-page.active { background: var(--title-color); color: white; border-color: var(--title-color); font-weight: bold; }
+        .btn-page:disabled { color: #ccc; cursor: not-allowed; }
 
         .status-pill { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; display: inline-block; min-width: 65px; text-align: center; }
-        .status-Nặng { background: #e74c3c; } 
-        .status-TB { background: var(--orange-color); } 
-        .status-Nhẹ { background: #3498db; }
+        .status-Nặng { background: #e74c3c; } .status-TB { background: var(--orange-color); } .status-Nhẹ { background: #3498db; }
     </style>
 </head>
 <body>
@@ -56,7 +45,7 @@
     <header>
         <div class="header-left">
             <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" alt="Logo" style="width: 40px;">
-            <h2>Hệ thống Quản lý Sự cố</h2>
+            <h2>Hệ thống Quản lý Sự cố y khoa</h2>
         </div>
         <a href="form.html" class="btn-new">+ TẠO MỚI</a>
     </header>
@@ -72,7 +61,7 @@
         <div class="filter-group"><label>Đến ngày:</label><input type="date" id="endDate"></div>
         <div class="filter-group"><label>Khoa:</label><select id="filterDept"><option value="">-- Tất cả khoa --</option></select></div>
         <div class="filter-group"><label>Mức độ:</label><select id="filterLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
-        <div class="filter-group" style="flex-grow: 1;"><label>Tìm kiếm theo mô tả:</label><input type="text" id="searchDesc" placeholder="Từ khóa nội dung sự cố..."></div>
+        <div class="filter-group" style="flex-grow: 1;"><label>Tìm kiếm theo mô tả:</label><input type="text" id="searchDesc" placeholder="Từ khóa nội dung..."></div>
     </div>
 
     <div class="table-container">
@@ -81,7 +70,7 @@
                 <tr>
                     <th style="width: 100px;">Ngày BC</th>
                     <th style="width: 200px;">Khoa/Phòng</th>
-                    <th>Mô tả tóm tắt sự cố</th>
+                    <th>Mô tả chi tiết sự cố</th>
                     <th style="width: 100px; text-align: center;">Mức độ</th>
                 </tr>
             </thead>
@@ -89,8 +78,8 @@
         </table>
     </div>
 
-    <div class="pagination-bar">
-        <div class="page-info" id="pageInfo">Đang thêm dữ liệu...</div>
+    <div class="pagination-container">
+        <div class="page-info" id="pageInfo">Đang nạp dữ liệu...</div>
         <div class="page-nav" id="pageNav"></div>
     </div>
 </div>
@@ -99,13 +88,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbx0d2JBoEo85sMsGhPs3bgy7eNmuhg05z8fsuOL6M5imB0s7922hcguVxWhbOszWkE/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbynaVlHpUE79D4fnczE04D_r83k0F3d_V4YBRVwOsWfhbWv47rdiGomoqQAdtX784U/exec';
     let originalData = [], filteredData = [];
-    let deptChart, levelChart, trendChart;
-    
-    // Cài đặt phân trang
     let currentPage = 1;
-    const rowsPerPage = 15; // Thay đổi số này nếu muốn hiển thị nhiều hơn 10 dòng/trang
+    const rowsPerPage = 10;
+    let deptChart, levelChart, trendChart;
 
     document.addEventListener('DOMContentLoaded', async () => {
         await loadData();
@@ -118,10 +105,23 @@
             const raw = await res.json();
             const currentYear = new Date().getFullYear();
 
+            // Sửa lỗi undefined bằng cách kiểm tra kỹ tên thuộc tính
             originalData = raw.map(i => {
-                const d = parseDate(i.date);
-                let lv = i.level === "Trung bình" || i.level === "TB" ? "TB" : i.level;
-                return { ...i, level: lv, ts: d.getTime(), yr: d.getFullYear(), mo: d.getMonth() };
+                const dateVal = i.date || i.Ngày || "";
+                const deptVal = i.dept || i.Khoa || i["Khoa/Phòng"] || "";
+                const descVal = i.desc || i["Mô tả"] || i["Mô tả chi tiết sự cố"] || "";
+                const levelVal = (i.level === "Trung bình" || i.level === "TB") ? "TB" : (i.level || "Nhẹ");
+                
+                const d = parseDate(dateVal);
+                return { 
+                    date: dateVal, 
+                    dept: deptVal, 
+                    desc: descVal, 
+                    level: levelVal,
+                    ts: d.getTime(), 
+                    yr: d.getFullYear(), 
+                    mo: d.getMonth() 
+                };
             });
 
             filteredData = [...originalData];
@@ -129,7 +129,7 @@
             initCharts(originalData);
             renderDisplay();
         } catch (e) {
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="color:red; text-align:center;">Lỗi kết nối Apps Script!</td></tr>';
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="color:red; text-align:center;">Lỗi kết nối: Vui lòng kiểm tra Deployment URL!</td></tr>';
         }
     }
 
@@ -143,9 +143,9 @@
     }
 
     function parseDate(s) {
-        if(!s) return new Date();
+        if(!s || typeof s !== 'string') return new Date();
         const p = s.split('/');
-        return new Date(p[2], p[1]-1, p[0]);
+        return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date();
     }
 
     function filterLogic() {
@@ -154,7 +154,6 @@
         const l = document.getElementById('filterLevel').value;
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
-        
         const st = start ? new Date(start).getTime() : 0;
         const et = end ? new Date(end).setHours(23,59,59,999) : Infinity;
 
@@ -164,7 +163,6 @@
             (l === "" || i.level === l) &&
             (i.desc.toLowerCase().includes(s) || i.dept.toLowerCase().includes(s))
         );
-
         renderDisplay();
         updateCharts(filteredData);
     }
@@ -177,16 +175,14 @@
 
         tbody.innerHTML = pageData.map(row => `
             <tr>
-                <td style="font-weight:500;">${row.date}</td>
+                <td>${row.date}</td>
                 <td>${row.dept}</td>
                 <td>${row.desc}</td>
                 <td style="text-align: center;"><span class="status-pill status-${row.level}">${row.level}</span></td>
             </tr>
-        `).join('') || '<tr><td colspan="4" style="text-align:center;">Không tìm thấy dữ liệu.</td></tr>';
+        `).join('') || '<tr><td colspan="4" style="text-align:center;">Không có dữ liệu phù hợp.</td></tr>';
 
-        document.getElementById('pageInfo').innerText = 
-            `Hiển thị ${pageData.length > 0 ? start + 1 : 0} - ${Math.min(end, filteredData.length)} trên tổng số ${filteredData.length} sự cố`;
-        
+        document.getElementById('pageInfo').innerText = `Hiển thị ${pageData.length > 0 ? start + 1 : 0} - ${Math.min(end, filteredData.length)} trên tổng số ${filteredData.length} sự cố`;
         renderPaginationButtons();
     }
 
@@ -194,41 +190,25 @@
         const totalPages = Math.ceil(filteredData.length / rowsPerPage);
         const nav = document.getElementById('pageNav');
         nav.innerHTML = '';
-
         if (totalPages <= 1) return;
 
-        // Nút lùi trang
-        const prev = document.createElement('button');
-        prev.className = 'btn-nav'; prev.innerText = '<';
-        prev.disabled = currentPage === 1;
-        prev.onclick = () => { currentPage--; renderDisplay(); };
-        nav.appendChild(prev);
-
-        // Các nút số trang
         for (let i = 1; i <= totalPages; i++) {
             const btn = document.createElement('button');
-            btn.className = `btn-nav ${i === currentPage ? 'active' : ''}`;
+            btn.className = `btn-page ${i === currentPage ? 'active' : ''}`;
             btn.innerText = i;
-            btn.onclick = () => { currentPage = i; renderDisplay(); };
+            btn.onclick = () => { currentPage = i; renderDisplay(); document.querySelector('.table-container').scrollTop = 0; };
             nav.appendChild(btn);
         }
-
-        // Nút tới trang
-        const next = document.createElement('button');
-        next.className = 'btn-nav'; next.innerText = '>';
-        next.disabled = currentPage === totalPages;
-        next.onclick = () => { currentPage++; renderDisplay(); };
-        nav.appendChild(next);
     }
 
-    // --- Các hàm hỗ trợ Chart (Giữ nguyên từ bản cũ) ---
+    // --- Giữ nguyên các hàm Chart như cũ ---
     function initCharts(data) {
         const yr = new Date().getFullYear();
         Chart.register(ChartDataLabels);
         const r = getAgg(data, yr);
-        deptChart = new Chart(document.getElementById('deptChart'), { type: 'bar', data: { labels: Object.keys(r.dp), datasets: [{ data: Object.values(r.dp), backgroundColor: '#2980b9' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: false, title: { display: true, text: 'SỐ VỤ THEO KHOA/PHÒNG' } } } });
-        levelChart = new Chart(document.getElementById('levelChart'), { type: 'doughnut', data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: [r.lv.Nhẹ, r.lv.TB, r.lv.Nặng], backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v, ctx) => { const s = ctx.dataset.data.reduce((a,b)=>a+b,0); return v > 0 ? `${v}\n(${(v*100/s).toFixed(0)}%)` : ''; }, textAlign: 'center' } } } });
-        trendChart = new Chart(document.getElementById('trendChart'), { type: 'line', data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: yr-2, data: r.tr[yr-2], borderColor: '#ccc', tension: 0.3 }, { label: yr-1, data: r.tr[yr-1], borderColor: '#3498db', tension: 0.3 }, { label: yr, data: r.tr[yr], borderColor: '#e67e22', borderWidth: 3, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: false, title: { display: true, text: 'XU HƯỚNG SỰ CỐ 3 NĂM GẦN NHẤT' } } } });
+        deptChart = new Chart(document.getElementById('deptChart'), { type: 'bar', data: { labels: Object.keys(r.dp), datasets: [{ data: Object.values(r.dp), backgroundColor: '#2980b9' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { stepSize: 1 } } }, plugins: { legend: false, title: { display: true, text: 'SỐ VỤ THEO KHOA/PHÒNG' } } } });
+        levelChart = new Chart(document.getElementById('levelChart'), { type: 'doughnut', data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: [r.lv.Nhẹ, r.lv.TB, r.lv.Nặng], backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', formatter: (v, ctx) => { const s = ctx.dataset.data.reduce((a,b)=>a+b,0); return v > 0 ? `${v}\n(${(v*100/s).toFixed(0)}%)` : ''; }, textAlign: 'center' } } } });
+        trendChart = new Chart(document.getElementById('trendChart'), { type: 'line', data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: yr-2, data: r.tr[yr-2], borderColor: '#ccc', tension: 0.3 }, { label: yr-1, data: r.tr[yr-1], borderColor: '#3498db', tension: 0.3 }, { label: yr, data: r.tr[yr], borderColor: '#e67e22', borderWidth: 3, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: false, title: { display: true, text: 'XU HƯỚNG 3 NĂM' } } } });
     }
 
     function updateCharts(data) {
