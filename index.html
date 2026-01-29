@@ -12,34 +12,38 @@
         header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
         .btn-new { background: var(--success); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; }
 
-        /* Dashboard Layout - 3 biểu đồ trên 1 hàng ngang */
         .dashboard-grid { display: grid; grid-template-columns: 1fr 0.8fr 1.2fr; gap: 15px; margin-bottom: 20px; }
         .card { background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee; height: 250px; position: relative; }
         
-        /* Filter Section - Bộ lọc đã quay trở lại */
         .filters { display: flex; flex-wrap: wrap; gap: 12px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
         .f-group { display: flex; flex-direction: column; gap: 5px; }
         .f-group label { font-size: 12px; font-weight: bold; color: #666; }
         .f-group input, .f-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
 
-        /* Table Area */
         .table-area { overflow-x: auto; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
         th { background: var(--primary); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #f0f0f0; }
+        td { padding: 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; } /* Thêm cursor pointer */
         tr:hover { background: #f1f7ff; }
 
-        /* Status Pills */
         .pill { padding: 4px 10px; border-radius: 20px; color: white; font-weight: bold; font-size: 11px; }
         .status-Nhẹ { background: #3498db; }
         .status-TB { background: var(--orange); }
         .status-Nặng { background: var(--danger); }
 
-        /* Pagination [1] [2] */
         .paging { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 10px; background: #fff; border-radius: 8px; }
         .page-btns { display: flex; gap: 5px; }
         .btn-p { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-p.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* MODAL STYLES (Popup) */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 2% auto; padding: 20px; width: 80%; max-width: 900px; border-radius: 12px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
+        .close { font-size: 28px; font-weight: bold; cursor: pointer; color: #666; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .detail-item { border-bottom: 1px solid #eee; padding: 8px 0; font-size: 13px; }
+        .detail-label { font-weight: bold; color: var(--primary); margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -48,7 +52,7 @@
     <header>
         <div style="display:flex; align-items:center; gap:15px;">
             <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" width="50" alt="Logo">
-            <h2 style="color:var(--primary); margin:0;">HỆ THỐNGQUẢN LÝ SỰ CỐ Y KHOA</h2>
+            <h2 style="color:var(--primary); margin:0;">HỆ THỐNG QUẢN LÝ SỰ CỐ Y KHOA</h2>
         </div>
         <a href="form.html" class="btn-new">+ BÁO CÁO MỚI</a>
     </header>
@@ -67,6 +71,7 @@
         <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm theo MÔ TẢ</label><input type="text" id="sKey" placeholder="Số hồ sơ, nội dung sự cố..."></div>
     </div>
 
+    <div style="font-size: 12px; color: #e67e22; margin-bottom: 5px; font-weight: bold;">* Bấm vào hàng để xem chi tiết 30 thông tin sự cố</div>
     <div class="table-area">
         <table>
             <thead>
@@ -86,6 +91,17 @@
     <div class="paging">
         <div id="pageInfo" style="font-size:13px; color:#666; font-weight: bold;"></div>
         <div class="page-btns" id="pageNav"></div>
+    </div>
+</div>
+
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="margin:0; color:var(--primary);">CHI TIẾT THÔNG TIN SỰ CỐ</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div id="modalBody" class="detail-grid">
+            </div>
     </div>
 </div>
 
@@ -125,7 +141,8 @@
                     level: lv,
                     ts: dateObj.getTime(),
                     month: dateObj.getMonth(),
-                    year: dateObj.getFullYear()
+                    year: dateObj.getFullYear(),
+                    fullData: row // Lưu toàn bộ hàng để xem chi tiết
                 };
             });
 
@@ -170,8 +187,8 @@
         const start = (currentPage - 1) * limit;
         const data = filtered.slice(start, start + limit);
         
-        document.getElementById('tableBody').innerHTML = data.map(i => `
-            <tr>
+        document.getElementById('tableBody').innerHTML = data.map((i, idx) => `
+            <tr onclick="showDetail(${start + idx})">
                 <td>${i.date}</td>
                 <td><b>${i.dept}</b></td>
                 <td>${i.desc}</td>
@@ -183,6 +200,29 @@
         renderPaging();
     }
 
+    // HÀM HIỂN THỊ POPUP
+    function showDetail(index) {
+        const item = filtered[index].fullData;
+        const body = document.getElementById('modalBody');
+        body.innerHTML = Object.keys(item).map(key => `
+            <div class="detail-item">
+                <span class="detail-label">${key}:</span>
+                <span>${item[key] || "---"}</span>
+            </div>
+        `).join('');
+        document.getElementById('detailModal').style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById('detailModal').style.display = "none";
+    }
+
+    // Đóng modal khi bấm ra ngoài
+    window.onclick = function(event) {
+        let modal = document.getElementById('detailModal');
+        if (event.target == modal) modal.style.display = "none";
+    }
+
     function renderPaging() {
         const total = Math.ceil(filtered.length / limit);
         const nav = document.getElementById('pageNav');
@@ -192,7 +232,7 @@
             const b = document.createElement('button');
             b.className = `btn-p ${i === currentPage ? 'active' : ''}`;
             b.innerText = i;
-            b.onclick = () => { currentPage = i; render(); };
+            b.onclick = (e) => { e.stopPropagation(); currentPage = i; render(); };
             nav.appendChild(b);
         }
     }
@@ -207,9 +247,8 @@
     function initCharts() {
         Chart.register(ChartDataLabels);
         const data = getAgg();
-        const cy = 2026; // Theo yêu cầu năm hiện tại
+        const cy = 2026;
 
-        // Biểu đồ Cột (Số nguyên)
         charts.dept = new Chart(document.getElementById('deptChart'), {
             type: 'bar',
             data: { labels: data.labels, datasets: [{ data: data.counts, backgroundColor: '#2980b9' }] },
@@ -224,7 +263,6 @@
             }
         });
 
-        // Biểu đồ Pie (% và số lượng)
         charts.level = new Chart(document.getElementById('levelChart'), {
             type: 'pie',
             data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: data.lv, backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
@@ -244,7 +282,6 @@
             }
         });
 
-        // Biểu đồ Đường (3 năm)
         charts.trend = new Chart(document.getElementById('trendChart'), {
             type: 'line',
             data: {
