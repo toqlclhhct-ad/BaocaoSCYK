@@ -102,10 +102,10 @@
         <div class="detail-body">
             <div class="info-panel" id="modalBody"></div>
             <div class="ai-panel">
-                <button class="btn-ai" id="btnRunAI" onclick="runAI()">✨ PHÂN TÍCH AI (GEMINI PRO)</button>
+                <button class="btn-ai" id="btnRunAI" onclick="runAI()">✨ PHÂN TÍCH AI (GEMINI 1.5 FLASH)</button>
                 
                 <div id="aiLoading" style="display:none; text-align:center; padding:20px;">
-                    <p style="color: var(--ai-purple); animation: pulse 1s infinite;">🤖 Hệ thống đang kết nối AI...</p>
+                    <p style="color: var(--ai-purple);">🤖 Hệ thống AI đang phân tích...</p>
                 </div>
 
                 <div id="aiResult" style="display:none;">
@@ -127,22 +127,16 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
 <script>
-    // 🔗 CẤU HÌNH HỆ THỐNG
     const scriptURL = 'https://script.google.com/macros/s/AKfycbynaVlHpUE79D4fnczE04D_r83k0F3d_V4YBRVwOsWfhbWv47rdiGomoqQAdtX784U/exec';
-    
-    // 🔑 DÁN API KEY CỦA BẠN VÀO ĐÂY
     const API_KEY = "AIzaSyBhJuHaTQ1FAabKzqkOhuiQr34C2G40UPQ";
 
     let db = [], filtered = [], charts = {};
 
-    // --- GIẢI PHÁP AI GỠ LỖI TRIỆT ĐỂ (Dùng Fetch + Gemini Pro) ---
     async function runAI() {
         const btn = document.getElementById('btnRunAI');
         const loading = document.getElementById('aiLoading');
         const result = document.getElementById('aiResult');
         const idx = document.getElementById('detailModal').dataset.index;
-
-        if (!API_KEY || API_KEY.includes("AIzaSyBhJuHaTQ1FAabKzqkOhuiQr34C2G40UPQ")) return alert("Lỗi: Bạn chưa dán API Key vào mã nguồn!");
 
         btn.disabled = true;
         loading.style.display = "block";
@@ -151,8 +145,8 @@
         const rowData = JSON.stringify(filtered[idx].fullData);
 
         try {
-            // Sử dụng model 'gemini-pro' thay cho flash để tránh lỗi 404 Not Found
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+            // Sử dụng v1 và model gemini-1.5-flash
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
             
             const response = await fetch(url, {
                 method: 'POST',
@@ -160,20 +154,14 @@
                 body: JSON.stringify({
                     contents: [{
                         parts: [{
-                            text: `Bạn là chuyên gia an toàn y tế. Hãy phân tích sự cố sau: ${rowData}. 
-                            Trả về kết quả duy nhất dưới dạng JSON không chứa ký tự markdown:
-                            {"nguyen_nhan": "Mô tả nguyên nhân gốc rễ ngắn gọn", "ke_hoach": "Các bước khắc phục cụ thể", "tien_do": 75}`
+                            text: `Bạn là chuyên gia quản lý chất lượng. Phân tích sự cố: ${rowData}. Trả về duy nhất JSON (không markdown): {"nguyen_nhan": "Mô tả nguyên nhân", "ke_hoach": "Mô tả giải pháp", "tien_do": 80}`
                         }]
                     }]
                 })
             });
 
             const json = await response.json();
-            
-            if (json.error) {
-                // Nếu vẫn lỗi 404 với gemini-pro, thử chuyển sang v1 thay vì v1beta
-                throw new Error(json.error.message);
-            }
+            if (json.error) throw new Error(json.error.message);
 
             const rawText = json.candidates[0].content.parts[0].text;
             const data = JSON.parse(rawText.replace(/```json|```/g, "").trim());
@@ -186,15 +174,14 @@
             loading.style.display = "none";
             result.style.display = "block";
         } catch (e) {
-            console.error("AI Error:", e);
-            alert("Lỗi AI: Key của bạn có thể chưa kích hoạt model này hoặc bị giới hạn vùng. Chi tiết: " + e.message);
+            console.error(e);
+            alert("Lỗi: " + e.message);
             loading.style.display = "none";
         } finally {
             btn.disabled = false;
         }
     }
 
-    // --- LOGIC XỬ LÝ DỮ LIỆU ---
     async function loadData() {
         try {
             const res = await fetch(`${scriptURL}?action=read`);
@@ -214,9 +201,8 @@
             filtered = [...db];
             renderTable();
             initFilters();
-            initCharts();
         } catch (e) { 
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Lỗi kết nối dữ liệu Google Sheets!</td></tr>';
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4">Lỗi kết nối dữ liệu!</td></tr>';
         }
     }
 
@@ -229,18 +215,16 @@
                 <td>${i.desc}</td>
                 <td style="text-align:center"><span class="pill status-${i.level}">${i.level}</span></td>
             </tr>
-        `).join('') || '<tr><td colspan="4" style="text-align:center;">Không tìm thấy kết quả phù hợp.</td></tr>';
+        `).join('') || '<tr><td colspan="4">Không có dữ length.</td></tr>';
     }
 
     function showDetail(idx) {
         const modal = document.getElementById('detailModal');
         const item = filtered[idx].fullData;
         modal.dataset.index = idx;
-        
         document.getElementById('modalBody').innerHTML = Object.keys(item).map(key => `
             <div class="detail-item"><span class="detail-label">${key}:</span><span>${item[key] || "---"}</span></div>
         `).join('');
-        
         document.getElementById('aiResult').style.display = "none";
         document.getElementById('aiLoading').style.display = "none";
         modal.style.display = "block";
@@ -252,7 +236,6 @@
         const depts = [...new Set(db.map(i => i.dept))].sort();
         const sel = document.getElementById('fDept');
         depts.forEach(d => sel.add(new Option(d, d)));
-        
         document.querySelectorAll('.filters input, .filters select').forEach(el => {
             el.oninput = () => {
                 const d = document.getElementById('fDept').value;
@@ -262,10 +245,6 @@
                 renderTable();
             };
         });
-    }
-
-    function initCharts() {
-        // Khởi tạo biểu đồ cơ bản (Rút gọn)
     }
 
     document.addEventListener('DOMContentLoaded', loadData);
