@@ -40,11 +40,11 @@
         .detail-item { border-bottom: 1px solid #f0f0f0; padding: 6px 0; font-size: 12px; }
         .detail-label { font-weight: bold; color: var(--primary); }
         .highlight-red .detail-label { color: var(--danger) !important; }
-        .btn-ai { background: var(--ai-purple); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 15px; transition: 0.3s; }
+        .btn-ai { background: var(--ai-purple); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 15px; transition: 0.3s; }
         .btn-ai:hover { opacity: 0.9; transform: translateY(-2px); }
         .ai-box { background: white; border-left: 4px solid var(--ai-purple); padding: 10px; margin-bottom: 15px; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .progress-bar { height: 10px; background: #eee; border-radius: 5px; margin: 10px 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--success); width: 0%; transition: 1s; }
+        .progress-fill { height: 100%; background: var(--success); width: 0%; transition: 1.2s cubic-bezier(0.075, 0.82, 0.165, 1); }
     </style>
 </head>
 <body>
@@ -68,7 +68,6 @@
         <div class="f-group"><label>Mức độ</label><select id="fLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
         <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm theo MÔ TẢ</label><input type="text" id="sKey" placeholder="Số hồ sơ, nội dung sự cố..."></div>
     </div>
-    <div style="font-size: 12px; color: #e67e22; margin-bottom: 5px; font-weight: bold;">* Bấm vào hàng để xem chi tiết 30 thông tin sự cố (Nhấn ESC để thoát)</div>
     <div class="table-area">
         <table>
             <thead>
@@ -80,7 +79,7 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="4" style="text-align:center; padding:50px;">Đang tải dữ liệu sự cố...</td></tr>
+                <tr><td colspan="4" style="text-align:center; padding:50px;">Đang kết nối dữ liệu an toàn y tế...</td></tr>
             </tbody>
         </table>
     </div>
@@ -103,7 +102,7 @@
             <div class="ai-panel">
                 <button class="btn-ai" id="btnAI" onclick="runAI()">✨ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
                 <div id="aiLoading" style="display:none; text-align:center; padding:20px;">
-                    <small>Đang nạp 30 thông tin và phân tích...</small>
+                    <p style="color:var(--ai-purple); font-weight:bold;">🤖 Đang nạp 30 thông tin sự cố...</p>
                 </div>
                 <div id="aiResult" style="display:none;">
                     <h4 style="color:var(--ai-purple); margin-top:0;">🤖 KẾT QUẢ PHÂN TÍCH AI</h4>
@@ -112,7 +111,7 @@
                     <div class="progress-box">
                         <strong>Tiến độ khắc phục tại khoa:</strong>
                         <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
-                        <div style="display:flex; justify-content:space-between; font-size:11px;">
+                        <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:5px;">
                             <span>Đã nhận thông tin</span><span id="pText">0%</span>
                         </div>
                     </div>
@@ -126,7 +125,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbynaVlHpUE79D4fnczE04D_r83k0F3d_V4YBRVwOsWfhbWv47rdiGomoqQAdtX784U/exec'; 
-    const AI_KEY = "AIzaSyBhJuHaTQ1FAabKzqkOhuiQr34C2G40UPQ";
+    const AI_KEY = "AIzaSyAJwkIQ6GqeFwD4m3tayK5jT-uiqj9D6v4";
     let db = [], filtered = [], currentPage = 1, limit = 10, charts = {};
 
     document.addEventListener('DOMContentLoaded', loadData);
@@ -149,7 +148,7 @@
             updateFilters();
             initCharts();
             render();
-        } catch (e) { document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Lỗi đồng bộ dữ liệu.</td></tr>'; }
+        } catch (e) { document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Lỗi đồng bộ dữ liệu Sheet.</td></tr>'; }
     }
 
     function parseDate(s) { if(!s) return new Date(); const p = s.split('/'); return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date(s); }
@@ -172,10 +171,10 @@
     }
 
     function showDetail(index) {
+        const modal = document.getElementById('detailModal');
+        modal.dataset.idx = index;
         const item = filtered[index].fullData;
         const body = document.getElementById('modalBody');
-        const modal = document.getElementById('detailModal');
-        modal.dataset.idx = index; // Lưu vị trí để AI lấy dữ liệu
         const redItems = [16, 17, 18, 24]; 
         body.innerHTML = Object.keys(item).map((key, i) => {
             const isRed = redItems.includes(i + 1);
@@ -188,7 +187,7 @@
 
     async function runAI() {
         const idx = document.getElementById('detailModal').dataset.idx;
-        const rowData = JSON.stringify(filtered[idx].fullData);
+        const fullInfo = JSON.stringify(filtered[idx].fullData);
         const btn = document.getElementById('btnAI');
         const loading = document.getElementById('aiLoading');
         const result = document.getElementById('aiResult');
@@ -196,22 +195,31 @@
         btn.disabled = true; loading.style.display = "block"; result.style.display = "none";
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AI_KEY}`, {
+            const apiURL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${AI_KEY}`;
+            const response = await fetch(apiURL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: `Bạn là chuyên gia quản lý rủi ro y tế. Phân tích sự cố này: ${rowData}. Trả về JSON (không markdown): {"root": "Nguyên nhân...", "plan": "Kế hoạch...", "percent": 70}` }] }] })
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: `Phân tích 30 thông tin sự cố y khoa sau: ${fullInfo}. Trả về duy nhất định dạng JSON không chứa markdown: {"root": "Nguyên nhân gốc rễ...", "plan": "Kế hoạch khắc phục cụ thể...", "percent": 75}` }] }]
+                })
             });
+
             const data = await response.json();
-            const resText = data.candidates[0].content.parts[0].text;
-            const resJson = JSON.parse(resText.replace(/```json|```/g, "").trim());
+            if (data.error) throw new Error(data.error.message);
+
+            const text = data.candidates[0].content.parts[0].text;
+            const res = JSON.parse(text.replace(/```json|```/g, "").trim());
+
+            document.getElementById('aiRoot').innerText = res.root;
+            document.getElementById('aiPlan').innerText = res.plan;
+            document.getElementById('pFill').style.width = res.percent + "%";
+            document.getElementById('pText').innerText = res.percent + "% - Đang triển khai";
             
-            document.getElementById('aiRoot').innerText = resJson.root;
-            document.getElementById('aiPlan').innerText = resJson.plan;
-            document.getElementById('pFill').style.width = resJson.percent + "%";
-            document.getElementById('pText').innerText = resJson.percent + "%";
             loading.style.display = "none"; result.style.display = "block";
-        } catch (e) { alert("Lỗi kết nối AI: " + e.message); loading.style.display = "none"; }
-        finally { btn.disabled = false; }
+        } catch (e) {
+            alert("Lỗi AI: " + e.message);
+            loading.style.display = "none";
+        } finally { btn.disabled = false; }
     }
 
     function closeModal() { document.getElementById('detailModal').style.display = "none"; }
