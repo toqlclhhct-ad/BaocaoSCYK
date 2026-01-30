@@ -8,63 +8,46 @@
         :root { --primary: #2980b9; --bg: #f4f7f6; --success: #27ae60; --orange: #f39c12; --danger: #e74c3c; --ai-purple: #8e44ad; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
         .container { max-width: 1600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
-        
         header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
         .btn-new { background: var(--success); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; }
-
         .dashboard-grid { display: grid; grid-template-columns: 1fr 0.8fr 1.2fr; gap: 15px; margin-bottom: 20px; }
         .card { background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee; height: 250px; position: relative; }
-        
         .filters { display: flex; flex-wrap: wrap; gap: 12px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
         .f-group { display: flex; flex-direction: column; gap: 5px; }
         .f-group label { font-size: 12px; font-weight: bold; color: #666; }
         .f-group input, .f-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
-
         .table-area { overflow-x: auto; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
-        th { background: var(--primary); color: white; padding: 12px; text-align: left; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; position: sticky; top: 0; }
         td { padding: 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
         tr:hover { background: #f1f7ff; }
-
         .pill { padding: 4px 10px; border-radius: 20px; color: white; font-weight: bold; font-size: 11px; }
         .status-Nhẹ { background: #3498db; }
         .status-TB { background: var(--orange); }
         .status-Nặng { background: var(--danger); }
-
         .paging { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 10px; background: #fff; border-radius: 8px; }
         .page-btns { display: flex; gap: 5px; }
         .btn-p { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-p.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        /* MODAL & AI SECTION */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
         .modal-content { background: white; margin: 1% auto; width: 90%; max-width: 1100px; border-radius: 12px; max-height: 95vh; overflow-y: auto; position: relative; }
-        
         .modal-header { position: sticky; top: 0; background: white; z-index: 10; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding: 15px 20px; }
         .close { font-size: 32px; font-weight: bold; cursor: pointer; color: #e74c3c; line-height: 1; }
-
         .detail-body { padding: 20px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
         .info-panel { border-right: 1px solid #eee; padding-right: 20px; }
         .ai-panel { background: #fcfaff; border-radius: 8px; padding: 15px; border: 1px solid #e0d0f0; }
-
         .detail-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
         .detail-item { border-bottom: 1px solid #f0f0f0; padding: 6px 0; font-size: 12px; }
         .detail-label { font-weight: bold; color: var(--primary); }
         .highlight-red .detail-label { color: var(--danger) !important; }
-
         .btn-ai { background: var(--ai-purple); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 15px; transition: 0.3s; }
         .btn-ai:hover { opacity: 0.9; transform: translateY(-2px); }
-
-        .ai-result { display: none; }
         .ai-box { background: white; border-left: 4px solid var(--ai-purple); padding: 10px; margin-bottom: 15px; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .progress-box { margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc; }
-        
         .progress-bar { height: 10px; background: #eee; border-radius: 5px; margin: 10px 0; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--success); width: 0%; transition: 1s; }
     </style>
 </head>
 <body>
-
 <div class="container">
     <header>
         <div style="display:flex; align-items:center; gap:15px;">
@@ -73,13 +56,11 @@
         </div>
         <a href="form.html" class="btn-new">+ BÁO CÁO MỚI</a>
     </header>
-
     <div class="dashboard-grid">
         <div class="card"><canvas id="deptChart"></canvas></div>
         <div class="card"><canvas id="levelChart"></canvas></div>
         <div class="card"><canvas id="trendChart"></canvas></div>
     </div>
-
     <div class="filters">
         <div class="f-group"><label>Từ ngày</label><input type="date" id="startD"></div>
         <div class="f-group"><label>Đến ngày</label><input type="date" id="endD"></div>
@@ -87,7 +68,6 @@
         <div class="f-group"><label>Mức độ</label><select id="fLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
         <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm theo MÔ TẢ</label><input type="text" id="sKey" placeholder="Số hồ sơ, nội dung sự cố..."></div>
     </div>
-
     <div style="font-size: 12px; color: #e67e22; margin-bottom: 5px; font-weight: bold;">* Bấm vào hàng để xem chi tiết 30 thông tin sự cố (Nhấn ESC để thoát)</div>
     <div class="table-area">
         <table>
@@ -104,7 +84,6 @@
             </tbody>
         </table>
     </div>
-
     <div class="paging">
         <div id="pageInfo" style="font-size:13px; color:#666; font-weight: bold;"></div>
         <div class="page-btns" id="pageNav"></div>
@@ -121,31 +100,20 @@
             <div class="info-panel">
                 <div id="modalBody" class="detail-grid"></div>
             </div>
-            
             <div class="ai-panel">
-                <button class="btn-ai" onclick="runAI()">✨ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
-                
+                <button class="btn-ai" id="btnAI" onclick="runAI()">✨ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
                 <div id="aiLoading" style="display:none; text-align:center; padding:20px;">
                     <small>Đang nạp 30 thông tin và phân tích...</small>
                 </div>
-
-                <div id="aiResult" class="ai-result">
+                <div id="aiResult" style="display:none;">
                     <h4 style="color:var(--ai-purple); margin-top:0;">🤖 KẾT QUẢ PHÂN TÍCH AI</h4>
-                    <div class="ai-box">
-                        <strong>Nguyên nhân gốc rễ:</strong>
-                        <p id="aiRoot">Đang phân tích...</p>
-                    </div>
-                    <div class="ai-box">
-                        <strong>Kế hoạch khắc phục đề xuất:</strong>
-                        <p id="aiPlan">Đang lập kế hoạch...</p>
-                    </div>
-
+                    <div class="ai-box"><strong>Nguyên nhân gốc rễ:</strong><p id="aiRoot"></p></div>
+                    <div class="ai-box"><strong>Kế hoạch khắc phục đề xuất:</strong><p id="aiPlan"></p></div>
                     <div class="progress-box">
                         <strong>Tiến độ khắc phục tại khoa:</strong>
                         <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
                         <div style="display:flex; justify-content:space-between; font-size:11px;">
-                            <span>Đã nhận thông tin</span>
-                            <span id="pText">0%</span>
+                            <span>Đã nhận thông tin</span><span id="pText">0%</span>
                         </div>
                     </div>
                 </div>
@@ -156,13 +124,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbynaVlHpUE79D4fnczE04D_r83k0F3d_V4YBRVwOsWfhbWv47rdiGomoqQAdtX784U/exec'; 
-    let db = [], filtered = [];
-    let currentPage = 1;
-    const limit = 10;
-    let charts = {};
+    const AI_KEY = "AIzaSyBhJuHaTQ1FAabKzqkOhuiQr34C2G40UPQ";
+    let db = [], filtered = [], currentPage = 1, limit = 10, charts = {};
 
     document.addEventListener('DOMContentLoaded', loadData);
     document.querySelectorAll('.filters input, .filters select').forEach(el => el.oninput = filterData);
@@ -178,63 +143,30 @@
                 const dateObj = parseDate(dateStr);
                 const levelRaw = row["Đánh giá ban đầu về mức độ ảnh hưởng"] || val[23] || "Nhẹ";
                 let lv = levelRaw.includes("Trung bình") || levelRaw.includes("TB") ? "TB" : (levelRaw.includes("Nặng") ? "Nặng" : "Nhẹ");
-                return {
-                    date: dateStr,
-                    dept: row["Khoa/phòng/vị trí xảy ra"] || val[11] || "KĐ",
-                    desc: row["Mô tả ngắn gọn"] || val[15] || "",
-                    level: lv,
-                    ts: dateObj.getTime(),
-                    month: dateObj.getMonth(),
-                    year: dateObj.getFullYear(),
-                    fullData: row
-                };
+                return { date: dateStr, dept: row["Khoa/phòng/vị trí xảy ra"] || val[11] || "KĐ", desc: row["Mô tả ngắn gọn"] || val[15] || "", level: lv, ts: dateObj.getTime(), month: dateObj.getMonth(), year: dateObj.getFullYear(), fullData: row };
             });
             filtered = [...db];
             updateFilters();
             initCharts();
             render();
-        } catch (e) {
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Lỗi đồng bộ dữ liệu.</td></tr>';
-        }
+        } catch (e) { document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Lỗi đồng bộ dữ liệu.</td></tr>'; }
     }
 
-    function parseDate(s) {
-        if(!s) return new Date();
-        const p = s.split('/');
-        return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date(s);
-    }
+    function parseDate(s) { if(!s) return new Date(); const p = s.split('/'); return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date(s); }
 
     function filterData() {
-        const start = document.getElementById('startD').value;
-        const end = document.getElementById('endD').value;
-        const dept = document.getElementById('fDept').value;
-        const level = document.getElementById('fLevel').value;
-        const key = document.getElementById('sKey').value.toLowerCase();
-        const sTs = start ? new Date(start).getTime() : 0;
-        const eTs = end ? new Date(end).setHours(23,59,59) : Infinity;
-
-        filtered = db.filter(i => 
-            (i.ts >= sTs && i.ts <= eTs) &&
-            (dept === "" || i.dept === dept) &&
-            (level === "" || i.level === level) &&
-            (i.desc.toLowerCase().includes(key) || i.dept.toLowerCase().includes(key))
-        );
-        currentPage = 1;
-        render();
-        updateCharts();
+        const start = document.getElementById('startD').value, end = document.getElementById('endD').value, dept = document.getElementById('fDept').value, level = document.getElementById('fLevel').value, key = document.getElementById('sKey').value.toLowerCase();
+        const sTs = start ? new Date(start).getTime() : 0, eTs = end ? new Date(end).setHours(23,59,59) : Infinity;
+        filtered = db.filter(i => (i.ts >= sTs && i.ts <= eTs) && (dept === "" || i.dept === dept) && (level === "" || i.level === level) && (i.desc.toLowerCase().includes(key) || i.dept.toLowerCase().includes(key)));
+        currentPage = 1; render(); updateCharts();
     }
 
     function render() {
-        const start = (currentPage - 1) * limit;
-        const data = filtered.slice(start, start + limit);
+        const start = (currentPage - 1) * limit, data = filtered.slice(start, start + limit);
         document.getElementById('tableBody').innerHTML = data.map((i, idx) => `
             <tr onclick="showDetail(${start + idx})">
-                <td>${i.date}</td>
-                <td><b>${i.dept}</b></td>
-                <td>${i.desc}</td>
-                <td style="text-align:center"><span class="pill status-${i.level}">${i.level}</span></td>
-            </tr>
-        `).join('') || '<tr><td colspan="4" style="text-align:center">Không tìm thấy kết quả</td></tr>';
+                <td>${i.date}</td><td><b>${i.dept}</b></td><td>${i.desc}</td><td style="text-align:center"><span class="pill status-${i.level}">${i.level}</span></td>
+            </tr>`).join('') || '<tr><td colspan="4" style="text-align:center">Không tìm thấy kết quả</td></tr>';
         document.getElementById('pageInfo').innerText = `Hiển thị ${data.length > 0 ? start+1 : 0}-${Math.min(start+limit, filtered.length)} / Tổng ${filtered.length} sự cố`;
         renderPaging();
     }
@@ -242,91 +174,69 @@
     function showDetail(index) {
         const item = filtered[index].fullData;
         const body = document.getElementById('modalBody');
+        const modal = document.getElementById('detailModal');
+        modal.dataset.idx = index; // Lưu vị trí để AI lấy dữ liệu
         const redItems = [16, 17, 18, 24]; 
-
         body.innerHTML = Object.keys(item).map((key, i) => {
             const isRed = redItems.includes(i + 1);
             return `<div class="detail-item ${isRed ? 'highlight-red' : ''}"><span class="detail-label">${key}:</span> ${item[key] || "---"}</div>`;
         }).join('');
-        
-        // Reset AI Panel
         document.getElementById('aiResult').style.display = "none";
         document.getElementById('aiLoading').style.display = "none";
-        document.getElementById('detailModal').style.display = "block";
+        modal.style.display = "block";
     }
 
-    function runAI() {
-        document.getElementById('aiLoading').style.display = "block";
-        document.getElementById('aiResult').style.display = "none";
-        
-        // Giả lập gửi dữ liệu cho Trợ lý AI của bạn
-        setTimeout(() => {
-            document.getElementById('aiLoading').style.display = "none";
-            document.getElementById('aiResult').style.display = "block";
+    async function runAI() {
+        const idx = document.getElementById('detailModal').dataset.idx;
+        const rowData = JSON.stringify(filtered[idx].fullData);
+        const btn = document.getElementById('btnAI');
+        const loading = document.getElementById('aiLoading');
+        const result = document.getElementById('aiResult');
+
+        btn.disabled = true; loading.style.display = "block"; result.style.display = "none";
+
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AI_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: `Bạn là chuyên gia quản lý rủi ro y tế. Phân tích sự cố này: ${rowData}. Trả về JSON (không markdown): {"root": "Nguyên nhân...", "plan": "Kế hoạch...", "percent": 70}` }] }] })
+            });
+            const data = await response.json();
+            const resText = data.candidates[0].content.parts[0].text;
+            const resJson = JSON.parse(resText.replace(/```json|```/g, "").trim());
             
-            // Dữ liệu giả lập mẫu (Khi bạn kết nối API AI thật, hãy đổ vào đây)
-            document.getElementById('aiRoot').innerText = "Thiếu quy trình kiểm soát kép tại vị trí xảy ra và nhân viên chưa được đào tạo cập nhật.";
-            document.getElementById('aiPlan').innerText = "1. Ban hành lại quy trình vận hành chuẩn. 2. Tổ chức đào tạo lại trong 7 ngày. 3. Giám sát tuân thủ hàng tuần.";
-            
-            // Chạy thanh tiến độ giả lập 65%
-            document.getElementById('pFill').style.width = "65%";
-            document.getElementById('pText').innerText = "65% - Đang thực hiện đào tạo";
-        }, 1500);
+            document.getElementById('aiRoot').innerText = resJson.root;
+            document.getElementById('aiPlan').innerText = resJson.plan;
+            document.getElementById('pFill').style.width = resJson.percent + "%";
+            document.getElementById('pText').innerText = resJson.percent + "%";
+            loading.style.display = "none"; result.style.display = "block";
+        } catch (e) { alert("Lỗi kết nối AI: " + e.message); loading.style.display = "none"; }
+        finally { btn.disabled = false; }
     }
 
     function closeModal() { document.getElementById('detailModal').style.display = "none"; }
-    window.onclick = function(e) { if (e.target == document.getElementById('detailModal')) closeModal(); }
-
     function renderPaging() {
-        const total = Math.ceil(filtered.length / limit);
-        const nav = document.getElementById('pageNav'); nav.innerHTML = '';
+        const total = Math.ceil(filtered.length / limit), nav = document.getElementById('pageNav'); nav.innerHTML = '';
         if(total <= 1) return;
         for(let i=1; i<=total; i++) {
-            const b = document.createElement('button');
-            b.className = `btn-p ${i === currentPage ? 'active' : ''}`;
+            const b = document.createElement('button'); b.className = `btn-p ${i === currentPage ? 'active' : ''}`;
             b.innerText = i; b.onclick = (e) => { e.stopPropagation(); currentPage = i; render(); };
             nav.appendChild(b);
         }
     }
-
     function updateFilters() {
-        const depts = [...new Set(db.map(i => i.dept))].sort();
-        const sel = document.getElementById('fDept');
-        sel.innerHTML = '<option value="">-- Tất cả --</option>';
-        depts.forEach(d => sel.add(new Option(d, d)));
+        const depts = [...new Set(db.map(i => i.dept))].sort(), sel = document.getElementById('fDept');
+        sel.innerHTML = '<option value="">-- Tất cả --</option>'; depts.forEach(d => sel.add(new Option(d, d)));
     }
-
     function initCharts() {
-        Chart.register(ChartDataLabels);
-        const data = getAgg();
-        const cy = 2026;
-        charts.dept = new Chart(document.getElementById('deptChart'), {
-            type: 'bar',
-            data: { labels: data.labels, datasets: [{ data: data.counts, backgroundColor: '#2980b9' }] },
-            options: { maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display:true, text:'SỰ CỐ THEO KHOA/PHÒNG' }, datalabels: { color: '#fff', anchor: 'end', align: 'bottom', font: {weight: 'bold'} } } }
-        });
-        charts.level = new Chart(document.getElementById('levelChart'), {
-            type: 'pie',
-            data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: data.lv, backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
-            options: { maintainAspectRatio: false, plugins: { legend: { position:'right' }, title: { display:true, text:'TỶ LỆ % THEO MỨC ĐỘ' }, datalabels: { color: '#fff', formatter: (val, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return val > 0 ? `${val} (${(val*100/sum).toFixed(0)}%)` : ''; } } } }
-        });
-        charts.trend = new Chart(document.getElementById('trendChart'), {
-            type: 'line',
-            data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: cy-2, data: data.trend[cy-2], borderColor: '#bdc3c7' }, { label: cy-1, data: data.trend[cy-1], borderColor: '#95a5a6' }, { label: cy, data: data.trend[cy], borderColor: '#2980b9', borderWidth: 3 }] },
-            options: { maintainAspectRatio: false, plugins: { title: { display: true, text: 'XU HƯỚNG 3 NĂM GẦN NHẤT' }, datalabels: { display: false } } }
-        });
+        Chart.register(ChartDataLabels); const data = getAgg(), cy = 2026;
+        charts.dept = new Chart(document.getElementById('deptChart'), { type: 'bar', data: { labels: data.labels, datasets: [{ data: data.counts, backgroundColor: '#2980b9' }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display:true, text:'SỰ CỐ THEO KHOA/PHÒNG' }, datalabels: { color: '#fff', anchor: 'end', align: 'bottom', font: {weight: 'bold'} } } } });
+        charts.level = new Chart(document.getElementById('levelChart'), { type: 'pie', data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: data.lv, backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] }, options: { maintainAspectRatio: false, plugins: { legend: { position:'right' }, title: { display:true, text:'TỶ LỆ % THEO MỨC ĐỘ' }, datalabels: { color: '#fff', formatter: (val, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return val > 0 ? `${val} (${(val*100/sum).toFixed(0)}%)` : ''; } } } } });
+        charts.trend = new Chart(document.getElementById('trendChart'), { type: 'line', data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: cy-2, data: data.trend[cy-2], borderColor: '#bdc3c7' }, { label: cy-1, data: data.trend[cy-1], borderColor: '#95a5a6' }, { label: cy, data: data.trend[cy], borderColor: '#2980b9', borderWidth: 3 }] }, options: { maintainAspectRatio: false, plugins: { title: { display: true, text: 'XU HƯỚNG 3 NĂM GẦN NHẤT' }, datalabels: { display: false } } } });
     }
-
-    function updateCharts() {
-        const data = getAgg();
-        charts.dept.data.labels = data.labels; charts.dept.data.datasets[0].data = data.counts;
-        charts.level.data.datasets[0].data = data.lv; charts.trend.data.datasets[2].data = data.trend[2026];
-        charts.dept.update(); charts.level.update(); charts.trend.update();
-    }
-
+    function updateCharts() { const data = getAgg(); charts.dept.data.labels = data.labels; charts.dept.data.datasets[0].data = data.counts; charts.level.data.datasets[0].data = data.lv; charts.trend.data.datasets[2].data = data.trend[2026]; charts.dept.update(); charts.level.update(); charts.trend.update(); }
     function getAgg() {
-        const depts = {}, lv = { Nhẹ: 0, TB: 0, Nặng: 0 }, trend = {};
-        const cy = 2026; [cy, cy-1, cy-2].forEach(y => trend[y] = Array(12).fill(0));
+        const depts = {}, lv = { Nhẹ: 0, TB: 0, Nặng: 0 }, trend = {}, cy = 2026; [cy, cy-1, cy-2].forEach(y => trend[y] = Array(12).fill(0));
         filtered.forEach(i => { depts[i.dept] = (depts[i.dept] || 0) + 1; if(lv.hasOwnProperty(i.level)) lv[i.level]++; if(trend[i.year]) trend[i.year][i.month]++; });
         return { labels: Object.keys(depts), counts: Object.values(depts), lv: [lv.Nhẹ, lv.TB, lv.Nặng], trend: trend };
     }
