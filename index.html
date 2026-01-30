@@ -102,7 +102,7 @@
             <div class="ai-panel">
                 <button class="btn-ai" id="btnAI" onclick="runAI()">✨ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
                 <div id="aiLoading" style="display:none; text-align:center; padding:20px;">
-                    <p style="color:var(--ai-purple); font-weight:bold;">🤖 Đang kết nối trí tuệ nhân tạo...</p>
+                    <p style="color:var(--ai-purple); font-weight:bold;">🤖 Đang phân tích dữ liệu chuyên sâu...</p>
                 </div>
                 <div id="aiResult" style="display:none;">
                     <h4 style="color:var(--ai-purple); margin-top:0;">🤖 KẾT QUẢ PHÂN TÍCH AI</h4>
@@ -125,13 +125,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbynaVlHpUE79D4fnczE04D_r83k0F3d_V4YBRVwOsWfhbWv47rdiGomoqQAdtX784U/exec'; 
-    // API KEY ĐÃ CẬP NHẬT THEO ẢNH CỦA BẠN
     const AI_KEY = "AIzaSyAJwkIQ6GqeFwD4m3tayK5jT-uiqj9D6v4";
     let db = [], filtered = [], currentPage = 1, limit = 10, charts = {};
 
     document.addEventListener('DOMContentLoaded', loadData);
     document.querySelectorAll('.filters input, .filters select').forEach(el => el.oninput = filterData);
-    document.addEventListener('keydown', (e) => { if (e.key === "Escape") closeModal(); });
 
     async function loadData() {
         try {
@@ -167,7 +165,7 @@
             <tr onclick="showDetail(${start + idx})">
                 <td>${i.date}</td><td><b>${i.dept}</b></td><td>${i.desc}</td><td style="text-align:center"><span class="pill status-${i.level}">${i.level}</span></td>
             </tr>`).join('') || '<tr><td colspan="4" style="text-align:center">Không tìm thấy kết quả</td></tr>';
-        document.getElementById('pageInfo').innerText = `Hiển thị ${data.length > 0 ? start+1 : 0}-${Math.min(start+limit, filtered.length)} / Tổng ${filtered.length} sự cố`;
+        document.getElementById('pageInfo').innerText = `Tổng ${filtered.length} sự cố`;
         renderPaging();
     }
 
@@ -176,11 +174,7 @@
         modal.dataset.idx = index; 
         const item = filtered[index].fullData;
         const body = document.getElementById('modalBody');
-        const redItems = [16, 17, 18, 24]; 
-        body.innerHTML = Object.keys(item).map((key, i) => {
-            const isRed = redItems.includes(i + 1);
-            return `<div class="detail-item ${isRed ? 'highlight-red' : ''}"><span class="detail-label">${key}:</span> ${item[key] || "---"}</div>`;
-        }).join('');
+        body.innerHTML = Object.keys(item).map((key) => `<div class="detail-item"><span class="detail-label">${key}:</span> ${item[key] || "---"}</div>`).join('');
         document.getElementById('aiResult').style.display = "none";
         document.getElementById('aiLoading').style.display = "none";
         modal.style.display = "block";
@@ -195,52 +189,55 @@
 
         btn.disabled = true; loading.style.display = "block"; result.style.display = "none";
 
-        try {
-            // SỬ DỤNG V1BETA VỚI MODEL LATEST ĐỂ TRÁNH LỖI 404
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${AI_KEY}`;
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `Bạn là trợ lý an toàn y tế. Phân tích sự cố sau: ${rowData}. Trả về JSON duy nhất (không markdown): {"root": "nguyên nhân gốc rễ", "plan": "hướng xử lý cụ thể", "percent": 75}`
-                        }]
-                    }]
-                })
-            });
+        // DANH SÁCH CÁC URL THỬ NGHIỆM ĐỂ TRÁNH LỖI 404
+        const endpoints = [
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${AI_KEY}`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${AI_KEY}`
+        ];
 
-            const json = await response.json();
-            if (json.error) throw new Error(json.error.message);
+        let success = false;
+        for (let url of endpoints) {
+            if (success) break;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Phân tích sự cố y khoa này và trả về JSON chuẩn {"root":"...","plan":"...","percent":80}: ${rowData}` }] }]
+                    })
+                });
 
-            const rawText = json.candidates[0].content.parts[0].text;
-            const cleanText = rawText.replace(/```json|```/g, "").trim();
-            const data = JSON.parse(cleanText);
+                const json = await response.json();
+                if (json.candidates && json.candidates[0]) {
+                    const rawText = json.candidates[0].content.parts[0].text;
+                    const cleanText = rawText.replace(/```json|```/g, "").trim();
+                    const data = JSON.parse(cleanText);
 
-            document.getElementById('aiRoot').innerText = data.root;
-            document.getElementById('aiPlan').innerText = data.plan;
-            document.getElementById('pFill').style.width = data.percent + "%";
-            document.getElementById('pText').innerText = data.percent + "%";
-
-            loading.style.display = "none";
-            result.style.display = "block";
-        } catch (e) {
-            console.error("Lỗi AI:", e);
-            alert("Hệ thống AI đang phản hồi lỗi. Vui lòng kiểm tra API Key hoặc thử lại sau ít phút.");
-            loading.style.display = "none";
-        } finally {
-            btn.disabled = false;
+                    document.getElementById('aiRoot').innerText = data.root;
+                    document.getElementById('aiPlan').innerText = data.plan;
+                    document.getElementById('pFill').style.width = data.percent + "%";
+                    document.getElementById('pText').innerText = data.percent + "%";
+                    
+                    success = true;
+                    loading.style.display = "none";
+                    result.style.display = "block";
+                }
+            } catch (e) { console.error("Thử URL thất bại, đang thử tiếp...", url); }
         }
+
+        if (!success) {
+            alert("Không thể kết nối Google AI. Vui lòng kiểm tra lại trạng thái API Key trong Google AI Studio.");
+            loading.style.display = "none";
+        }
+        btn.disabled = false;
     }
 
     function closeModal() { document.getElementById('detailModal').style.display = "none"; }
     function renderPaging() {
         const total = Math.ceil(filtered.length / limit), nav = document.getElementById('pageNav'); nav.innerHTML = '';
-        if(total <= 1) return;
         for(let i=1; i<=total; i++) {
             const b = document.createElement('button'); b.className = `btn-p ${i === currentPage ? 'active' : ''}`;
-            b.innerText = i; b.onclick = (e) => { e.stopPropagation(); currentPage = i; render(); };
+            b.innerText = i; b.onclick = () => { currentPage = i; render(); };
             nav.appendChild(b);
         }
     }
@@ -249,15 +246,15 @@
         sel.innerHTML = '<option value="">-- Tất cả --</option>'; depts.forEach(d => sel.add(new Option(d, d)));
     }
     function initCharts() {
-        Chart.register(ChartDataLabels); const data = getAgg(), cy = 2026;
-        charts.dept = new Chart(document.getElementById('deptChart'), { type: 'bar', data: { labels: data.labels, datasets: [{ data: data.counts, backgroundColor: '#2980b9' }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display:true, text:'SỰ CỐ THEO KHOA/PHÒNG' }, datalabels: { color: '#fff', anchor: 'end', align: 'bottom', font: {weight: 'bold'} } } } });
-        charts.level = new Chart(document.getElementById('levelChart'), { type: 'pie', data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: data.lv, backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] }, options: { maintainAspectRatio: false, plugins: { legend: { position:'right' }, title: { display:true, text:'TỶ LỆ % THEO MỨC ĐỘ' }, datalabels: { color: '#fff', formatter: (val, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return val > 0 ? `${val} (${(val*100/sum).toFixed(0)}%)` : ''; } } } } });
-        charts.trend = new Chart(document.getElementById('trendChart'), { type: 'line', data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: cy-2, data: data.trend[cy-2], borderColor: '#bdc3c7' }, { label: cy-1, data: data.trend[cy-1], borderColor: '#95a5a6' }, { label: cy, data: data.trend[cy], borderColor: '#2980b9', borderWidth: 3 }] }, options: { maintainAspectRatio: false, plugins: { title: { display: true, text: 'XU HƯỚNG 3 NĂM GẦN NHẤT' }, datalabels: { display: false } } } });
+        Chart.register(ChartDataLabels); const data = getAgg();
+        charts.dept = new Chart(document.getElementById('deptChart'), { type: 'bar', data: { labels: data.labels, datasets: [{ data: data.counts, backgroundColor: '#2980b9' }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display:true, text:'THEO KHOA' } } } });
+        charts.level = new Chart(document.getElementById('levelChart'), { type: 'pie', data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: data.lv, backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] }, options: { maintainAspectRatio: false } });
+        charts.trend = new Chart(document.getElementById('trendChart'), { type: 'line', data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: '2026', data: data.trend[2026], borderColor: '#2980b9' }] }, options: { maintainAspectRatio: false } });
     }
-    function updateCharts() { const data = getAgg(); charts.dept.data.labels = data.labels; charts.dept.data.datasets[0].data = data.counts; charts.level.data.datasets[0].data = data.lv; charts.trend.data.datasets[2].data = data.trend[2026]; charts.dept.update(); charts.level.update(); charts.trend.update(); }
+    function updateCharts() { const data = getAgg(); charts.dept.data.labels = data.labels; charts.dept.data.datasets[0].data = data.counts; charts.level.data.datasets[0].data = data.lv; charts.trend.update(); charts.dept.update(); charts.level.update(); }
     function getAgg() {
-        const depts = {}, lv = { Nhẹ: 0, TB: 0, Nặng: 0 }, trend = {}, cy = 2026; [cy, cy-1, cy-2].forEach(y => trend[y] = Array(12).fill(0));
-        filtered.forEach(i => { depts[i.dept] = (depts[i.dept] || 0) + 1; if(lv.hasOwnProperty(i.level)) lv[i.level]++; if(trend[i.year]) trend[i.year][i.month]++; });
+        const depts = {}, lv = { Nhẹ: 0, TB: 0, Nặng: 0 }, trend = { 2026: Array(12).fill(0) };
+        filtered.forEach(i => { depts[i.dept] = (depts[i.dept] || 0) + 1; if(lv.hasOwnProperty(i.level)) lv[i.level]++; if(i.year === 2026) trend[2026][i.month]++; });
         return { labels: Object.keys(depts), counts: Object.values(depts), lv: [lv.Nhẹ, lv.TB, lv.Nặng], trend: trend };
     }
 </script>
