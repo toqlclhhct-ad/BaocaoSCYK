@@ -44,7 +44,7 @@
         .btn-ai:hover { opacity: 0.9; transform: translateY(-2px); }
         .ai-box { background: white; border-left: 4px solid var(--ai-purple); padding: 10px; margin-bottom: 15px; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .progress-bar { height: 10px; background: #eee; border-radius: 5px; margin: 10px 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--success); width: 0%; transition: 1.2s cubic-bezier(0.075, 0.82, 0.165, 1); }
+        .progress-fill { height: 100%; background: var(--success); width: 0%; transition: 1s; }
     </style>
 </head>
 <body>
@@ -79,7 +79,7 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="4" style="text-align:center; padding:50px;">Đang kết nối dữ liệu an toàn y tế...</td></tr>
+                <tr><td colspan="4" style="text-align:center; padding:50px;">Đang tải dữ liệu sự cố...</td></tr>
             </tbody>
         </table>
     </div>
@@ -102,17 +102,17 @@
             <div class="ai-panel">
                 <button class="btn-ai" id="btnAI" onclick="runAI()">✨ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
                 <div id="aiLoading" style="display:none; text-align:center; padding:20px;">
-                    <p style="color:var(--ai-purple); font-weight:bold;">🤖 Đang nạp 30 thông tin sự cố...</p>
+                    <p style="color:var(--ai-purple); font-weight:bold;">🤖 Đang phân tích 30 thông tin sự cố...</p>
                 </div>
                 <div id="aiResult" style="display:none;">
                     <h4 style="color:var(--ai-purple); margin-top:0;">🤖 KẾT QUẢ PHÂN TÍCH AI</h4>
                     <div class="ai-box"><strong>Nguyên nhân gốc rễ:</strong><p id="aiRoot"></p></div>
                     <div class="ai-box"><strong>Kế hoạch khắc phục đề xuất:</strong><p id="aiPlan"></p></div>
                     <div class="progress-box">
-                        <strong>Tiến độ khắc phục tại khoa:</strong>
+                        <strong>Tiến độ khắc phục dự kiến:</strong>
                         <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
-                        <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:5px;">
-                            <span>Đã nhận thông tin</span><span id="pText">0%</span>
+                        <div style="display:flex; justify-content:space-between; font-size:11px;">
+                            <span>Đã tiếp nhận</span><span id="pText">0%</span>
                         </div>
                     </div>
                 </div>
@@ -148,7 +148,7 @@
             updateFilters();
             initCharts();
             render();
-        } catch (e) { document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Lỗi đồng bộ dữ liệu Sheet.</td></tr>'; }
+        } catch (e) { document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Lỗi đồng bộ dữ liệu.</td></tr>'; }
     }
 
     function parseDate(s) { if(!s) return new Date(); const p = s.split('/'); return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date(s); }
@@ -172,7 +172,7 @@
 
     function showDetail(index) {
         const modal = document.getElementById('detailModal');
-        modal.dataset.idx = index;
+        modal.dataset.idx = index; 
         const item = filtered[index].fullData;
         const body = document.getElementById('modalBody');
         const redItems = [16, 17, 18, 24]; 
@@ -187,7 +187,7 @@
 
     async function runAI() {
         const idx = document.getElementById('detailModal').dataset.idx;
-        const fullInfo = JSON.stringify(filtered[idx].fullData);
+        const rowData = JSON.stringify(filtered[idx].fullData);
         const btn = document.getElementById('btnAI');
         const loading = document.getElementById('aiLoading');
         const result = document.getElementById('aiResult');
@@ -195,31 +195,41 @@
         btn.disabled = true; loading.style.display = "block"; result.style.display = "none";
 
         try {
-            const apiURL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${AI_KEY}`;
-            const response = await fetch(apiURL, {
+            // FIX LỖI 404: Dùng URL chuẩn cho model gemini-1.5-flash
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AI_KEY}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Phân tích 30 thông tin sự cố y khoa sau: ${fullInfo}. Trả về duy nhất định dạng JSON không chứa markdown: {"root": "Nguyên nhân gốc rễ...", "plan": "Kế hoạch khắc phục cụ thể...", "percent": 75}` }] }]
+                    contents: [{
+                        parts: [{
+                            text: `Bạn là chuyên gia an toàn y tế. Hãy phân tích 30 thông tin sự cố sau: ${rowData}. 
+                            Trả về kết quả duy nhất dạng JSON không markdown: 
+                            {"root": "Mô tả nguyên nhân ngắn gọn", "plan": "Các bước khắc phục cụ thể", "percent": 70}`
+                        }]
+                    }]
                 })
             });
 
-            const data = await response.json();
-            if (data.error) throw new Error(data.error.message);
+            const json = await response.json();
+            if (json.error) throw new Error(json.error.message);
 
-            const text = data.candidates[0].content.parts[0].text;
-            const res = JSON.parse(text.replace(/```json|```/g, "").trim());
+            const rawText = json.candidates[0].content.parts[0].text;
+            const data = JSON.parse(rawText.replace(/```json|```/g, "").trim());
 
-            document.getElementById('aiRoot').innerText = res.root;
-            document.getElementById('aiPlan').innerText = res.plan;
-            document.getElementById('pFill').style.width = res.percent + "%";
-            document.getElementById('pText').innerText = res.percent + "% - Đang triển khai";
-            
-            loading.style.display = "none"; result.style.display = "block";
+            document.getElementById('aiRoot').innerText = data.root;
+            document.getElementById('aiPlan').innerText = data.plan;
+            document.getElementById('pFill').style.width = data.percent + "%";
+            document.getElementById('pText').innerText = data.percent + "%";
+
+            loading.style.display = "none";
+            result.style.display = "block";
         } catch (e) {
+            console.error(e);
             alert("Lỗi AI: " + e.message);
             loading.style.display = "none";
-        } finally { btn.disabled = false; }
+        } finally {
+            btn.disabled = false;
+        }
     }
 
     function closeModal() { document.getElementById('detailModal').style.display = "none"; }
