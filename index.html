@@ -121,30 +121,27 @@
             <div class="info-panel">
                 <div id="modalBody" class="detail-grid"></div>
             </div>
-            
             <div class="ai-panel">
-                <button class="btn-ai" onclick="runAI()">✨ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
-                
+                <button class="btn-ai" onclick="runAI()">✨ PHÂN TÍCH AI</button>
                 <div id="aiLoading" style="display:none; text-align:center; padding:20px;">
+                    <div style="margin-bottom:10px;">⏳</div>
                     <small>Đang nạp 30 thông tin và phân tích...</small>
                 </div>
-
                 <div id="aiResult" class="ai-result">
                     <h4 style="color:var(--ai-purple); margin-top:0;">🤖 KẾT QUẢ PHÂN TÍCH AI</h4>
                     <div class="ai-box">
                         <strong>Nguyên nhân gốc rễ:</strong>
-                        <p id="aiRoot">Đang phân tích...</p>
+                        <p id="aiRoot"></p>
                     </div>
                     <div class="ai-box">
                         <strong>Kế hoạch khắc phục đề xuất:</strong>
-                        <p id="aiPlan">Đang lập kế hoạch...</p>
+                        <p id="aiPlan"></p>
                     </div>
-
                     <div class="progress-box">
                         <strong>Tiến độ khắc phục tại khoa:</strong>
                         <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
                         <div style="display:flex; justify-content:space-between; font-size:11px;">
-                            <span>Đã nhận thông tin</span>
+                            <span id="pStatus">Đang thực hiện</span>
                             <span id="pText">0%</span>
                         </div>
                     </div>
@@ -156,6 +153,44 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+<script type="module">
+    // --- KẾT NỐI GEMINI AI ---
+    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+    const API_KEY = "AIzaSyBhJuHaTQ1FAabKzqkOhuiQr34C2G40UPQ";
+    const genAI = new GoogleGenerativeAI(API_KEY);
+
+    window.runAI = async function() {
+        const loading = document.getElementById('aiLoading');
+        const result = document.getElementById('aiResult');
+        const modal = document.getElementById('detailModal');
+        const idx = modal.dataset.index;
+        const reportData = JSON.stringify(filtered[idx].fullData);
+
+        loading.style.display = "block";
+        result.style.display = "none";
+
+        try {
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const prompt = `Bạn là một chuyên gia Quản lý chất lượng Bệnh viện. Phân tích dữ liệu sự cố này: ${reportData}. Trả về JSON: {"nguyen_nhan": "chuỗi", "ke_hoach": "chuỗi", "tien_do": số từ 0-100}. Lưu ý: Chỉ JSON, không nói gì thêm.`;
+            
+            const resultAI = await model.generateContent(prompt);
+            const response = await resultAI.response;
+            const data = JSON.parse(response.text().replace(/```json|```/g, ""));
+
+            document.getElementById('aiRoot').innerText = data.nguyen_nhan;
+            document.getElementById('aiPlan').innerText = data.ke_hoach;
+            document.getElementById('pFill').style.width = data.tien_do + "%";
+            document.getElementById('pText').innerText = data.tien_do + "%";
+            
+            loading.style.display = "none";
+            result.style.display = "block";
+        } catch (e) {
+            alert("Lỗi AI: Vui lòng kiểm tra API Key.");
+            loading.style.display = "none";
+        }
+    }
+</script>
 
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbynaVlHpUE79D4fnczE04D_r83k0F3d_V4YBRVwOsWfhbWv47rdiGomoqQAdtX784U/exec'; 
@@ -178,155 +213,71 @@
                 const dateObj = parseDate(dateStr);
                 const levelRaw = row["Đánh giá ban đầu về mức độ ảnh hưởng"] || val[23] || "Nhẹ";
                 let lv = levelRaw.includes("Trung bình") || levelRaw.includes("TB") ? "TB" : (levelRaw.includes("Nặng") ? "Nặng" : "Nhẹ");
-                return {
-                    date: dateStr,
-                    dept: row["Khoa/phòng/vị trí xảy ra"] || val[11] || "KĐ",
-                    desc: row["Mô tả ngắn gọn"] || val[15] || "",
-                    level: lv,
-                    ts: dateObj.getTime(),
-                    month: dateObj.getMonth(),
-                    year: dateObj.getFullYear(),
-                    fullData: row
-                };
+                return { date: dateStr, dept: row["Khoa/phòng/vị trí xảy ra"] || val[11] || "KĐ", desc: row["Mô tả ngắn gọn"] || val[15] || "", level: lv, ts: dateObj.getTime(), month: dateObj.getMonth(), year: dateObj.getFullYear(), fullData: row };
             });
             filtered = [...db];
-            updateFilters();
-            initCharts();
-            render();
+            updateFilters(); initCharts(); render();
         } catch (e) {
             document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Lỗi đồng bộ dữ liệu.</td></tr>';
         }
     }
 
-    function parseDate(s) {
-        if(!s) return new Date();
-        const p = s.split('/');
-        return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date(s);
-    }
+    function parseDate(s) { if(!s) return new Date(); const p = s.split('/'); return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date(s); }
 
     function filterData() {
-        const start = document.getElementById('startD').value;
-        const end = document.getElementById('endD').value;
-        const dept = document.getElementById('fDept').value;
-        const level = document.getElementById('fLevel').value;
-        const key = document.getElementById('sKey').value.toLowerCase();
-        const sTs = start ? new Date(start).getTime() : 0;
-        const eTs = end ? new Date(end).setHours(23,59,59) : Infinity;
-
-        filtered = db.filter(i => 
-            (i.ts >= sTs && i.ts <= eTs) &&
-            (dept === "" || i.dept === dept) &&
-            (level === "" || i.level === level) &&
-            (i.desc.toLowerCase().includes(key) || i.dept.toLowerCase().includes(key))
-        );
-        currentPage = 1;
-        render();
-        updateCharts();
+        const start = document.getElementById('startD').value, end = document.getElementById('endD').value, dept = document.getElementById('fDept').value, level = document.getElementById('fLevel').value, key = document.getElementById('sKey').value.toLowerCase();
+        const sTs = start ? new Date(start).getTime() : 0, eTs = end ? new Date(end).setHours(23,59,59) : Infinity;
+        filtered = db.filter(i => (i.ts >= sTs && i.ts <= eTs) && (dept === "" || i.dept === dept) && (level === "" || i.level === level) && (i.desc.toLowerCase().includes(key) || i.dept.toLowerCase().includes(key)));
+        currentPage = 1; render(); updateCharts();
     }
 
     function render() {
-        const start = (currentPage - 1) * limit;
-        const data = filtered.slice(start, start + limit);
-        document.getElementById('tableBody').innerHTML = data.map((i, idx) => `
-            <tr onclick="showDetail(${start + idx})">
-                <td>${i.date}</td>
-                <td><b>${i.dept}</b></td>
-                <td>${i.desc}</td>
-                <td style="text-align:center"><span class="pill status-${i.level}">${i.level}</span></td>
-            </tr>
-        `).join('') || '<tr><td colspan="4" style="text-align:center">Không tìm thấy kết quả</td></tr>';
+        const start = (currentPage - 1) * limit, data = filtered.slice(start, start + limit);
+        document.getElementById('tableBody').innerHTML = data.map((i, idx) => `<tr onclick="showDetail(${start + idx})"><td>${i.date}</td><td><b>${i.dept}</b></td><td>${i.desc}</td><td style="text-align:center"><span class="pill status-${i.level}">${i.level}</span></td></tr>`).join('') || '<tr><td colspan="4" style="text-align:center">Không tìm thấy kết quả</td></tr>';
         document.getElementById('pageInfo').innerText = `Hiển thị ${data.length > 0 ? start+1 : 0}-${Math.min(start+limit, filtered.length)} / Tổng ${filtered.length} sự cố`;
         renderPaging();
     }
 
     function showDetail(index) {
+        const modal = document.getElementById('detailModal');
         const item = filtered[index].fullData;
-        const body = document.getElementById('modalBody');
+        modal.dataset.index = index; // Lưu index để AI dùng
         const redItems = [16, 17, 18, 24]; 
-
-        body.innerHTML = Object.keys(item).map((key, i) => {
-            const isRed = redItems.includes(i + 1);
-            return `<div class="detail-item ${isRed ? 'highlight-red' : ''}"><span class="detail-label">${key}:</span> ${item[key] || "---"}</div>`;
-        }).join('');
-        
-        // Reset AI Panel
+        document.getElementById('modalBody').innerHTML = Object.keys(item).map((key, i) => `<div class="detail-item ${redItems.includes(i + 1) ? 'highlight-red' : ''}"><span class="detail-label">${key}:</span> ${item[key] || "---"}</div>`).join('');
         document.getElementById('aiResult').style.display = "none";
         document.getElementById('aiLoading').style.display = "none";
-        document.getElementById('detailModal').style.display = "block";
-    }
-
-    function runAI() {
-        document.getElementById('aiLoading').style.display = "block";
-        document.getElementById('aiResult').style.display = "none";
-        
-        // Giả lập gửi dữ liệu cho Trợ lý AI của bạn
-        setTimeout(() => {
-            document.getElementById('aiLoading').style.display = "none";
-            document.getElementById('aiResult').style.display = "block";
-            
-            // Dữ liệu giả lập mẫu (Khi bạn kết nối API AI thật, hãy đổ vào đây)
-            document.getElementById('aiRoot').innerText = "Thiếu quy trình kiểm soát kép tại vị trí xảy ra và nhân viên chưa được đào tạo cập nhật.";
-            document.getElementById('aiPlan').innerText = "1. Ban hành lại quy trình vận hành chuẩn. 2. Tổ chức đào tạo lại trong 7 ngày. 3. Giám sát tuân thủ hàng tuần.";
-            
-            // Chạy thanh tiến độ giả lập 65%
-            document.getElementById('pFill').style.width = "65%";
-            document.getElementById('pText').innerText = "65% - Đang thực hiện đào tạo";
-        }, 1500);
+        modal.style.display = "block";
     }
 
     function closeModal() { document.getElementById('detailModal').style.display = "none"; }
     window.onclick = function(e) { if (e.target == document.getElementById('detailModal')) closeModal(); }
 
     function renderPaging() {
-        const total = Math.ceil(filtered.length / limit);
-        const nav = document.getElementById('pageNav'); nav.innerHTML = '';
+        const total = Math.ceil(filtered.length / limit), nav = document.getElementById('pageNav'); nav.innerHTML = '';
         if(total <= 1) return;
         for(let i=1; i<=total; i++) {
-            const b = document.createElement('button');
-            b.className = `btn-p ${i === currentPage ? 'active' : ''}`;
-            b.innerText = i; b.onclick = (e) => { e.stopPropagation(); currentPage = i; render(); };
-            nav.appendChild(b);
+            const b = document.createElement('button'); b.className = `btn-p ${i === currentPage ? 'active' : ''}`; b.innerText = i; b.onclick = (e) => { e.stopPropagation(); currentPage = i; render(); }; nav.appendChild(b);
         }
     }
 
     function updateFilters() {
-        const depts = [...new Set(db.map(i => i.dept))].sort();
-        const sel = document.getElementById('fDept');
-        sel.innerHTML = '<option value="">-- Tất cả --</option>';
-        depts.forEach(d => sel.add(new Option(d, d)));
+        const depts = [...new Set(db.map(i => i.dept))].sort(), sel = document.getElementById('fDept');
+        sel.innerHTML = '<option value="">-- Tất cả --</option>'; depts.forEach(d => sel.add(new Option(d, d)));
     }
 
     function initCharts() {
         Chart.register(ChartDataLabels);
-        const data = getAgg();
-        const cy = 2026;
-        charts.dept = new Chart(document.getElementById('deptChart'), {
-            type: 'bar',
-            data: { labels: data.labels, datasets: [{ data: data.counts, backgroundColor: '#2980b9' }] },
-            options: { maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display:true, text:'SỰ CỐ THEO KHOA/PHÒNG' }, datalabels: { color: '#fff', anchor: 'end', align: 'bottom', font: {weight: 'bold'} } } }
-        });
-        charts.level = new Chart(document.getElementById('levelChart'), {
-            type: 'pie',
-            data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: data.lv, backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
-            options: { maintainAspectRatio: false, plugins: { legend: { position:'right' }, title: { display:true, text:'TỶ LỆ % THEO MỨC ĐỘ' }, datalabels: { color: '#fff', formatter: (val, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return val > 0 ? `${val} (${(val*100/sum).toFixed(0)}%)` : ''; } } } }
-        });
-        charts.trend = new Chart(document.getElementById('trendChart'), {
-            type: 'line',
-            data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: cy-2, data: data.trend[cy-2], borderColor: '#bdc3c7' }, { label: cy-1, data: data.trend[cy-1], borderColor: '#95a5a6' }, { label: cy, data: data.trend[cy], borderColor: '#2980b9', borderWidth: 3 }] },
-            options: { maintainAspectRatio: false, plugins: { title: { display: true, text: 'XU HƯỚNG 3 NĂM GẦN NHẤT' }, datalabels: { display: false } } }
-        });
+        const data = getAgg(), cy = 2026;
+        charts.dept = new Chart(document.getElementById('deptChart'), { type: 'bar', data: { labels: data.labels, datasets: [{ data: data.counts, backgroundColor: '#2980b9' }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display:true, text:'SỰ CỐ THEO KHOA/PHÒNG' }, datalabels: { color: '#fff', anchor: 'end', align: 'bottom' } } } });
+        charts.level = new Chart(document.getElementById('levelChart'), { type: 'pie', data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: data.lv, backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] }, options: { maintainAspectRatio: false, plugins: { title: { display:true, text:'TỶ LỆ % THEO MỨC ĐỘ' }, datalabels: { color: '#fff', formatter: (val, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return val > 0 ? `${val} (${(val*100/sum).toFixed(0)}%)` : ''; } } } } });
+        charts.trend = new Chart(document.getElementById('trendChart'), { type: 'line', data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: cy-2, data: data.trend[cy-2], borderColor: '#bdc3c7' }, { label: cy-1, data: data.trend[cy-1], borderColor: '#95a5a6' }, { label: cy, data: data.trend[cy], borderColor: '#2980b9', borderWidth: 3 }] }, options: { maintainAspectRatio: false, plugins: { title: { display: true, text: 'XU HƯỚNG 3 NĂM GẦN NHẤT' }, datalabels: { display: false } } } });
     }
 
-    function updateCharts() {
-        const data = getAgg();
-        charts.dept.data.labels = data.labels; charts.dept.data.datasets[0].data = data.counts;
-        charts.level.data.datasets[0].data = data.lv; charts.trend.data.datasets[2].data = data.trend[2026];
-        charts.dept.update(); charts.level.update(); charts.trend.update();
-    }
+    function updateCharts() { const data = getAgg(); charts.dept.data.labels = data.labels; charts.dept.data.datasets[0].data = data.counts; charts.level.data.datasets[0].data = data.lv; charts.trend.data.datasets[2].data = data.trend[2026]; charts.dept.update(); charts.level.update(); charts.trend.update(); }
 
     function getAgg() {
-        const depts = {}, lv = { Nhẹ: 0, TB: 0, Nặng: 0 }, trend = {};
-        const cy = 2026; [cy, cy-1, cy-2].forEach(y => trend[y] = Array(12).fill(0));
+        const depts = {}, lv = { Nhẹ: 0, TB: 0, Nặng: 0 }, trend = {}, cy = 2026;
+        [cy, cy-1, cy-2].forEach(y => trend[y] = Array(12).fill(0));
         filtered.forEach(i => { depts[i.dept] = (depts[i.dept] || 0) + 1; if(lv.hasOwnProperty(i.level)) lv[i.level]++; if(trend[i.year]) trend[i.year][i.month]++; });
         return { labels: Object.keys(depts), counts: Object.values(depts), lv: [lv.Nhẹ, lv.TB, lv.Nặng], trend: trend };
     }
