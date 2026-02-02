@@ -7,13 +7,13 @@
     <style>
         :root { --primary: #2980b9; --bg: #f4f7f6; --success: #27ae60; --orange: #f39c12; --danger: #e74c3c; --ai-purple: #8e44ad; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
-        .container { max-width: 1600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .container { max-width: 1600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
         .btn-new { background: var(--success); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; }
         
-        /* Dashboard & Charts */
+        /* Dashboard */
         .dashboard-grid { display: grid; grid-template-columns: 1fr 0.8fr 1.2fr; gap: 15px; margin-bottom: 20px; }
-        .card { background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee; height: 300px; position: relative; }
+        .card { background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee; height: 320px; position: relative; }
         
         /* Filters */
         .filters { display: flex; flex-wrap: wrap; gap: 12px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
@@ -24,11 +24,11 @@
         /* Table */
         .table-area { overflow-x: auto; border: 1px solid #eee; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 900px; }
-        th { background: var(--primary); color: white; padding: 12px; text-align: left; position: sticky; top: 0; z-index: 5; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; position: sticky; top: 0; }
         td { padding: 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
         tr:hover { background: #f1f7ff; }
         
-        /* Status Pills */
+        /* Pills */
         .pill { padding: 4px 10px; border-radius: 20px; color: white; font-weight: bold; font-size: 11px; }
         .status-Nhẹ { background: #3498db; }
         .status-TB { background: var(--orange); }
@@ -36,18 +36,18 @@
         
         /* Modal & AI */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-        .modal-content { background: white; margin: 1.5% auto; width: 90%; max-width: 1200px; border-radius: 12px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: white; margin: 1% auto; width: 90%; max-width: 1200px; border-radius: 12px; max-height: 95vh; overflow-y: auto; }
         .modal-header { position: sticky; top: 0; background: white; z-index: 10; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding: 15px 20px; }
         .detail-body { padding: 20px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
-        .detail-item { border-bottom: 1px solid #eee; padding: 8px 0; display: flex; flex-direction: column; }
-        .detail-label { font-weight: bold; color: #444; margin-bottom: 2px; }
-        .highlight-red { color: #e74c3c !important; font-weight: bold; }
+        .detail-item { border-bottom: 1px solid #eee; padding: 8px 0; font-size: 13px; }
+        .detail-label { font-weight: bold; color: #444; }
+        .highlight-red { color: var(--danger) !important; font-weight: bold; }
         
-        .ai-panel { background: #fcfaff; border-radius: 8px; padding: 20px; border: 1px solid #e0d0f0; height: fit-content; }
+        .ai-panel { background: #fcfaff; border-radius: 8px; padding: 20px; border: 1px solid #e0d0f0; }
         .btn-ai { background: var(--ai-purple); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 15px; font-size: 15px; }
         .ai-box { background: white; border-left: 4px solid var(--ai-purple); padding: 12px; margin-bottom: 15px; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .progress-bar { height: 12px; background: #eee; border-radius: 6px; margin: 10px 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--success); width: 0%; transition: 1.5s ease-out; }
+        .progress-fill { height: 100%; background: var(--success); width: 0%; transition: 1.5s; }
     </style>
 </head>
 <body>
@@ -72,7 +72,7 @@
         <div class="f-group"><label>Đến ngày</label><input type="date" id="endD"></div>
         <div class="f-group"><label>Khoa xảy ra</label><select id="fDept"><option value="">-- Tất cả --</option></select></div>
         <div class="f-group"><label>Mức độ</label><select id="fLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
-        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm theo MÔ TẢ</label><input type="text" id="sKey" placeholder="Số hồ sơ, nội dung sự cố..."></div>
+        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm theo MÔ TẢ</label><input type="text" id="sKey" placeholder="Tìm kiếm nội dung sự cố..."></div>
     </div>
 
     <div class="table-area">
@@ -101,14 +101,14 @@
             <div class="ai-panel">
                 <button class="btn-ai" id="btnAI" onclick="runAI()">✨ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
                 <div id="aiLoading" style="display:none; text-align:center;">
-                    <p style="color:var(--ai-purple); font-weight:bold;">🤖 Đang suy luận nguyên nhân gốc rễ (RCA)...</p>
+                    <p style="color:var(--ai-purple); font-weight:bold;">🤖 Hệ thống đang suy luận RCA...</p>
                 </div>
                 <div id="aiResult" style="display:none;">
                     <h4 style="color:var(--ai-purple); margin-top:0;">🤖 KẾT QUẢ PHÂN TÍCH AI</h4>
                     <div class="ai-box"><strong>Nguyên nhân gốc rễ:</strong><p id="aiRoot"></p></div>
-                    <div class="ai-box"><strong>Kế hoạch khắc phục đề xuất:</strong><p id="aiPlan"></p></div>
-                    <div style="margin-top:15px;">
-                        <strong>Mức độ ưu tiên khắc phục:</strong>
+                    <div class="ai-box"><strong>Giải pháp đề xuất:</strong><p id="aiPlan"></p></div>
+                    <div>
+                        <strong>Mức độ ưu tiên:</strong>
                         <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
                         <span id="pText" style="font-size:12px; font-weight:bold; color:var(--success);">0%</span>
                     </div>
@@ -155,7 +155,7 @@
             updateFilters();
             initCharts();
             render();
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Lỗi tải dữ liệu:", e); }
     }
 
     function filterData() {
@@ -174,7 +174,7 @@
                 <td><b>${i.dept}</b></td>
                 <td>${i.desc}</td>
                 <td style="text-align:center"><span class="pill status-${i.level}">${i.level}</span></td>
-            </tr>`).join('') || '<tr><td colspan="4" style="text-align:center">Không tìm thấy sự cố</td></tr>';
+            </tr>`).join('');
     }
 
     function showDetail(idx) {
@@ -182,13 +182,12 @@
         const modal = document.getElementById('detailModal');
         modal.dataset.idx = idx;
         
-        // Render nội dung và Highlight đỏ các mục quan trọng
         document.getElementById('modalBody').innerHTML = Object.keys(item).map(k => {
-            const isCritical = ["mức độ", "ảnh hưởng", "nghiêm trọng", "đánh giá"].some(word => k.toLowerCase().includes(word));
+            const isRed = ["mức độ", "đánh giá", "khẩn", "nghiêm trọng"].some(word => k.toLowerCase().includes(word));
             return `
             <div class="detail-item">
-                <span class="detail-label ${isCritical ? 'highlight-red' : ''}">${k}</span>
-                <span style="font-size:13px; color:#333;">${item[k] || '---'}</span>
+                <span class="detail-label ${isRed ? 'highlight-red' : ''}">${k}:</span> 
+                <span>${item[k] || '---'}</span>
             </div>`;
         }).join('');
 
@@ -201,38 +200,36 @@
         const btn = document.getElementById('btnAI');
         const loading = document.getElementById('aiLoading');
         const result = document.getElementById('aiResult');
-        
         const rowData = JSON.stringify(filtered[idx].fullData);
 
         btn.disabled = true; loading.style.display = "block"; result.style.display = "none";
 
         try {
-            // FIX LỖI 404: Endpoint chuẩn v1beta
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AI_KEY}`;
+            // SỬA LỖI 404: Dùng endpoint v1beta và model name đầy đủ
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${AI_KEY}`;
             
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Phân tích sự cố: ${rowData}. Trả về JSON (không markdown): {"root": "nguyên nhân chính", "plan": "hành động", "percent": 85}` }] }]
+                    contents: [{ parts: [{ text: `Phân tích sự cố y khoa: ${rowData}. Trả về định dạng JSON thuần túy (không kèm markdown): {"root": "...", "plan": "...", "percent": 85}` }] }]
                 })
             });
 
-            if (!response.ok) throw new Error("Google AI đang bận hoặc lỗi kết nối. Vui lòng thử lại sau.");
+            if (!response.ok) throw new Error("Google AI đang bận hoặc Endpoint bị lỗi. Thử lại sau.");
 
-            const json = await response.json();
-            const rawText = json.candidates[0].content.parts[0].text;
-            const cleanText = rawText.replace(/```json|```/g, "").trim();
-            const data = JSON.parse(cleanText);
+            const data = await response.json();
+            const text = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+            const res = JSON.parse(text);
 
-            document.getElementById('aiRoot').innerText = data.root;
-            document.getElementById('aiPlan').innerText = data.plan;
-            document.getElementById('pFill').style.width = data.percent + "%";
-            document.getElementById('pText').innerText = data.percent + "%";
+            document.getElementById('aiRoot').innerText = res.root;
+            document.getElementById('aiPlan').innerText = res.plan;
+            document.getElementById('pFill').style.width = res.percent + "%";
+            document.getElementById('pText').innerText = res.percent + "%";
 
             loading.style.display = "none"; result.style.display = "block";
         } catch (e) {
-            alert(e.message);
+            alert("Lỗi AI: " + e.message);
             loading.style.display = "none";
             btn.disabled = false;
         }
@@ -247,41 +244,34 @@
     }
 
     function initCharts() {
-        const commonOptions = {
+        const opt = {
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'bottom', labels: { font: { size: 11 } } },
+                legend: { position: 'bottom', labels: { font: { size: 10 } } },
                 datalabels: {
-                    color: '#444',
-                    anchor: 'end',
-                    align: 'top',
-                    font: { weight: 'bold', size: 11 },
-                    formatter: (v) => v > 0 ? v : ''
+                    anchor: 'end', align: 'top', color: '#444',
+                    font: { weight: 'bold' }, formatter: (v) => v > 0 ? v : ''
                 }
             }
         };
 
-        // Biểu đồ Cột (Khoa Phòng)
         charts.dept = new Chart(document.getElementById('deptChart'), {
             type: 'bar',
             data: { labels: [], datasets: [{ label: 'Số vụ', data: [], backgroundColor: '#2980b9' }] },
-            options: { ...commonOptions, plugins: { ...commonOptions.plugins, title: { display: true, text: 'SỰ CỐ THEO KHOA/PHÒNG', font: {size: 14} } } }
+            options: { ...opt, plugins: { ...opt.plugins, title: { display: true, text: 'SỰ CỐ THEO KHOA/PHÒNG' } } }
         });
 
-        // Biểu đồ Tròn (Mức độ)
         charts.level = new Chart(document.getElementById('levelChart'), {
             type: 'pie',
             data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: [], backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
-            options: { ...commonOptions, plugins: { ...commonOptions.plugins, title: { display: true, text: 'TỶ LỆ % THEO MỨC ĐỘ', font: {size: 14} }, datalabels: { formatter: (v, ctx) => v > 0 ? `${v} (${Math.round(v/filtered.length*100)}%)` : '' } } }
+            options: { ...opt, plugins: { ...opt.plugins, title: { display: true, text: 'TỶ LỆ % THEO MỨC ĐỘ' } } }
         });
 
-        // Biểu đồ Đường (Xu hướng)
         charts.trend = new Chart(document.getElementById('trendChart'), {
             type: 'line',
-            data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: '2026', data: [], borderColor: '#2980b9', tension: 0.3, fill: true, backgroundColor: 'rgba(41, 128, 185, 0.1)' }] },
-            options: { ...commonOptions, plugins: { ...commonOptions.plugins, title: { display: true, text: 'XU HƯỚNG 3 NĂM GẦN NHẤT', font: {size: 14} } } }
+            data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: '2026', data: [], borderColor: '#2980b9', tension: 0.3 }] },
+            options: { ...opt, plugins: { ...opt.plugins, title: { display: true, text: 'XU HƯỚNG 3 NĂM GẦN NHẤT' } } }
         });
-
         updateCharts();
     }
 
@@ -292,12 +282,10 @@
             lv[i.level]++;
             if(i.year === 2026) trend[i.month]++;
         });
-
         charts.dept.data.labels = Object.keys(deptMap);
         charts.dept.data.datasets[0].data = Object.values(deptMap);
         charts.level.data.datasets[0].data = [lv.Nhẹ, lv.TB, lv.Nặng];
         charts.trend.data.datasets[0].data = trend;
-
         Object.values(charts).forEach(c => c.update());
     }
 </script>
