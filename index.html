@@ -8,53 +8,39 @@
         :root { --primary: #2c3e50; --accent: #3498db; --bg: #ecf0f1; --success: #27ae60; --danger: #e74c3c; --ai: #8e44ad; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #333; }
         .container { max-width: 1550px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        
         header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--accent); padding-bottom: 15px; margin-bottom: 20px; }
         .logo-area { display: flex; align-items: center; gap: 15px; }
-        .btn-new { background: var(--success); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; transition: 0.3s; }
-        .btn-new:hover { opacity: 0.8; }
-
-        /* Dashboard */
-        .dashboard { display: grid; grid-template-columns: 1fr 0.8fr 1.2fr; gap: 15px; margin-bottom: 20px; }
-        .card { background: white; padding: 15px; border-radius: 10px; border: 1px solid #ddd; height: 320px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .btn-new { background: var(--success); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; }
         
-        /* Bộ lọc */
+        .dashboard { display: grid; grid-template-columns: 1fr 0.8fr 1.2fr; gap: 15px; margin-bottom: 20px; }
+        .card { background: white; padding: 15px; border-radius: 10px; border: 1px solid #ddd; height: 320px; }
+        
         .filter-bar { display: flex; flex-wrap: wrap; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
         .f-item { display: flex; flex-direction: column; gap: 5px; }
-        .f-item label { font-size: 12px; font-weight: bold; color: #666; }
-        .f-item select, .f-item input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
+        .f-item select, .f-item input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
 
-        /* Bảng dữ liệu & Phân trang */
         .table-container { overflow-x: auto; border: 1px solid #eee; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
         th { background: var(--primary); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.2s; }
+        td { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
         tr:hover { background: #f1f7ff; }
 
         .pagination { display: flex; justify-content: center; align-items: center; gap: 5px; padding: 15px; }
         .pg-btn { border: 1px solid #ddd; background: white; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
-        .pg-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
-        .pg-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pg-btn.active { background: var(--accent); color: white; }
 
-        /* Mức độ Pill */
         .pill { padding: 4px 10px; border-radius: 20px; color: white; font-weight: bold; font-size: 11px; text-transform: uppercase; }
         .lv-Nhẹ { background: #3498db; } .lv-TB { background: #f39c12; } .lv-Nặng { background: #e74c3c; }
 
-        /* Modal chi tiết */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
-        .modal-content { background: white; margin: 1% auto; width: 90%; max-width: 1250px; border-radius: 12px; max-height: 95vh; overflow: hidden; display: flex; flex-direction: column; }
+        .modal-content { background: white; margin: 1% auto; width: 95%; max-width: 1300px; border-radius: 12px; max-height: 95vh; overflow: hidden; display: flex; flex-direction: column; }
         .modal-header { padding: 15px 25px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
         .modal-body { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; padding: 20px; overflow-y: auto; }
         
-        .detail-info { border-right: 1px solid #eee; padding-right: 20px; }
-        .detail-row { margin-bottom: 12px; padding-bottom: 5px; border-bottom: 1px dashed #eee; font-size: 14px; }
         .lbl-red { color: var(--danger); font-weight: bold; }
-
         .ai-section { background: #f9f4ff; border: 1px solid #dcd0ff; border-radius: 8px; padding: 20px; position: sticky; top: 0; }
-        .btn-ai { background: var(--ai); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.2); }
-        .ai-output { margin-top: 20px; background: white; border-left: 5px solid var(--ai); padding: 15px; border-radius: 4px; display: none; animation: fadeIn 0.5s; }
-        
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .btn-ai { background: var(--ai); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; }
+        .ai-output { margin-top: 20px; background: white; border-left: 5px solid var(--ai); padding: 15px; display: none; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -65,7 +51,7 @@
             <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" width="60">
             <h2 style="margin:0; color:var(--primary)">HỆ THỐNG GIÁM SÁT SỰ CỐ Y KHOA</h2>
         </div>
-        <a href="form.html" class="btn-new">+ BÁO CÁO MỚI</a>
+        <a href="form.html" class="btn-new">+ LẬP BÁO CÁO MỚI</a>
     </header>
 
     <div class="dashboard">
@@ -77,7 +63,7 @@
     <div class="filter-bar">
         <div class="f-item"><label>Khoa xảy ra</label><select id="fDept"><option value="">Tất cả</option></select></div>
         <div class="f-item"><label>Mức độ</label><select id="fLevel"><option value="">Tất cả</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
-        <div class="f-item" style="flex-grow:1;"><label>Tìm kiếm thông tin</label><input type="text" id="sSearch" placeholder="Số hồ sơ, bệnh nhân, mô tả..."></div>
+        <div class="f-item" style="flex-grow:1;"><label>Tìm kiếm thông tin</label><input type="text" id="sSearch" placeholder="Nhập nội dung cần tìm..."></div>
     </div>
 
     <div class="table-container">
@@ -85,7 +71,7 @@
             <thead>
                 <tr>
                     <th style="width:110px">Ngày BC</th>
-                    <th style="width:200px">Khoa/Phòng</th>
+                    <th style="width:180px">Khoa/Phòng</th>
                     <th>Mô tả tóm tắt nội dung sự cố</th>
                     <th style="width:100px; text-align:center">Mức độ</th>
                 </tr>
@@ -103,16 +89,15 @@
             <span style="font-size:35px; cursor:pointer; color:var(--danger)" onclick="closeModal()">&times;</span>
         </div>
         <div class="modal-body">
-            <div id="detailContent" class="detail-info"></div>
+            <div id="detailContent"></div>
             <div class="ai-section">
-                <button class="btn-ai" id="btnAI" onclick="analyzeAI()">⚡ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
+                <button class="btn-ai" id="btnAI" onclick="analyzeAI()">✨ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
                 <div id="aiWait" style="display:none; text-align:center; margin-top:15px; color:var(--ai)">
-                    <strong>🤖 Đang kết nối dữ liệu và suy luận...</strong>
+                    <strong>🤖 Đang xử lý dữ liệu qua Google Apps Script...</strong>
                 </div>
                 <div id="aiOutput" class="ai-output">
-                    <h4 style="margin:0 0 10px 0; color:var(--ai)">🤖 KẾT QUẢ PHÂN TÍCH AI</h4>
-                    <p><strong>Nguyên nhân gốc rễ (RCA):</strong> <span id="resRoot"></span></p>
-                    <p><strong>Kế hoạch đề xuất:</strong> <span id="resPlan"></span></p>
+                    <h4 style="margin:0 0 10px 0; color:var(--ai)">🤖 KẾT QUẢ PHÂN TÍCH AI:</h4>
+                    <div id="aiResText"></div>
                 </div>
             </div>
         </div>
@@ -123,7 +108,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyTZcv0sgGdvRmgyWJM3bMHpFG6lLGjup1qLfmSrswDehs45oJw_fuIyplz7MrMZbQ/exec'; 
+    // THAY LINK WEB APP MỚI CỦA BẠN VÀO ĐÂY
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbynaVlHpUE79D4fnczE04D_r83k0F3d_V4YBRVwOsWfhbWv47rdiGomoqQAdtX784U/exec'; 
     let masterData = [], filteredData = [], charts = {};
     let page = 1, limit = 10;
 
@@ -135,22 +121,19 @@
             const d = await r.json();
             masterData = d.map(row => {
                 const v = Object.values(row);
-                const dateObj = new Date(row["Ngày báo cáo"] || v[3]);
+                const dObj = new Date(row["Ngày báo cáo"] || v[3]);
                 const lvRaw = (row["Đánh giá ban đầu về mức độ ảnh hưởng"] || v[23] || "").toLowerCase();
-                let lv = lvRaw.includes("nặng") ? "Nặng" : (lvRaw.includes("trung bình") || lvRaw.includes("tb") ? "TB" : "Nhẹ");
+                let lv = lvRaw.includes("nặng") ? "Nặng" : (lvRaw.includes("trung bình") ? "TB" : "Nhẹ");
                 return {
-                    date: isNaN(dateObj) ? "---" : dateObj.toLocaleDateString('vi-VN'),
+                    date: isNaN(dObj) ? "---" : dObj.toLocaleDateString('vi-VN'),
                     dept: row["Khoa/phòng/vị trí xảy ra"] || v[11] || "KĐ",
                     desc: row["Mô tả ngắn gọn"] || v[15] || "---",
-                    level: lv,
-                    full: row,
-                    month: dateObj.getMonth(),
-                    year: dateObj.getFullYear()
+                    level: lv, full: row, month: dObj.getMonth(), year: dObj.getFullYear()
                 };
             });
             filteredData = [...masterData];
             initFilters(); initCharts(); render();
-        } catch (e) { alert("Lỗi tải dữ liệu: " + e.message); }
+        } catch (e) { console.error(e); }
     }
 
     function render() {
@@ -163,58 +146,55 @@
                 <td>${i.desc}</td>
                 <td style="text-align:center"><span class="pill lv-${i.level}">${i.level}</span></td>
             </tr>`).join('');
-        renderPagination();
+        renderPager();
     }
 
-    function renderPagination() {
+    function renderPager() {
         const total = Math.ceil(filteredData.length / limit);
-        let h = `<button class="pg-btn" ${page===1?'disabled':''} onclick="page--;render()">&lt;</button>`;
+        let h = '';
         for(let i=1; i<=total; i++) {
-            if(i==1 || i==total || (i>=page-1 && i<=page+1)) {
-                h += `<button class="pg-btn ${i===page?'active':''}" onclick="page=${i};render()">${i}</button>`;
-            } else if(i==page-2 || i==page+2) { h += `<span>...</span>`; }
+            h += `<button class="pg-btn ${i===page?'active':''}" onclick="page=${i};render()">${i}</button>`;
         }
-        h += `<button class="pg-btn" ${page===total?'disabled':''} onclick="page++;render()">&gt;</button>`;
         document.getElementById('pagination').innerHTML = h;
     }
 
     function showDetail(idx) {
         const item = filteredData[idx].full;
-        const box = document.getElementById('detailContent');
         document.getElementById('modalDetail').dataset.idx = idx;
-        
-        box.innerHTML = Object.keys(item).map(k => {
-            const red = ["mức độ", "đánh giá", "nghiêm trọng", "ảnh hưởng"].some(w => k.toLowerCase().includes(w));
-            return `<div class="detail-row"><span class="${red?'lbl-red':''}" style="font-weight:bold">${k}:</span> ${item[k]||'---'}</div>`;
+        document.getElementById('detailContent').innerHTML = Object.keys(item).map(k => {
+            const red = ["mức độ", "đánh giá", "nghiêm trọng"].some(w => k.toLowerCase().includes(w));
+            return `<div style="padding:8px 0; border-bottom:1px dashed #eee">
+                <span class="${red?'lbl-red':''}" style="font-weight:bold">${k}:</span> ${item[k]||'---'}
+            </div>`;
         }).join('');
-        
         document.getElementById('aiOutput').style.display = 'none';
         document.getElementById('modalDetail').style.display = 'block';
     }
 
+    // HÀM GỌI AI MỚI: CHUYỂN QUA CẦU NỐI APPS SCRIPT
     async function analyzeAI() {
         const btn = document.getElementById('btnAI');
         const wait = document.getElementById('aiWait');
         const out = document.getElementById('aiOutput');
         const idx = document.getElementById('modalDetail').dataset.idx;
-        const data = JSON.stringify(filteredData[idx].full);
+        const rowData = JSON.stringify(filteredData[idx].full);
 
         btn.disabled = true; wait.style.display = 'block'; out.style.display = 'none';
 
         try {
-            const r = await fetch(`${scriptURL}?action=ai&data=${encodeURIComponent(data)}`);
-            const res = await r.json();
-            
-            // Bóc tách text JSON từ Gemini
-            const text = res.candidates[0].content.parts[0].text;
-            const clean = JSON.parse(text.replace(/```json|```/g, "").trim());
-            
-            document.getElementById('resRoot').innerText = clean.root;
-            document.getElementById('resPlan').innerText = clean.plan;
-            
-            wait.style.display = 'none'; out.style.display = 'block';
+            // KHÔNG GỌI TRỰC TIẾP GOOGLE AI NỮA ĐỂ TRÁNH LỖI 404
+            const response = await fetch(`${scriptURL}?action=ai&data=${encodeURIComponent(rowData)}`);
+            const result = await response.json();
+
+            if(result.error) {
+                alert("Lỗi: " + result.error);
+            } else {
+                document.getElementById('aiResText').innerHTML = result.text.replace(/\n/g, "<br>");
+                out.style.display = 'block';
+            }
         } catch (e) {
-            alert("Hệ thống AI đang quá tải. Vui lòng nhấn lại sau 5 giây.");
+            alert("Hệ thống đang phản hồi chậm, vui lòng thử lại sau 5 giây.");
+        } finally {
             btn.disabled = false; wait.style.display = 'none';
         }
     }
@@ -223,8 +203,7 @@
         const depts = [...new Set(masterData.map(i => i.dept))].sort();
         const sel = document.getElementById('fDept');
         depts.forEach(d => sel.add(new Option(d, d)));
-        
-        document.querySelectorAll('.filter-bar select, .filter-bar input').forEach(el => {
+        document.querySelectorAll('.filter-bar input, .filter-bar select').forEach(el => {
             el.oninput = () => {
                 const d = document.getElementById('fDept').value;
                 const l = document.getElementById('fLevel').value;
@@ -236,40 +215,23 @@
     }
 
     function initCharts() {
-        const opt = { maintainAspectRatio:false, plugins: { datalabels: { display:true, font: {weight:'bold'} }, legend: {position:'bottom'} } };
-        
-        charts.dept = new Chart(document.getElementById('chartDept'), {
-            type:'bar', data: {labels:[], datasets:[{label:'Số vụ', data:[], backgroundColor:'#3498db'}]},
-            options: { ...opt, plugins: { ...opt.plugins, title: {display:true, text:'SỰ CỐ THEO KHOA/PHÒNG'} } }
-        });
-        
-        charts.level = new Chart(document.getElementById('chartLevel'), {
-            type:'pie', data: {labels:['Nhẹ', 'TB', 'Nặng'], datasets:[{data:[], backgroundColor:['#3498db','#f39c12','#e74c3c']}]},
-            options: { ...opt, plugins: { ...opt.plugins, title: {display:true, text:'TỶ LỆ % THEO MỨC ĐỘ'} } }
-        });
-
-        charts.trend = new Chart(document.getElementById('chartTrend'), {
-            type:'line', data: {labels:['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets:[{label:'Xu hướng 2026', data:[], borderColor:'#2c3e50', tension:0.3}]},
-            options: { ...opt, plugins: { ...opt.plugins, title: {display:true, text:'XU HƯỚNG 3 NĂM GẦN NHẤT'} } }
-        });
+        const opt = { maintainAspectRatio:false, plugins: { datalabels: { display:true, font:{weight:'bold'} }, legend:{position:'bottom'} } };
+        charts.dept = new Chart(document.getElementById('chartDept'), { type:'bar', data:{labels:[], datasets:[{label:'Số vụ', data:[], backgroundColor:'#3498db'}]}, options:{...opt, plugins:{...opt.plugins, title:{display:true, text:'SỰ CỐ THEO KHOA'}}}});
+        charts.level = new Chart(document.getElementById('chartLevel'), { type:'pie', data:{labels:['Nhẹ','TB','Nặng'], datasets:[{data:[], backgroundColor:['#3498db','#f39c12','#e74c3c']}]}, options:{...opt, plugins:{...opt.plugins, title:{display:true, text:'MỨC ĐỘ %'}}}});
+        charts.trend = new Chart(document.getElementById('chartTrend'), { type:'line', data:{labels:['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets:[{label:'2026', data:[], borderColor:'#2c3e50', tension:0.3}]}, options:{...opt, plugins:{...opt.plugins, title:{display:true, text:'XU HƯỚNG'}}}});
         updateCharts();
     }
 
     function updateCharts() {
         const dM = {}, lM = {Nhẹ:0, TB:0, Nặng:0}, tM = Array(12).fill(0);
-        filteredData.forEach(i => {
-            dM[i.dept] = (dM[i.dept] || 0) + 1;
-            lM[i.level]++;
-            if(i.year === 2026) tM[i.month]++;
-        });
-        charts.dept.data.labels = Object.keys(dM);
-        charts.dept.data.datasets[0].data = Object.values(dM);
+        filteredData.forEach(i => { dM[i.dept] = (dM[i.dept]||0)+1; lM[i.level]++; if(i.year === 2026) tM[i.month]++; });
+        charts.dept.data.labels = Object.keys(dM); charts.dept.data.datasets[0].data = Object.values(dM);
         charts.level.data.datasets[0].data = [lM.Nhẹ, lM.TB, lM.Nặng];
         charts.trend.data.datasets[0].data = tM;
         Object.values(charts).forEach(c => c.update());
     }
 
-    function closeModal() { document.getElementById('modalDetail').style.display = 'none'; document.getElementById('btnAI').disabled = false; }
+    function closeModal() { document.getElementById('modalDetail').style.display = 'none'; }
     window.onload = fetchData;
 </script>
 </body>
