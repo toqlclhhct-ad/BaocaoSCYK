@@ -28,7 +28,7 @@
         .btn-p { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-p.active { background: var(--primary); color: white; border-color: var(--primary); }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-        .modal-content { background: white; margin: 1% auto; width: 90%; max-width: 1100px; border-radius: 12px; max-height: 95vh; overflow-y: auto; position: relative; }
+        .modal-content { background: white; margin: 1% auto; width: 95%; max-width: 1200px; border-radius: 12px; max-height: 95vh; overflow-y: auto; position: relative; }
         .modal-header { position: sticky; top: 0; background: white; z-index: 10; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding: 15px 20px; }
         .close { font-size: 32px; font-weight: bold; cursor: pointer; color: #e74c3c; line-height: 1; }
         .detail-body { padding: 20px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
@@ -37,15 +37,12 @@
         .detail-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
         .detail-item { border-bottom: 1px solid #f0f0f0; padding: 6px 0; font-size: 12px; }
         .detail-label { font-weight: bold; color: var(--primary); }
-        .highlight-red .detail-label { color: var(--danger) !important; }
-        .btn-ai { background: var(--ai-purple); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 15px; transition: 0.3s; }
+        .btn-ai { background: var(--ai-purple); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 15px; transition: 0.3s; }
         .btn-ai:hover { opacity: 0.9; transform: translateY(-2px); }
         .btn-ai:disabled { background: #ccc; cursor: not-allowed; }
-        .ai-result { display: none; }
-        .ai-box { background: white; border-left: 4px solid var(--ai-purple); padding: 10px; margin-bottom: 15px; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .progress-box { margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc; }
+        .ai-box { background: white; border-left: 4px solid var(--ai-purple); padding: 15px; margin-bottom: 15px; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); white-space: pre-line; line-height: 1.6; }
         .progress-bar { height: 10px; background: #eee; border-radius: 5px; margin: 10px 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--success); width: 0%; transition: 1s; }
+        .progress-fill { height: 100%; background: var(--success); width: 0%; transition: 1.5s; }
     </style>
 </head>
 <body>
@@ -56,7 +53,7 @@
             <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" width="50" alt="Logo">
             <h2 style="color:var(--primary); margin:0;">HỆ THỐNG QUẢN LÝ SỰ CỐ Y KHOA</h2>
         </div>
-        <a href="form.html" class="btn-new">+ BÁO CÁO MỚI</a>
+        <a href="#" class="btn-new" onclick="alert('Tính năng đang phát triển')">+ BÁO CÁO MỚI</a>
     </header>
 
     <div class="dashboard-grid">
@@ -70,28 +67,27 @@
         <div class="f-group"><label>Đến ngày</label><input type="date" id="endD"></div>
         <div class="f-group"><label>Khoa xảy ra</label><select id="fDept"><option value="">-- Tất cả --</option></select></div>
         <div class="f-group"><label>Mức độ</label><select id="fLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
-        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm theo MÔ TẢ</label><input type="text" id="sKey" placeholder="Số hồ sơ, nội dung sự cố..."></div>
+        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm</label><input type="text" id="sKey" placeholder="Nội dung sự cố..."></div>
     </div>
 
-    <div style="font-size: 12px; color: #e67e22; margin-bottom: 5px; font-weight: bold;">* Bấm vào hàng để xem chi tiết (Nhấn ESC để thoát)</div>
     <div class="table-area">
         <table>
             <thead>
                 <tr>
                     <th style="width: 100px;">Ngày BC</th>
-                    <th style="width: 220px;">Khoa xảy ra</th>
-                    <th>Mô tả tóm tắt sự cố</th>
+                    <th style="width: 200px;">Khoa xảy ra</th>
+                    <th>Mô tả sự cố</th>
                     <th style="width: 100px; text-align:center">Mức độ</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="4" style="text-align:center; padding:50px;">Đang tải dữ liệu sự cố...</td></tr>
+                <tr><td colspan="4" style="text-align:center; padding:50px;">Đang tải dữ liệu...</td></tr>
             </tbody>
         </table>
     </div>
 
     <div class="paging">
-        <div id="pageInfo" style="font-size:13px; color:#666; font-weight: bold;"></div>
+        <div id="pageInfo" style="font-size:13px; font-weight:bold;"></div>
         <div class="page-btns" id="pageNav"></div>
     </div>
 </div>
@@ -103,29 +99,20 @@
             <span class="close" onclick="closeModal()">&times;</span>
         </div>
         <div class="detail-body">
-            <div class="info-panel">
-                <div id="modalBody" class="detail-grid"></div>
-            </div>
+            <div class="info-panel" id="modalBody"></div>
             <div class="ai-panel">
-                <button class="btn-ai" id="btnRunAI" onclick="runAI()">✨ PHÂN TÍCH AI </button>
-                <div id="aiLoading" style="display:none; text-align:center; padding:20px;">
-                    <small>Đang nạp 30 thông tin và phân tích qua Google Apps Script...</small>
+                <button class="btn-ai" id="btnRunAI" onclick="runAI()">✨ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
+                <div id="aiLoading" style="display:none; text-align:center;">
+                    <p>🤖 Đang phân tích chuyên sâu...</p>
                 </div>
-                <div id="aiResult" class="ai-result">
+                <div id="aiResult" style="display:none;">
                     <h4 style="color:var(--ai-purple); margin-top:0;">🤖 KẾT QUẢ PHÂN TÍCH AI</h4>
-                    <div class="ai-box">
-                        <strong>Nguyên nhân gốc rễ:</strong>
-                        <p id="aiRoot"></p>
-                    </div>
-                    <div class="ai-box">
-                        <strong>Kế hoạch khắc phục đề xuất:</strong>
-                        <p id="aiPlan"></p>
-                    </div>
+                    <div class="ai-box" id="aiContent"></div>
                     <div class="progress-box">
-                        <strong>Tiến độ khắc phục tại khoa:</strong>
+                        <strong>Tiến độ xử lý tại khoa:</strong>
                         <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
                         <div style="display:flex; justify-content:space-between; font-size:11px;">
-                            <span>Đã nhận thông tin</span>
+                            <span>Đã nhận phản hồi</span>
                             <span id="pText">0%</span>
                         </div>
                     </div>
@@ -136,34 +123,29 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-
 <script>
-    // URL WEB APP TỪ BẢN TRIỂN KHAI MỚI NHẤT CỦA BẠN
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxPGaSNiMCJ7jkKIzfo7bmirYXwRAw15x3Za-N-U2AXThao6jgcdWD2H0OgH6xJr94/exec'; 
-    let db = [], filtered = [];
-    let currentPage = 1;
-    const limit = 10;
-    let charts = {};
+    // --- DÁN LINK WEB APP CỦA BẠN VÀO ĐÂY ---
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwDb-LYrnHyEWRb6Ou5MkLFCVGZKsUSeUR1YdGEJBshbzcYZyKcjJDFeJMzr9OR054/exec'; 
+    
+    let db = [], filtered = [], currentPage = 1, limit = 10, charts = {};
 
     document.addEventListener('DOMContentLoaded', loadData);
     document.querySelectorAll('.filters input, .filters select').forEach(el => el.oninput = filterData);
-    document.addEventListener('keydown', (e) => { if (e.key === "Escape") closeModal(); });
 
     async function loadData() {
         try {
             const res = await fetch(`${scriptURL}?action=read`);
             const json = await res.json();
             db = json.map(row => {
-                const val = Object.values(row); 
+                const val = Object.values(row);
                 const dateStr = row["Ngày báo cáo"] || val[3] || "";
                 const dateObj = parseDate(dateStr);
                 const levelRaw = (row["Đánh giá ban đầu về mức độ ảnh hưởng"] || val[23] || "Nhẹ").toLowerCase();
                 let lv = levelRaw.includes("nặng") ? "Nặng" : (levelRaw.includes("trung bình") || levelRaw.includes("tb") ? "TB" : "Nhẹ");
                 return {
                     date: dateStr,
-                    dept: row["Khoa/phòng/vị trí xảy ra"] || val[11] || "KĐ",
-                    desc: row["Mô tả ngắn gọn"] || val[15] || "",
+                    dept: row["Khoa/phòng/vị trí xảy ra"] || val[11] || "N/A",
+                    desc: row["Mô tả ngắn gọn"] || val[15] || "Không có mô tả",
                     level: lv,
                     ts: dateObj.getTime(),
                     month: dateObj.getMonth(),
@@ -176,7 +158,38 @@
             initCharts();
             render();
         } catch (e) {
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Lỗi đồng bộ dữ liệu. Hãy kiểm tra link Web App.</td></tr>';
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Lỗi đồng bộ dữ liệu. Hãy kiểm tra link Web App và quyền truy cập.</td></tr>';
+        }
+    }
+
+    async function runAI() {
+        const idx = document.getElementById('detailModal').dataset.idx;
+        const dataToAnalyze = JSON.stringify(filtered[idx].fullData);
+        const btn = document.getElementById('btnRunAI');
+        
+        btn.disabled = true;
+        document.getElementById('aiLoading').style.display = "block";
+        document.getElementById('aiResult').style.display = "none";
+        
+        try {
+            const response = await fetch(`${scriptURL}?action=ai&data=${encodeURIComponent(dataToAnalyze)}`);
+            const result = await response.json();
+            
+            if (result.error) throw new Error(result.error);
+
+            document.getElementById('aiContent').innerText = result.text;
+            document.getElementById('aiLoading').style.display = "none";
+            document.getElementById('aiResult').style.display = "block";
+            
+            setTimeout(() => {
+                document.getElementById('pFill').style.width = "85%";
+                document.getElementById('pText').innerText = "85% - Đã có giải pháp đề xuất";
+            }, 100);
+
+        } catch (e) {
+            alert("Lỗi AI: " + e.message);
+            btn.disabled = false;
+            document.getElementById('aiLoading').style.display = "none";
         }
     }
 
@@ -192,6 +205,7 @@
         const dept = document.getElementById('fDept').value;
         const level = document.getElementById('fLevel').value;
         const key = document.getElementById('sKey').value.toLowerCase();
+        
         const sTs = start ? new Date(start).getTime() : 0;
         const eTs = end ? new Date(end).setHours(23,59,59) : Infinity;
 
@@ -217,76 +231,30 @@
                 <td style="text-align:center"><span class="pill status-${i.level}">${i.level}</span></td>
             </tr>
         `).join('') || '<tr><td colspan="4" style="text-align:center">Không tìm thấy kết quả</td></tr>';
-        document.getElementById('pageInfo').innerText = `Hiển thị ${data.length > 0 ? start+1 : 0}-${Math.min(start+limit, filtered.length)} / Tổng ${filtered.length} sự cố`;
+        document.getElementById('pageInfo').innerText = `Hiển thị ${data.length > 0 ? start+1 : 0}-${Math.min(start+limit, filtered.length)} / Tổng ${filtered.length}`;
         renderPaging();
     }
 
     function showDetail(index) {
         const item = filtered[index].fullData;
-        const body = document.getElementById('modalBody');
         const modal = document.getElementById('detailModal');
-        modal.dataset.idx = index; // Lưu index để AI lấy dữ liệu
+        modal.dataset.idx = index;
 
-        body.innerHTML = Object.keys(item).map((key, i) => {
-            const isRed = ["mức độ", "đánh giá", "nghiêm trọng"].some(word => key.toLowerCase().includes(word));
-            return `<div class="detail-item ${isRed ? 'highlight-red' : ''}"><span class="detail-label">${key}:</span> ${item[key] || "---"}</div>`;
-        }).join('');
+        document.getElementById('modalBody').innerHTML = Object.keys(item).map(key => `
+            <div class="detail-item">
+                <span class="detail-label">${key}:</span> ${item[key] || "---"}
+            </div>
+        `).join('');
         
         document.getElementById('aiResult').style.display = "none";
         document.getElementById('aiLoading').style.display = "none";
         document.getElementById('btnRunAI').disabled = false;
+        document.getElementById('pFill').style.width = "0%";
+        document.getElementById('pText').innerText = "0%";
         modal.style.display = "block";
     }
 
-    async function runAI() {
-        const idx = document.getElementById('detailModal').dataset.idx;
-        const dataToAnalyze = JSON.stringify(filtered[idx].fullData);
-        const btn = document.getElementById('btnRunAI');
-        
-        btn.disabled = true;
-        document.getElementById('aiLoading').style.display = "block";
-        document.getElementById('aiResult').style.display = "none";
-        
-        try {
-            const response = await fetch(`${scriptURL}?action=ai&data=${encodeURIComponent(dataToAnalyze)}`);
-            const result = await response.json();
-            
-            if (result.error) throw new Error(result.error);
-
-            // Bóc tách text JSON từ GAS
-            const aiText = result.text;
-            let finalRoot = "Không xác định", finalPlan = "Vui lòng liên hệ QLCL";
-            
-            try {
-                // Thử parse nếu AI trả về JSON string sạch
-                const cleanJson = JSON.parse(aiText.replace(/```json|```/g, "").trim());
-                finalRoot = cleanJson.root;
-                finalPlan = cleanJson.plan;
-            } catch(e) {
-                // Nếu AI trả về text tự do, hiển thị nguyên văn
-                finalRoot = aiText;
-                finalPlan = "Theo phân tích chi tiết phía trên.";
-            }
-
-            document.getElementById('aiRoot').innerHTML = finalRoot;
-            document.getElementById('aiPlan').innerHTML = finalPlan;
-            
-            document.getElementById('aiLoading').style.display = "none";
-            document.getElementById('aiResult').style.display = "block";
-            
-            // Thanh tiến độ giả lập thực tế
-            document.getElementById('pFill').style.width = "75%";
-            document.getElementById('pText').innerText = "75% - Đang rà soát quy trình";
-
-        } catch (e) {
-            alert("Lỗi AI: " + e.message);
-            btn.disabled = false;
-            document.getElementById('aiLoading').style.display = "none";
-        }
-    }
-
     function closeModal() { document.getElementById('detailModal').style.display = "none"; }
-    window.onclick = function(e) { if (e.target == document.getElementById('detailModal')) closeModal(); }
 
     function renderPaging() {
         const total = Math.ceil(filtered.length / limit);
@@ -295,7 +263,7 @@
         for(let i=1; i<=total; i++) {
             const b = document.createElement('button');
             b.className = `btn-p ${i === currentPage ? 'active' : ''}`;
-            b.innerText = i; b.onclick = (e) => { e.stopPropagation(); currentPage = i; render(); };
+            b.innerText = i; b.onclick = () => { currentPage = i; render(); };
             nav.appendChild(b);
         }
     }
@@ -308,37 +276,38 @@
     }
 
     function initCharts() {
-        Chart.register(ChartDataLabels);
         const data = getAgg();
-        const cy = 2026;
         charts.dept = new Chart(document.getElementById('deptChart'), {
             type: 'bar',
             data: { labels: data.labels, datasets: [{ data: data.counts, backgroundColor: '#2980b9' }] },
-            options: { maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display:true, text:'SỰ CỐ THEO KHOA/PHÒNG' }, datalabels: { color: '#fff', anchor: 'end', align: 'bottom', font: {weight: 'bold'} } } }
+            options: { maintainAspectRatio: false, plugins: { title: { display:true, text:'SỐ LƯỢNG THEO KHOA' }, legend: {display:false} } }
         });
         charts.level = new Chart(document.getElementById('levelChart'), {
             type: 'pie',
             data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: data.lv, backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] },
-            options: { maintainAspectRatio: false, plugins: { legend: { position:'right' }, title: { display:true, text:'TỶ LỆ % THEO MỨC ĐỘ' }, datalabels: { color: '#fff', formatter: (val, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return val > 0 ? `${val} (${(val*100/sum).toFixed(0)}%)` : ''; } } } }
+            options: { maintainAspectRatio: false, plugins: { title: { display:true, text:'MỨC ĐỘ %' } } }
         });
         charts.trend = new Chart(document.getElementById('trendChart'), {
             type: 'line',
-            data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: cy-2, data: data.trend[cy-2], borderColor: '#bdc3c7' }, { label: cy-1, data: data.trend[cy-1], borderColor: '#95a5a6' }, { label: cy, data: data.trend[cy], borderColor: '#2980b9', borderWidth: 3 }] },
-            options: { maintainAspectRatio: false, plugins: { title: { display: true, text: 'XU HƯỚNG 3 NĂM GẦN NHẤT' }, datalabels: { display: false } } }
+            data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: '2026', data: data.trend[2026], borderColor: '#2980b9', tension: 0.3 }] },
+            options: { maintainAspectRatio: false, plugins: { title: { display:true, text:'XU HƯỚNG NĂM' } } }
         });
     }
 
     function updateCharts() {
         const data = getAgg();
         charts.dept.data.labels = data.labels; charts.dept.data.datasets[0].data = data.counts;
-        charts.level.data.datasets[0].data = data.lv; charts.trend.data.datasets[2].data = data.trend[2026];
+        charts.level.data.datasets[0].data = data.lv; charts.trend.data.datasets[0].data = data.trend[2026];
         charts.dept.update(); charts.level.update(); charts.trend.update();
     }
 
     function getAgg() {
-        const depts = {}, lv = { Nhẹ: 0, TB: 0, Nặng: 0 }, trend = {};
-        const cy = 2026; [cy, cy-1, cy-2].forEach(y => trend[y] = Array(12).fill(0));
-        filtered.forEach(i => { depts[i.dept] = (depts[i.dept] || 0) + 1; if(lv.hasOwnProperty(i.level)) lv[i.level]++; if(trend[i.year]) trend[i.year][i.month]++; });
+        const depts = {}, lv = { Nhẹ: 0, TB: 0, Nặng: 0 }, trend = { 2026: Array(12).fill(0) };
+        filtered.forEach(i => { 
+            depts[i.dept] = (depts[i.dept] || 0) + 1; 
+            if(lv.hasOwnProperty(i.level)) lv[i.level]++; 
+            if(i.year === 2026) trend[2026][i.month]++;
+        });
         return { labels: Object.keys(depts), counts: Object.values(depts), lv: [lv.Nhẹ, lv.TB, lv.Nặng], trend: trend };
     }
 </script>
