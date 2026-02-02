@@ -3,82 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Sự cố Y khoa - Bản Chuẩn</title>
+    <title>Hệ thống Quản lý Sự cố Y khoa</title>
     <style>
-        :root { --primary: #2980b9; --bg: #f4f7f6; --success: #27ae60; --orange: #f39c12; --danger: #e74c3c; --ai-purple: #8e44ad; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
-        .container { max-width: 1600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
-        .btn-new { background: var(--success); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; }
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 0.8fr 1.2fr; gap: 15px; margin-bottom: 20px; }
-        .card { background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee; height: 320px; }
-        .filters { display: flex; flex-wrap: wrap; gap: 12px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
-        .f-group { display: flex; flex-direction: column; gap: 5px; }
-        .table-area { background: white; border: 1px solid #eee; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #ecf0f1; --success: #27ae60; --danger: #e74c3c; --ai: #8e44ad; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #333; }
+        .container { max-width: 1550px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--accent); padding-bottom: 15px; margin-bottom: 20px; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .btn-new { background: var(--success); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+        .btn-new:hover { opacity: 0.8; }
+
+        /* Dashboard */
+        .dashboard { display: grid; grid-template-columns: 1fr 0.8fr 1.2fr; gap: 15px; margin-bottom: 20px; }
+        .card { background: white; padding: 15px; border-radius: 10px; border: 1px solid #ddd; height: 320px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        
+        /* Bộ lọc */
+        .filter-bar { display: flex; flex-wrap: wrap; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
+        .f-item { display: flex; flex-direction: column; gap: 5px; }
+        .f-item label { font-size: 12px; font-weight: bold; color: #666; }
+        .f-item select, .f-item input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
+
+        /* Bảng dữ liệu & Phân trang */
+        .table-container { overflow-x: auto; border: 1px solid #eee; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
         th { background: var(--primary); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+        td { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.2s; }
         tr:hover { background: #f1f7ff; }
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 15px; }
-        .btn-page { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; }
-        .btn-page.active { background: var(--primary); color: white; }
-        .pill { padding: 4px 10px; border-radius: 20px; color: white; font-weight: bold; font-size: 11px; }
-        .status-Nhẹ { background: #3498db; } .status-TB { background: var(--orange); } .status-Nặng { background: var(--danger); }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-        .modal-content { background: white; margin: 1% auto; width: 90%; max-width: 1200px; border-radius: 12px; max-height: 95vh; overflow-y: auto; display: grid; grid-template-rows: auto 1fr; }
-        .detail-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; padding: 20px; }
-        .highlight-red { color: var(--danger) !important; font-weight: bold; }
-        .ai-panel { background: #fcfaff; border-radius: 8px; padding: 20px; border: 1px solid #e0d0f0; }
-        .btn-ai { background: var(--ai-purple); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
+
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 5px; padding: 15px; }
+        .pg-btn { border: 1px solid #ddd; background: white; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
+        .pg-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .pg-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Mức độ Pill */
+        .pill { padding: 4px 10px; border-radius: 20px; color: white; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        .lv-Nhẹ { background: #3498db; } .lv-TB { background: #f39c12; } .lv-Nặng { background: #e74c3c; }
+
+        /* Modal chi tiết */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+        .modal-content { background: white; margin: 1% auto; width: 90%; max-width: 1250px; border-radius: 12px; max-height: 95vh; overflow: hidden; display: flex; flex-direction: column; }
+        .modal-header { padding: 15px 25px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; padding: 20px; overflow-y: auto; }
+        
+        .detail-info { border-right: 1px solid #eee; padding-right: 20px; }
+        .detail-row { margin-bottom: 12px; padding-bottom: 5px; border-bottom: 1px dashed #eee; font-size: 14px; }
+        .lbl-red { color: var(--danger); font-weight: bold; }
+
+        .ai-section { background: #f9f4ff; border: 1px solid #dcd0ff; border-radius: 8px; padding: 20px; position: sticky; top: 0; }
+        .btn-ai { background: var(--ai); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.2); }
+        .ai-output { margin-top: 20px; background: white; border-left: 5px solid var(--ai); padding: 15px; border-radius: 4px; display: none; animation: fadeIn 0.5s; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <div style="display:flex; align-items:center; gap:15px;">
-            <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" width="55">
-            <h2 style="color:var(--primary); margin:0;">HỆ THỐNG QUẢN LÝ SỰ CỐ Y KHOA</h2>
+        <div class="logo-area">
+            <img src="https://i.postimg.cc/s2zWMnCs/Logo-Benh-vien.jpg" width="60">
+            <h2 style="margin:0; color:var(--primary)">HỆ THỐNG GIÁM SÁT SỰ CỐ Y KHOA</h2>
         </div>
         <a href="form.html" class="btn-new">+ BÁO CÁO MỚI</a>
     </header>
 
-    <div class="dashboard-grid">
-        <div class="card"><canvas id="deptChart"></canvas></div>
-        <div class="card"><canvas id="levelChart"></canvas></div>
-        <div class="card"><canvas id="trendChart"></canvas></div>
+    <div class="dashboard">
+        <div class="card"><canvas id="chartDept"></canvas></div>
+        <div class="card"><canvas id="chartLevel"></canvas></div>
+        <div class="card"><canvas id="chartTrend"></canvas></div>
     </div>
 
-    <div class="filters">
-        <div class="f-group"><label>Khoa</label><select id="fDept"><option value="">Tất cả</option></select></div>
-        <div class="f-group"><label>Mức độ</label><select id="fLevel"><option value="">Tất cả</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
-        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm</label><input type="text" id="sKey" placeholder="Tìm mô tả..."></div>
+    <div class="filter-bar">
+        <div class="f-item"><label>Khoa xảy ra</label><select id="fDept"><option value="">Tất cả</option></select></div>
+        <div class="f-item"><label>Mức độ</label><select id="fLevel"><option value="">Tất cả</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
+        <div class="f-item" style="flex-grow:1;"><label>Tìm kiếm thông tin</label><input type="text" id="sSearch" placeholder="Số hồ sơ, bệnh nhân, mô tả..."></div>
     </div>
 
-    <div class="table-area">
+    <div class="table-container">
         <table>
-            <thead><tr><th>Ngày BC</th><th>Khoa</th><th>Mô tả sự cố</th><th style="text-align:center">Mức độ</th></tr></thead>
+            <thead>
+                <tr>
+                    <th style="width:110px">Ngày BC</th>
+                    <th style="width:200px">Khoa/Phòng</th>
+                    <th>Mô tả tóm tắt nội dung sự cố</th>
+                    <th style="width:100px; text-align:center">Mức độ</th>
+                </tr>
+            </thead>
             <tbody id="tableBody"></tbody>
         </table>
         <div class="pagination" id="pagination"></div>
     </div>
 </div>
 
-<div id="detailModal" class="modal">
+<div id="modalDetail" class="modal">
     <div class="modal-content">
-        <div class="modal-header" style="padding:15px 20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="margin:0; color:var(--primary)">CHI TIẾT SỰ CỐ</h3>
-            <span style="font-size:24px; cursor:pointer;" onclick="closeModal()">&times;</span>
+        <div class="modal-header">
+            <h3 style="margin:0; color:var(--accent)">CHI TIẾT PHIẾU BÁO CÁO SỰ CỐ</h3>
+            <span style="font-size:35px; cursor:pointer; color:var(--danger)" onclick="closeModal()">&times;</span>
         </div>
-        <div class="detail-grid">
-            <div id="modalBody"></div>
-            <div class="ai-panel">
-                <button class="btn-ai" id="btnAI" onclick="runAI()">✨ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
-                <div id="aiLoading" style="display:none; margin-top:15px; text-align:center;">🤖 Đang suy luận...</div>
-                <div id="aiResult" style="display:none; margin-top:15px;">
-                    <div style="background:white; padding:12px; border-radius:6px; border-left:4px solid var(--ai-purple)">
-                        <strong>RCA & Giải pháp:</strong><p id="aiText"></p>
-                    </div>
+        <div class="modal-body">
+            <div id="detailContent" class="detail-info"></div>
+            <div class="ai-section">
+                <button class="btn-ai" id="btnAI" onclick="analyzeAI()">⚡ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
+                <div id="aiWait" style="display:none; text-align:center; margin-top:15px; color:var(--ai)">
+                    <strong>🤖 Đang kết nối dữ liệu và suy luận...</strong>
+                </div>
+                <div id="aiOutput" class="ai-output">
+                    <h4 style="margin:0 0 10px 0; color:var(--ai)">🤖 KẾT QUẢ PHÂN TÍCH AI</h4>
+                    <p><strong>Nguyên nhân gốc rễ (RCA):</strong> <span id="resRoot"></span></p>
+                    <p><strong>Kế hoạch đề xuất:</strong> <span id="resPlan"></span></p>
                 </div>
             </div>
         </div>
@@ -89,125 +123,154 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbynaVlHpUE79D4fnczE04D_r83k0F3d_V4YBRVwOsWfhbWv47rdiGomoqQAdtX784U/exec'; 
-    const AI_KEY = "AIzaSyCrgpQIf-uVZGw55VaxuJPpY68Fjmwpl3k"; 
-    
-    let db = [], filtered = [], charts = {};
-    let curPage = 1, pageSize = 10;
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyTZcv0sgGdvRmgyWJM3bMHpFG6lLGjup1qLfmSrswDehs45oJw_fuIyplz7MrMZbQ/exec'; 
+    let masterData = [], filteredData = [], charts = {};
+    let page = 1, limit = 10;
 
     Chart.register(ChartDataLabels);
 
-    async function loadData() {
+    async function fetchData() {
         try {
-            const res = await fetch(`${scriptURL}?action=read`);
-            const data = await res.json();
-            db = data.map(row => {
+            const r = await fetch(`${scriptURL}?action=read`);
+            const d = await r.json();
+            masterData = d.map(row => {
                 const v = Object.values(row);
-                const d = new Date(row["Ngày báo cáo"] || v[3]);
-                const lv = (row["Đánh giá ban đầu về mức độ ảnh hưởng"] || v[23] || "").includes("Nặng") ? "Nặng" : 
-                           ((row["Đánh giá ban đầu về mức độ ảnh hưởng"] || v[23] || "").includes("Trung bình") ? "TB" : "Nhẹ");
-                return { 
-                    date: isNaN(d) ? "---" : d.toLocaleDateString('vi-VN'),
+                const dateObj = new Date(row["Ngày báo cáo"] || v[3]);
+                const lvRaw = (row["Đánh giá ban đầu về mức độ ảnh hưởng"] || v[23] || "").toLowerCase();
+                let lv = lvRaw.includes("nặng") ? "Nặng" : (lvRaw.includes("trung bình") || lvRaw.includes("tb") ? "TB" : "Nhẹ");
+                return {
+                    date: isNaN(dateObj) ? "---" : dateObj.toLocaleDateString('vi-VN'),
                     dept: row["Khoa/phòng/vị trí xảy ra"] || v[11] || "KĐ",
-                    desc: row["Mô tả ngắn gọn"] || v[15] || "",
+                    desc: row["Mô tả ngắn gọn"] || v[15] || "---",
                     level: lv,
                     full: row,
-                    m: d.getMonth(), y: d.getFullYear()
+                    month: dateObj.getMonth(),
+                    year: dateObj.getFullYear()
                 };
             });
-            filtered = [...db];
+            filteredData = [...masterData];
             initFilters(); initCharts(); render();
-        } catch (e) { alert("Lỗi kết nối dữ liệu!"); }
+        } catch (e) { alert("Lỗi tải dữ liệu: " + e.message); }
     }
 
     function render() {
-        const start = (curPage - 1) * pageSize;
-        const pageData = filtered.slice(start, start + pageSize);
-        document.getElementById('tableBody').innerHTML = pageData.map((item, idx) => `
+        const start = (page - 1) * limit;
+        const items = filteredData.slice(start, start + limit);
+        document.getElementById('tableBody').innerHTML = items.map((i, idx) => `
             <tr onclick="showDetail(${start + idx})">
-                <td>${item.date}</td>
-                <td><b>${item.dept}</b></td>
-                <td>${item.desc}</td>
-                <td style="text-align:center"><span class="pill status-${item.level}">${item.level}</span></td>
+                <td>${i.date}</td>
+                <td><b>${i.dept}</b></td>
+                <td>${i.desc}</td>
+                <td style="text-align:center"><span class="pill lv-${i.level}">${i.level}</span></td>
             </tr>`).join('');
-        renderPager();
+        renderPagination();
     }
 
-    function renderPager() {
-        const total = Math.ceil(filtered.length / pageSize);
-        let h = '';
+    function renderPagination() {
+        const total = Math.ceil(filteredData.length / limit);
+        let h = `<button class="pg-btn" ${page===1?'disabled':''} onclick="page--;render()">&lt;</button>`;
         for(let i=1; i<=total; i++) {
-            h += `<button class="btn-page ${i===curPage?'active':''}" onclick="curPage=${i};render();">${i}</button>`;
+            if(i==1 || i==total || (i>=page-1 && i<=page+1)) {
+                h += `<button class="pg-btn ${i===page?'active':''}" onclick="page=${i};render()">${i}</button>`;
+            } else if(i==page-2 || i==page+2) { h += `<span>...</span>`; }
         }
+        h += `<button class="pg-btn" ${page===total?'disabled':''} onclick="page++;render()">&gt;</button>`;
         document.getElementById('pagination').innerHTML = h;
     }
 
     function showDetail(idx) {
-        const item = filtered[idx].full;
-        document.getElementById('detailModal').dataset.idx = idx;
-        document.getElementById('modalBody').innerHTML = Object.keys(item).map(k => {
-            const isRed = ["mức độ", "đánh giá", "nghiêm trọng"].some(s => k.toLowerCase().includes(s));
-            return `<div style="padding:8px 0; border-bottom:1px solid #eee">
-                <span class="${isRed?'highlight-red':''}" style="font-weight:bold">${k}:</span> ${item[k] || '---'}
-            </div>`;
+        const item = filteredData[idx].full;
+        const box = document.getElementById('detailContent');
+        document.getElementById('modalDetail').dataset.idx = idx;
+        
+        box.innerHTML = Object.keys(item).map(k => {
+            const red = ["mức độ", "đánh giá", "nghiêm trọng", "ảnh hưởng"].some(w => k.toLowerCase().includes(w));
+            return `<div class="detail-row"><span class="${red?'lbl-red':''}" style="font-weight:bold">${k}:</span> ${item[k]||'---'}</div>`;
         }).join('');
-        document.getElementById('aiResult').style.display = 'none';
-        document.getElementById('detailModal').style.display = 'block';
+        
+        document.getElementById('aiOutput').style.display = 'none';
+        document.getElementById('modalDetail').style.display = 'block';
     }
 
-    async function runAI() {
+    async function analyzeAI() {
         const btn = document.getElementById('btnAI');
-        const item = filtered[document.getElementById('detailModal').dataset.idx].full;
-        btn.disabled = true; 
-        document.getElementById('aiLoading').style.display = 'block';
+        const wait = document.getElementById('aiWait');
+        const out = document.getElementById('aiOutput');
+        const idx = document.getElementById('modalDetail').dataset.idx;
+        const data = JSON.stringify(filteredData[idx].full);
+
+        btn.disabled = true; wait.style.display = 'block'; out.style.display = 'none';
 
         try {
-            // SỬA LỖI 404: Endpoint v1beta mới nhất
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AI_KEY}`;
-            const res = await fetch(url, {
-                method: 'POST',
-                body: JSON.stringify({ contents: [{ parts: [{ text: "Phân tích sự cố y khoa này, chỉ ra nguyên nhân gốc rễ và 3 giải pháp khắc phục ngắn gọn: " + JSON.stringify(item) }] }] })
-            });
-            const data = await res.json();
-            document.getElementById('aiText').innerText = data.candidates[0].content.parts[0].text;
-            document.getElementById('aiResult').style.display = 'block';
-        } catch (e) { alert("AI đang bận, thử lại sau!"); }
-        finally { btn.disabled = false; document.getElementById('aiLoading').style.display = 'none'; }
+            const r = await fetch(`${scriptURL}?action=ai&data=${encodeURIComponent(data)}`);
+            const res = await r.json();
+            
+            // Bóc tách text JSON từ Gemini
+            const text = res.candidates[0].content.parts[0].text;
+            const clean = JSON.parse(text.replace(/```json|```/g, "").trim());
+            
+            document.getElementById('resRoot').innerText = clean.root;
+            document.getElementById('resPlan').innerText = clean.plan;
+            
+            wait.style.display = 'none'; out.style.display = 'block';
+        } catch (e) {
+            alert("Hệ thống AI đang quá tải. Vui lòng nhấn lại sau 5 giây.");
+            btn.disabled = false; wait.style.display = 'none';
+        }
     }
 
     function initFilters() {
-        const depts = [...new Set(db.map(i => i.dept))].sort();
-        depts.forEach(d => document.getElementById('fDept').add(new Option(d, d)));
-        document.querySelectorAll('.filters input, .filters select').forEach(el => {
+        const depts = [...new Set(masterData.map(i => i.dept))].sort();
+        const sel = document.getElementById('fDept');
+        depts.forEach(d => sel.add(new Option(d, d)));
+        
+        document.querySelectorAll('.filter-bar select, .filter-bar input').forEach(el => {
             el.oninput = () => {
                 const d = document.getElementById('fDept').value;
                 const l = document.getElementById('fLevel').value;
-                const k = document.getElementById('sKey').value.toLowerCase();
-                filtered = db.filter(i => (!d || i.dept === d) && (!l || i.level === l) && i.desc.toLowerCase().includes(k));
-                curPage = 1; render(); updateCharts();
+                const s = document.getElementById('sSearch').value.toLowerCase();
+                filteredData = masterData.filter(i => (!d || i.dept === d) && (!l || i.level === l) && i.desc.toLowerCase().includes(s));
+                page = 1; render(); updateCharts();
             };
         });
     }
 
     function initCharts() {
-        const common = { maintainAspectRatio: false, plugins: { datalabels: { display: true, font: { weight: 'bold' } } } };
-        charts.dept = new Chart(document.getElementById('deptChart'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Số vụ', data: [], backgroundColor: '#2980b9' }] }, options: { ...common, plugins: { ...common.plugins, title: { display: true, text: 'SỰ CỐ THEO KHOA/PHÒNG' } } } });
-        charts.level = new Chart(document.getElementById('levelChart'), { type: 'pie', data: { labels: ['Nhẹ', 'TB', 'Nặng'], datasets: [{ data: [], backgroundColor: ['#3498db', '#f39c12', '#e74c3c'] }] }, options: { ...common, plugins: { ...common.plugins, title: { display: true, text: 'TỶ LỆ % THEO MỨC ĐỘ' } } } });
-        charts.trend = new Chart(document.getElementById('trendChart'), { type: 'line', data: { labels: ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets: [{ label: '2026', data: [], borderColor: '#2980b9' }] }, options: { ...common, plugins: { ...common.plugins, title: { display: true, text: 'XU HƯỚNG 2026' } } } });
+        const opt = { maintainAspectRatio:false, plugins: { datalabels: { display:true, font: {weight:'bold'} }, legend: {position:'bottom'} } };
+        
+        charts.dept = new Chart(document.getElementById('chartDept'), {
+            type:'bar', data: {labels:[], datasets:[{label:'Số vụ', data:[], backgroundColor:'#3498db'}]},
+            options: { ...opt, plugins: { ...opt.plugins, title: {display:true, text:'SỰ CỐ THEO KHOA/PHÒNG'} } }
+        });
+        
+        charts.level = new Chart(document.getElementById('chartLevel'), {
+            type:'pie', data: {labels:['Nhẹ', 'TB', 'Nặng'], datasets:[{data:[], backgroundColor:['#3498db','#f39c12','#e74c3c']}]},
+            options: { ...opt, plugins: { ...opt.plugins, title: {display:true, text:'TỶ LỆ % THEO MỨC ĐỘ'} } }
+        });
+
+        charts.trend = new Chart(document.getElementById('chartTrend'), {
+            type:'line', data: {labels:['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'], datasets:[{label:'Xu hướng 2026', data:[], borderColor:'#2c3e50', tension:0.3}]},
+            options: { ...opt, plugins: { ...opt.plugins, title: {display:true, text:'XU HƯỚNG 3 NĂM GẦN NHẤT'} } }
+        });
         updateCharts();
     }
 
     function updateCharts() {
-        const dM = {}, lM = { Nhẹ:0, TB:0, Nặng:0 }, tM = Array(12).fill(0);
-        filtered.forEach(i => { dM[i.dept] = (dM[i.dept] || 0) + 1; lM[i.level]++; if(i.y === 2026) tM[i.m]++; });
-        charts.dept.data.labels = Object.keys(dM); charts.dept.data.datasets[0].data = Object.values(dM);
+        const dM = {}, lM = {Nhẹ:0, TB:0, Nặng:0}, tM = Array(12).fill(0);
+        filteredData.forEach(i => {
+            dM[i.dept] = (dM[i.dept] || 0) + 1;
+            lM[i.level]++;
+            if(i.year === 2026) tM[i.month]++;
+        });
+        charts.dept.data.labels = Object.keys(dM);
+        charts.dept.data.datasets[0].data = Object.values(dM);
         charts.level.data.datasets[0].data = [lM.Nhẹ, lM.TB, lM.Nặng];
         charts.trend.data.datasets[0].data = tM;
         Object.values(charts).forEach(c => c.update());
     }
 
-    function closeModal() { document.getElementById('detailModal').style.display = 'none'; }
-    window.onload = loadData;
+    function closeModal() { document.getElementById('modalDetail').style.display = 'none'; document.getElementById('btnAI').disabled = false; }
+    window.onload = fetchData;
 </script>
 </body>
 </html>
