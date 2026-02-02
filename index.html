@@ -3,51 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Sự cố Y khoa</title>
+    <title>Hệ thống Quản lý Sự cố Y khoa - Final Version</title>
     <style>
         :root { --primary: #2980b9; --bg: #f4f7f6; --success: #27ae60; --orange: #f39c12; --danger: #e74c3c; --ai-purple: #8e44ad; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
         .container { max-width: 1600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        
         header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
         .btn-new { background: var(--success); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; }
-        
+
         /* Dashboard */
         .dashboard-grid { display: grid; grid-template-columns: 1fr 0.8fr 1.2fr; gap: 15px; margin-bottom: 20px; }
-        .card { background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee; height: 320px; position: relative; }
+        .card { background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee; height: 320px; }
         
         /* Filters */
         .filters { display: flex; flex-wrap: wrap; gap: 12px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
         .f-group { display: flex; flex-direction: column; gap: 5px; }
         .f-group label { font-size: 12px; font-weight: bold; color: #666; }
-        .f-group input, .f-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
-        
-        /* Table */
-        .table-area { overflow-x: auto; border: 1px solid #eee; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 900px; }
-        th { background: var(--primary); color: white; padding: 12px; text-align: left; position: sticky; top: 0; }
+        .f-group input, .f-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+
+        /* Table Area */
+        .table-area { background: white; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; }
         td { padding: 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
         tr:hover { background: #f1f7ff; }
-        
-        /* Pills */
+
+        /* Pagination */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 15px; background: #fff; }
+        .btn-page { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; }
+        .btn-page:disabled { background: #eee; cursor: not-allowed; }
+        .btn-page.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Status Pills */
         .pill { padding: 4px 10px; border-radius: 20px; color: white; font-weight: bold; font-size: 11px; }
         .status-Nhẹ { background: #3498db; }
         .status-TB { background: var(--orange); }
         .status-Nặng { background: var(--danger); }
-        
+
         /* Modal & AI */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-        .modal-content { background: white; margin: 1% auto; width: 90%; max-width: 1200px; border-radius: 12px; max-height: 95vh; overflow-y: auto; }
-        .modal-header { position: sticky; top: 0; background: white; z-index: 10; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding: 15px 20px; }
-        .detail-body { padding: 20px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
-        .detail-item { border-bottom: 1px solid #eee; padding: 8px 0; font-size: 13px; }
-        .detail-label { font-weight: bold; color: #444; }
+        .modal-content { background: white; margin: 1% auto; width: 90%; max-width: 1200px; border-radius: 12px; max-height: 95vh; overflow-y: auto; display: grid; grid-template-rows: auto 1fr; }
+        .modal-header { padding: 15px 20px; border-bottom: 2px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .detail-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; padding: 20px; }
         .highlight-red { color: var(--danger) !important; font-weight: bold; }
-        
-        .ai-panel { background: #fcfaff; border-radius: 8px; padding: 20px; border: 1px solid #e0d0f0; }
-        .btn-ai { background: var(--ai-purple); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 15px; font-size: 15px; }
-        .ai-box { background: white; border-left: 4px solid var(--ai-purple); padding: 12px; margin-bottom: 15px; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .progress-bar { height: 12px; background: #eee; border-radius: 6px; margin: 10px 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--success); width: 0%; transition: 1.5s; }
+        .ai-panel { background: #fcfaff; border-radius: 8px; padding: 20px; border: 1px solid #e0d0f0; height: fit-content; }
+        .btn-ai { background: var(--ai-purple); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
+        .ai-box { background: white; border-left: 4px solid var(--ai-purple); padding: 12px; margin-top: 15px; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
@@ -68,25 +70,24 @@
     </div>
 
     <div class="filters">
-        <div class="f-group"><label>Từ ngày</label><input type="date" id="startD"></div>
-        <div class="f-group"><label>Đến ngày</label><input type="date" id="endD"></div>
         <div class="f-group"><label>Khoa xảy ra</label><select id="fDept"><option value="">-- Tất cả --</option></select></div>
         <div class="f-group"><label>Mức độ</label><select id="fLevel"><option value="">-- Tất cả --</option><option value="Nhẹ">Nhẹ</option><option value="TB">TB</option><option value="Nặng">Nặng</option></select></div>
-        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm theo MÔ TẢ</label><input type="text" id="sKey" placeholder="Tìm kiếm nội dung sự cố..."></div>
+        <div class="f-group" style="flex-grow:1;"><label>Tìm kiếm</label><input type="text" id="sKey" placeholder="Nhập nội dung tìm kiếm..."></div>
     </div>
 
     <div class="table-area">
         <table id="mainTable">
             <thead>
                 <tr>
-                    <th style="width: 110px;">Ngày BC</th>
-                    <th style="width: 180px;">Khoa xảy ra</th>
+                    <th style="width: 120px;">Ngày BC</th>
+                    <th style="width: 200px;">Khoa xảy ra</th>
                     <th>Mô tả tóm tắt sự cố</th>
                     <th style="width: 100px; text-align:center">Mức độ</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
+        <div class="pagination" id="pagination"></div>
     </div>
 </div>
 
@@ -96,22 +97,14 @@
             <h3 style="margin:0; color:var(--primary);">CHI TIẾT THÔNG TIN SỰ CỐ</h3>
             <span style="font-size:30px; cursor:pointer; color:var(--danger)" onclick="closeModal()">&times;</span>
         </div>
-        <div class="detail-body">
+        <div class="detail-grid">
             <div id="modalBody"></div>
             <div class="ai-panel">
                 <button class="btn-ai" id="btnAI" onclick="runAI()">✨ PHÂN TÍCH AI (TRỢ LÝ CHIẾN LƯỢC)</button>
-                <div id="aiLoading" style="display:none; text-align:center;">
-                    <p style="color:var(--ai-purple); font-weight:bold;">🤖 Hệ thống đang suy luận RCA...</p>
-                </div>
+                <div id="aiLoading" style="display:none; margin-top:15px; text-align:center; color:var(--ai-purple); font-weight:bold;">🤖 AI đang xử lý dữ liệu...</div>
                 <div id="aiResult" style="display:none;">
-                    <h4 style="color:var(--ai-purple); margin-top:0;">🤖 KẾT QUẢ PHÂN TÍCH AI</h4>
-                    <div class="ai-box"><strong>Nguyên nhân gốc rễ:</strong><p id="aiRoot"></p></div>
-                    <div class="ai-box"><strong>Giải pháp đề xuất:</strong><p id="aiPlan"></p></div>
-                    <div>
-                        <strong>Mức độ ưu tiên:</strong>
-                        <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
-                        <span id="pText" style="font-size:12px; font-weight:bold; color:var(--success);">0%</span>
-                    </div>
+                    <div class="ai-box"><strong>💡 Nguyên nhân gốc rễ (RCA):</strong><p id="aiRoot"></p></div>
+                    <div class="ai-box"><strong>🛠️ Giải pháp đề xuất:</strong><p id="aiPlan"></p></div>
                 </div>
             </div>
         </div>
@@ -124,12 +117,14 @@
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbynaVlHpUE79D4fnczE04D_r83k0F3d_V4YBRVwOsWfhbWv47rdiGomoqQAdtX784U/exec'; 
     const AI_KEY = "AIzaSyCrgpQIf-uVZGw55VaxuJPpY68Fjmwpl3k"; 
+    
     let db = [], filtered = [], charts = {};
+    let currentPage = 1, rowsPerPage = 10;
 
     Chart.register(ChartDataLabels);
 
     document.addEventListener('DOMContentLoaded', loadData);
-    document.querySelectorAll('.filters input, .filters select').forEach(el => el.oninput = filterData);
+    document.querySelectorAll('.filters input, .filters select').forEach(el => el.oninput = () => { currentPage = 1; filterData(); });
 
     async function loadData() {
         try {
@@ -137,12 +132,16 @@
             const json = await res.json();
             db = json.map(row => {
                 const val = Object.values(row);
-                const dateRaw = row["Ngày báo cáo"] || val[3] || "";
-                const dateObj = new Date(dateRaw);
+                // Xử lý ngày tháng chuẩn
+                const rawDate = row["Ngày báo cáo"] || val[3] || "";
+                const dateObj = new Date(rawDate);
+                const formattedDate = isNaN(dateObj) ? "---" : dateObj.toLocaleDateString('vi-VN');
+                
                 const levelRaw = row["Đánh giá ban đầu về mức độ ảnh hưởng"] || val[23] || "Nhẹ";
                 let lv = levelRaw.includes("Nặng") ? "Nặng" : (levelRaw.includes("Trung bình") || levelRaw.includes("TB") ? "TB" : "Nhẹ");
+                
                 return { 
-                    date: dateRaw.split('T')[0], 
+                    date: formattedDate, 
                     dept: row["Khoa/phòng/vị trí xảy ra"] || val[11] || "KĐ", 
                     desc: row["Mô tả ngắn gọn"] || val[15] || "", 
                     level: lv, 
@@ -154,28 +153,57 @@
             filtered = [...db];
             updateFilters();
             initCharts();
-            render();
-        } catch (e) { console.error("Lỗi tải dữ liệu:", e); }
+            renderTable();
+        } catch (e) { alert("Lỗi tải dữ liệu. Hãy kiểm tra kết nối!"); }
     }
 
     function filterData() {
         const dept = document.getElementById('fDept').value;
         const level = document.getElementById('fLevel').value;
         const key = document.getElementById('sKey').value.toLowerCase();
-        filtered = db.filter(i => (dept==="" || i.dept===dept) && (level==="" || i.level===level) && (i.desc.toLowerCase().includes(key)));
-        render();
+        
+        filtered = db.filter(i => 
+            (dept === "" || i.dept === dept) && 
+            (level === "" || i.level === level) && 
+            (i.desc.toLowerCase().includes(key))
+        );
+        renderTable();
         updateCharts();
     }
 
-    function render() {
-        document.getElementById('tableBody').innerHTML = filtered.map((i, idx) => `
-            <tr onclick="showDetail(${idx})">
+    function renderTable() {
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const pageData = filtered.slice(start, end);
+
+        document.getElementById('tableBody').innerHTML = pageData.map((i, idx) => `
+            <tr onclick="showDetail(${start + idx})">
                 <td>${i.date}</td>
                 <td><b>${i.dept}</b></td>
                 <td>${i.desc}</td>
                 <td style="text-align:center"><span class="pill status-${i.level}">${i.level}</span></td>
             </tr>`).join('');
+        
+        renderPagination();
     }
+
+    function renderPagination() {
+        const totalPages = Math.ceil(filtered.length / rowsPerPage);
+        let html = `<button class="btn-page" onclick="changePage(1)" ${currentPage===1?'disabled':''}>&laquo;</button>`;
+        
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                html += `<button class="btn-page ${i===currentPage?'active':''}" onclick="changePage(${i})">${i}</button>`;
+            } else if (i === currentPage - 2 || i === currentPage + 2) {
+                html += `<span>...</span>`;
+            }
+        }
+        
+        html += `<button class="btn-page" onclick="changePage(${totalPages})" ${currentPage===totalPages?'disabled':''}>&raquo;</button>`;
+        document.getElementById('pagination').innerHTML = html;
+    }
+
+    function changePage(p) { currentPage = p; renderTable(); }
 
     function showDetail(idx) {
         const item = filtered[idx].fullData;
@@ -183,15 +211,14 @@
         modal.dataset.idx = idx;
         
         document.getElementById('modalBody').innerHTML = Object.keys(item).map(k => {
-            const isRed = ["mức độ", "đánh giá", "khẩn", "nghiêm trọng"].some(word => k.toLowerCase().includes(word));
-            return `
-            <div class="detail-item">
-                <span class="detail-label ${isRed ? 'highlight-red' : ''}">${k}:</span> 
-                <span>${item[k] || '---'}</span>
+            const isRed = ["mức độ", "đánh giá", "nghiêm trọng", "ảnh hưởng"].some(w => k.toLowerCase().includes(w));
+            return `<div style="padding:8px 0; border-bottom:1px solid #eee; font-size:13px;">
+                <span class="${isRed?'highlight-red':''}" style="font-weight:bold">${k}:</span> ${item[k] || '---'}
             </div>`;
         }).join('');
-
+        
         document.getElementById('aiResult').style.display = "none";
+        document.getElementById('btnAI').disabled = false;
         modal.style.display = "block";
     }
 
@@ -200,38 +227,32 @@
         const btn = document.getElementById('btnAI');
         const loading = document.getElementById('aiLoading');
         const result = document.getElementById('aiResult');
-        const rowData = JSON.stringify(filtered[idx].fullData);
-
-        btn.disabled = true; loading.style.display = "block"; result.style.display = "none";
-
+        
+        btn.disabled = true; loading.style.display = "block";
+        
         try {
-            // SỬA LỖI 404: Dùng endpoint v1beta và model name đầy đủ
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${AI_KEY}`;
+            // FIX LỖI API: Sử dụng đúng cấu trúc Google AI v1beta
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AI_KEY}`;
+            const prompt = `Phân tích sự cố sau và trả về JSON {root: "nguyên nhân", plan: "giải pháp"}. Dữ liệu: ${JSON.stringify(filtered[idx].fullData)}`;
             
             const response = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Phân tích sự cố y khoa: ${rowData}. Trả về định dạng JSON thuần túy (không kèm markdown): {"root": "...", "plan": "...", "percent": 85}` }] }]
-                })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
 
-            if (!response.ok) throw new Error("Google AI đang bận hoặc Endpoint bị lỗi. Thử lại sau.");
-
             const data = await response.json();
-            const text = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
-            const res = JSON.parse(text);
+            const text = data.candidates[0].content.parts[0].text;
+            const jsonStr = text.match(/\{.*\}/s)[0]; // Lấy đúng phần JSON
+            const final = JSON.parse(jsonStr);
 
-            document.getElementById('aiRoot').innerText = res.root;
-            document.getElementById('aiPlan').innerText = res.plan;
-            document.getElementById('pFill').style.width = res.percent + "%";
-            document.getElementById('pText').innerText = res.percent + "%";
-
+            document.getElementById('aiRoot').innerText = final.root;
+            document.getElementById('aiPlan').innerText = final.plan;
+            
             loading.style.display = "none"; result.style.display = "block";
         } catch (e) {
-            alert("Lỗi AI: " + e.message);
-            loading.style.display = "none";
-            btn.disabled = false;
+            alert("Lỗi AI: Vui lòng kiểm tra lại API Key hoặc nội dung sự cố.");
+            loading.style.display = "none"; btn.disabled = false;
         }
     }
 
@@ -248,10 +269,7 @@
             maintainAspectRatio: false,
             plugins: {
                 legend: { position: 'bottom', labels: { font: { size: 10 } } },
-                datalabels: {
-                    anchor: 'end', align: 'top', color: '#444',
-                    font: { weight: 'bold' }, formatter: (v) => v > 0 ? v : ''
-                }
+                datalabels: { anchor: 'end', align: 'top', color: '#444', font: { weight: 'bold' } }
             }
         };
 
@@ -276,16 +294,16 @@
     }
 
     function updateCharts() {
-        const deptMap = {}, lv = { Nhẹ: 0, TB: 0, Nặng: 0 }, trend = Array(12).fill(0);
+        const dMap = {}, lMap = { Nhẹ: 0, TB: 0, Nặng: 0 }, tMap = Array(12).fill(0);
         filtered.forEach(i => {
-            deptMap[i.dept] = (deptMap[i.dept] || 0) + 1;
-            lv[i.level]++;
-            if(i.year === 2026) trend[i.month]++;
+            dMap[i.dept] = (dMap[i.dept] || 0) + 1;
+            lMap[i.level]++;
+            if(i.year === 2026) tMap[i.month]++;
         });
-        charts.dept.data.labels = Object.keys(deptMap);
-        charts.dept.data.datasets[0].data = Object.values(deptMap);
-        charts.level.data.datasets[0].data = [lv.Nhẹ, lv.TB, lv.Nặng];
-        charts.trend.data.datasets[0].data = trend;
+        charts.dept.data.labels = Object.keys(dMap);
+        charts.dept.data.datasets[0].data = Object.values(dMap);
+        charts.level.data.datasets[0].data = [lMap.Nhẹ, lMap.TB, lMap.Nặng];
+        charts.trend.data.datasets[0].data = tMap;
         Object.values(charts).forEach(c => c.update());
     }
 </script>
