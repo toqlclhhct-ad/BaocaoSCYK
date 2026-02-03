@@ -242,6 +242,23 @@
             btn.innerText = 'GỬI BÁO CÁO';
         });
     });
+
+    function submitForm(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = "Đang gửi báo cáo...";
+
+        google.script.run.withSuccessHandler(function(res) {
+        alert("Gửi báo cáo sự cố thành công!");
+        // Reset form để sẵn sàng cho báo cáo tiếp theo
+        document.getElementById('incidentForm').reset(); 
+        btn.disabled = false;
+        btn.innerText = "GỬI BÁO CÁO";
+        window.scrollTo(0, 0); // Cuộn lên đầu
+        }).processForm(document.getElementById('incidentForm'));
+    }
+            
 </script>
 </body>
 </html>
